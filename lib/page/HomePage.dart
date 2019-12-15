@@ -21,6 +21,17 @@ class HomePageState extends State<HomePage>{
 //          backgroundColor: Color.fromARGB(255, 199, 136, 213),
 //          centerTitle: true,
 //        ),
+//      appBar: PreferredSize(
+//        child: Container(
+//          width: double.infinity,
+//          height: double.infinity,
+//          decoration: BoxDecoration(
+//            gradient: LinearGradient(colors: [Colors.yellow,Colors.pink]),
+//          ),
+//          child: SafeArea(child: Text("3423"),),
+//        ),
+//        preferredSize: Size(double.infinity,60),
+//      ),
         body: Center(
           child: Text("首页"),
         ),
