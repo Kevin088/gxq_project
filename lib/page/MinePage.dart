@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:gxq_project/utils/Utils.dart';
 
 class MinePage extends StatefulWidget{
   @override
@@ -21,8 +22,14 @@ class MinePageState extends State<MinePage>{
 //          backgroundColor: Color.fromARGB(255, 199, 136, 213),
 //          centerTitle: true,
 //        ),
-        body: Center(
-          child: Text("我的"),
+        body: Column(
+
+          children: <Widget>[
+            CircleAvatar(
+              radius: 36.0,
+              backgroundImage: AssetImage(Utils.getImgPath2("ali_connors")),
+            ),
+          ],
         ),
       ),
 

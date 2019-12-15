@@ -70,3 +70,17 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages
+  assets:
+    - assets/images/ali_connors.png
+    - assets/images/ali_connors_sml.png
+    - assets/images/qrcode.png
+    - assets/images/icon_wan_android.png
+    - assets/images/ic_launcher_news.png
+    - assets/images/guide1.png
+    - assets/images/guide2.png
+    - assets/images/guide3.png
+    - assets/images/guide4.png
+    - assets/images/splash_bg.png
+
+
+
