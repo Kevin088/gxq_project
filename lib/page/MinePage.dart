@@ -59,6 +59,7 @@ class MinePageState extends State<MinePage>{
                   ),
                 ],)
                 ,
+                SizedBox(height: 30.0),
                 getText("设备管理"),
                 Divider(height: 1.0,color: Colors.blueGrey),
                 getText("提醒设置"),
@@ -69,16 +70,27 @@ class MinePageState extends State<MinePage>{
                 Divider(height: 1.0,color: Colors.blueGrey),
                 getText("关于我们"),
                 Divider(height: 1.0,color: Colors.blueGrey),
-                FlatButton(
-                  onPressed: (){
-                    print(1);
-                  },
-                  child: Text("登录"),
-                  color: Colors.blue,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(20))
+                Expanded(child: Container()),
+                Container(
+                  margin: EdgeInsets.fromLTRB(0, 0, 0, 30),
+                  child: FlatButton(
+
+                    onPressed: (){
+                      print(1);
+                    },
+                    child: Container(
+                      margin:  EdgeInsets.fromLTRB(20,0,20,0),
+                      height: 40,
+                      alignment: const Alignment(0,0),
+                      child: Text("登录"),
+                    ),
+                    color: Colors.blue,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(20))
+                    ),
                   ),
                 )
+
 
               ],
             ),
