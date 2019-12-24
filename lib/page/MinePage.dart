@@ -52,16 +52,11 @@ class MinePageState extends State<MinePage>{
                                   fontSize: 14.0,
                                   color: Color.fromARGB(100, 178, 178, 178)
                               ),
-
                             )
                         ),
-
                       ],
                     )
-                  )
-                  ,
-
-
+                  ),
                 ],)
                 ,
                 getText("设备管理"),
@@ -74,22 +69,20 @@ class MinePageState extends State<MinePage>{
                 Divider(height: 1.0,color: Colors.blueGrey),
                 getText("关于我们"),
                 Divider(height: 1.0,color: Colors.blueGrey),
+                FlatButton(
+                  onPressed: (){
+                    print(1);
+                  },
+                  child: Text("登录"),
+                  color: Colors.blue,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(20))
+                  ),
+                )
 
               ],
             ),
           ),
-//        body: Column(
-//          children: <Widget>[
-//            Row(children: <Widget>[
-//              CircleAvatar(
-//                radius: 36.0,
-//                backgroundImage: AssetImage(Utils.getImgPath2("ic_avatar")),
-//              ),
-//
-//            ],)
-//
-//          ],
-//        ),
       ),
 
 
