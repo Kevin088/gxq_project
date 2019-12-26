@@ -1,6 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:gxq_project/page/mine/MineInfoPage.dart';
 import 'package:gxq_project/utils/Utils.dart';
+import 'package:gxq_project/widget/CustomRoute.dart';
 
 class MinePage extends StatefulWidget{
   @override
@@ -23,7 +25,7 @@ class MinePageState extends State<MinePage>{
 //          centerTitle: true,
 //        ),
           body: Container(
-            margin:  EdgeInsets.fromLTRB(10,50,0,0),
+            margin:  EdgeInsets.fromLTRB(10,50,10,0),
             child: Column(
               children: <Widget>[
                 Row(children: <Widget>[
@@ -32,7 +34,7 @@ class MinePageState extends State<MinePage>{
                     backgroundImage: AssetImage(Utils.getImgPath2("ic_avatar")),
                   ),
                   Container(
-                    margin: EdgeInsets.fromLTRB(20, 0, 0, 0),
+                    margin: EdgeInsets.fromLTRB(20, 0, 20, 0),
                     child:Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
@@ -60,16 +62,19 @@ class MinePageState extends State<MinePage>{
                 ],)
                 ,
                 SizedBox(height: 30.0),
-                getText("设备管理"),
-                Divider(height: 1.0,color: Colors.blueGrey),
-                getText("提醒设置"),
-                Divider(height: 1.0,color: Colors.blueGrey),
-                getText("服务条款"),
-                Divider(height: 1.0,color: Colors.blueGrey),
-                getText("意见反馈"),
-                Divider(height: 1.0,color: Colors.blueGrey),
-                getText("关于我们"),
-                Divider(height: 1.0,color: Colors.blueGrey),
+                getText("设备管理",
+                    (){
+                      Navigator.push(context, CustomRoute(MineInfoPage()));
+                    }),
+                Divider(height: 1.0,color: Color.fromARGB(255, 220, 220, 220)),
+                getText("提醒设置",null),
+                Divider(height: 1.0,color: Color.fromARGB(255, 220, 220, 220)),
+                getText("服务条款",null),
+                Divider(height: 1.0,color: Color.fromARGB(255, 220, 220, 220)),
+                getText("意见反馈",null),
+                Divider(height: 1.0,color: Color.fromARGB(255, 220, 220, 220)),
+                getText("关于我们",null),
+                Divider(height: 1.0,color: Color.fromARGB(255, 220, 220, 220)),
                 Expanded(child: Container()),
                 Container(
                   margin: EdgeInsets.fromLTRB(0, 0, 0, 30),
@@ -82,16 +87,25 @@ class MinePageState extends State<MinePage>{
                       margin:  EdgeInsets.fromLTRB(20,0,20,0),
                       height: 40,
                       alignment: const Alignment(0,0),
-                      child: Text("登录"),
+                      child: Text(
+                          "退出登录",
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: Color.fromARGB(100, 136, 136, 136)
+                        ),
+                      ),
                     ),
-                    color: Colors.blue,
+                    color: Colors.white,
+
                     shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(20))
+                        borderRadius: BorderRadius.all(Radius.circular(20)),
+                        side: BorderSide(
+                            color: Color.fromARGB(255, 211, 211, 211),
+                          width: 1,
+                        ),
                     ),
                   ),
                 )
-
-
               ],
             ),
           ),
@@ -100,17 +114,20 @@ class MinePageState extends State<MinePage>{
 
     );
   }
-  Container getText(String text){
-    return Container(
-      padding: EdgeInsets.fromLTRB(10,0,10,0),
-      height: 50.0,
-      child: Row(
+  GestureDetector getText(String text,Function callBack){
+    return GestureDetector(
+      onTap: callBack,
+      child: Container(
+        padding: EdgeInsets.fromLTRB(10,0,10,0),
+        height: 50.0,
+        child: Row(
+
           children: <Widget>[
             Expanded(
               child: Text(
                 text,
                 style: TextStyle(
-                    fontSize: 16.0,
+                  fontSize: 16.0,
                 ),
               ),
             )
@@ -120,8 +137,10 @@ class MinePageState extends State<MinePage>{
             )
 
           ],
+        ),
       ),
     );
+
   }
 
 
