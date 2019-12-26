@@ -52,7 +52,7 @@ class MinePageState extends State<MinePage>{
                               "电话号码：15313729066",
                               style: TextStyle(
                                   fontSize: 14.0,
-                                  color: Color.fromARGB(100, 178, 178, 178)
+                                  color: Color.fromARGB(255, 178, 178, 178)
                               ),
                             )
                         ),
@@ -91,7 +91,7 @@ class MinePageState extends State<MinePage>{
                           "退出登录",
                         style: TextStyle(
                           fontSize: 16,
-                          color: Color.fromARGB(100, 136, 136, 136)
+                          color: Color.fromARGB(255, 136, 136, 136)
                         ),
                       ),
                     ),
