@@ -24,7 +24,9 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^0.1.2
   image_picker: ^0.6.2+3
-#  image_crop: ^0.2.1
+  flutter_qrscaner: ^0.0.4
+  admob_flutter: "^1.0.0-beta"
+  banner_view: "^1.1.2"
 
 dev_dependencies:
   flutter_test:
@@ -86,6 +88,9 @@ flutter:
     - assets/images/ic_avatar.png
     - assets/images/ic_arraw.png
     - assets/images/ic_back.png
+    - assets/images/ic_saoyisao.png
+    - assets/images/ic_setting.png
+
 
 
 
