@@ -9,4 +9,8 @@ class MyColors{
   static const Color color_444444=Color(0xFF444444);
   static const Color color_dddddd=Color(0xFFdddddd);
   static const Color color_3464BA=Color(0xFF3464BA);
+  static const Color color_DFC865=Color(0xFFDFC865);
+  static const Color color_divider=Color(0xFFDDDDDD);
+
+
 }
