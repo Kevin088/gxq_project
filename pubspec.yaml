@@ -93,6 +93,8 @@ flutter:
     - assets/images/ic_wenduji.png
     - assets/images/ic_arraw_down.png
     - assets/images/ic_help.png
+    - assets/images/ic_wendu_down.png
+    - assets/images/ic_wendu_up.png
 
 
 
