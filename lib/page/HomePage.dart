@@ -5,9 +5,12 @@ import 'package:flutter_qrscaner/flutter_qrscaner.dart';
 import 'package:gxq_project/res/Colors.dart';
 import 'package:gxq_project/utils/Toast.dart';
 import 'package:gxq_project/utils/Utils.dart';
+import 'package:gxq_project/widget/CustomRoute.dart';
 import 'package:gxq_project/widget/banner/widget_banner.dart';
 import 'package:gxq_project/widget/line/chart_bean.dart';
 import 'package:gxq_project/widget/line/chart_line.dart';
+
+import 'DeviceManagePage.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -146,6 +149,7 @@ class HomePageState extends State<HomePage> {
 
   void setting() {
     Toast.toast(context, msg: "设置");
+    Navigator.push(context, CustomRoute(DeviceManagePage()));
   }
 
   Widget getBanner() {
