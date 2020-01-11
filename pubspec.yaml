@@ -95,6 +95,10 @@ flutter:
     - assets/images/ic_help.png
     - assets/images/ic_wendu_down.png
     - assets/images/ic_wendu_up.png
+    - assets/images/ic_add.png
+    - assets/images/ic_is_select.png
+    - assets/images/ic_no_select.png
+    - assets/images/ic_device_manage_empty.png
 
 
 
