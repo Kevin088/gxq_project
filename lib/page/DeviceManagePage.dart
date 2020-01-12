@@ -2,9 +2,11 @@ import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:gxq_project/page/TemperatureSetPage.dart';
 import 'package:gxq_project/res/Colors.dart';
 import 'package:gxq_project/utils/Toast.dart';
 import 'package:gxq_project/utils/Utils.dart';
+import 'package:gxq_project/widget/CustomRoute.dart';
 import 'package:gxq_project/widget/SlideButton.dart';
 
 class DeviceManagePage extends StatefulWidget{
@@ -210,14 +212,14 @@ class DeviceManageState extends State<DeviceManagePage>{
           SizedBox(height: 45),
           Container(
             width: 300,
-            height: 55,
+            height: 45,
             child:RaisedButton(
               child: new Text("查看帮助",style: TextStyle(fontSize: 16),),
               color: MyColors.color_00286B ,
               textColor: Colors.white ,
 
               onPressed: (){
-
+                Navigator.push(context, CustomRoute(TemperatureSetPage()));
               },
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(30.0)), //圆角大小
