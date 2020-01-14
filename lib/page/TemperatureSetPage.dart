@@ -1,10 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:gxq_project/widget/pickview/date_model.dart';
-import 'package:gxq_project/widget/pickview/datetime_picker_theme.dart';
-import 'package:gxq_project/widget/pickview/i18n_model.dart';
+import 'package:gxq_project/res/Colors.dart';
 
-typedef DateChangedCallback(DateTime time);
+typedef DateChangedCallback(double time);
 typedef String StringAtIndexCallBack(int index);
 
 class TemperatureSetPage extends StatefulWidget {
@@ -17,189 +15,137 @@ class TemperatureSetPage extends StatefulWidget {
 
 class TemperatureSetPageState extends State<TemperatureSetPage> {
 
+  List<String> dataList=List();
+  List<Widget> widegets1=List<Widget>();
+  List<Widget> widegets2=List<Widget>();
+  int leftSelect=0;
+  int rightSelect=0;
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    for(double i=42.0;i>35.0;i-=0.1){
+      dataList.add(i.toStringAsFixed(1));
+      widegets1.add(Text(i.toStringAsFixed(1),style: const TextStyle(color: MyColors.color_00286B, fontSize: 18),));
+      widegets2.add(Text(i.toStringAsFixed(1),style: const TextStyle(color: Color(0xFF000046), fontSize: 18),));
+    }
+  }
+
+
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
     return new MaterialApp(
       home: Scaffold(
-        body: _DatePickerComponent(
-            onChanged: (date){
-              print('change $date in time zone ' +
-                  date.timeZoneOffset.inHours.toString());
-            },
-            pickerModel: DateTimePickerModel(
-                minTime: DateTime(2020, 5, 5, 20, 50),
-                maxTime: DateTime(2020, 6, 7, 05, 09),
-                )
+        backgroundColor: Colors.white,
+        body: Column(
+          children: <Widget>[
+            SizedBox(height: 30,),
+            Text(
+              "温度选择 ",
+              style: TextStyle(color: MyColors.color_444444,fontSize: 19,fontWeight: FontWeight.bold),
+            ),
+            SizedBox(height: 50,),
+             Row(
+               children: <Widget>[
+                 Expanded(
+                   child: Container(),
+                   flex: 1,
+                 ),
+                 getView1(),
+                 Expanded(
+                   child: Container(),
+                   flex: 1,
+                 ),
+                 Text(
+                   "℃",
+                   style: TextStyle(color: MyColors.color_00286B,fontSize:18 ,fontWeight: FontWeight.bold),
+                 ),
+                 Expanded(
+                   child: Container(),
+                   flex: 1,
+                 ),
+                 Text(
+                   "至",
+                   style: TextStyle(color: MyColors.color_00286B,fontSize:18 ,fontWeight: FontWeight.bold),
+                 ),
+                 Expanded(
+                   child: Container(),
+                   flex: 1,
+                 ),
+                 getView2(),
+                 Expanded(
+                   child: Container(),
+                   flex: 1,
+                 ),
+                 Text(
+                   "℃",
+                   style: TextStyle(color: MyColors.color_00286B,fontSize:18 ,fontWeight: FontWeight.bold),
+                 ),
+                 Expanded(
+                   child: Container(),
+                   flex: 1,
+                 ),
+               ],
+             ),
+
+            SizedBox(height: 50,),
+            Container(
+              width: 300,
+              height: 45,
+              child:RaisedButton(
+                child: new Text("确定",style: TextStyle(fontSize: 16),),
+                color: MyColors.color_00286B ,
+                textColor: Colors.white ,
+
+                onPressed: (){
+
+                  print(dataList[leftSelect]+"========"+dataList[rightSelect]);
+                },
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(30.0)), //圆角大小
+              ),
+            ),
+          ],
         ),
       ),
     );
   }
-}
-
-class _DatePickerComponent extends StatefulWidget {
-  _DatePickerComponent(
-      {Key key,
-        this.onChanged,
-        this.pickerModel});
-
-  final DateChangedCallback onChanged;
 
 
+  Widget getView1(){
 
-  final BasePickerModel pickerModel;
-
-  @override
-  State<StatefulWidget> createState() {
-    return _DatePickerState();
-  }
-}
-
-class  _DatePickerState extends State<_DatePickerComponent> {
-  FixedExtentScrollController leftScrollCtrl, middleScrollCtrl, rightScrollCtrl;
-
-  @override
-  void initState() {
-    super.initState();
-    refreshScrollOffset();
-  }
-
-  void refreshScrollOffset() {
-    leftScrollCtrl = new FixedExtentScrollController(
-        initialItem: widget.pickerModel.currentLeftIndex());
-    middleScrollCtrl = new FixedExtentScrollController(
-        initialItem: widget.pickerModel.currentMiddleIndex());
-    rightScrollCtrl = new FixedExtentScrollController(
-        initialItem: widget.pickerModel.currentRightIndex());
-  }
-
-  @override
-  Widget build(BuildContext context) {
-
-    return _renderItemView(DatePickerTheme());
-  }
-
-  void _notifyDateChanged() {
-    if (widget.onChanged != null) {
-      widget.onChanged(widget.pickerModel.finalTime());
-    }
-  }
-
-
-
-  Widget _renderColumnView(
-      ValueKey key,
-      DatePickerTheme theme,
-      StringAtIndexCallBack stringAtIndexCB,
-      ScrollController scrollController,
-      int layoutProportion,
-      ValueChanged<int> selectedChangedWhenScrolling,
-      ValueChanged<int> selectedChangedWhenScrollEnd) {
-    return Expanded(
-      flex: layoutProportion,
-      child: Container(
-          padding: EdgeInsets.all(8.0),
-          height: theme.containerHeight,
-          decoration:
-          BoxDecoration(color: theme.backgroundColor ?? Colors.white),
-          child: NotificationListener(
-              onNotification: (ScrollNotification notification) {
-                if (notification.depth == 0 &&
-                    selectedChangedWhenScrollEnd != null &&
-                    notification is ScrollEndNotification &&
-                    notification.metrics is FixedExtentMetrics) {
-                  final FixedExtentMetrics metrics = notification.metrics;
-                  final int currentItemIndex = metrics.itemIndex;
-                  selectedChangedWhenScrollEnd(currentItemIndex);
-                }
-                return false;
-              },
-              child: CupertinoPicker.builder(
-                  key: key,
-                  backgroundColor: theme.backgroundColor ?? Colors.white,
-                  scrollController: scrollController,
-                  itemExtent: theme.itemHeight,
-                  onSelectedItemChanged: (int index) {
-                    selectedChangedWhenScrolling(index);
-                  },
-                  useMagnifier: true,
-                  itemBuilder: (BuildContext context, int index) {
-                    final content = stringAtIndexCB(index);
-                    if (content == null) {
-                      return null;
-                    }
-                    return Container(
-                      height: theme.itemHeight,
-                      alignment: Alignment.center,
-                      child: Text(
-                        content,
-                        style: theme.itemStyle,
-                        textAlign: TextAlign.start,
-                      ),
-                    );
-                  }))),
+    var picker1  = CupertinoPicker(
+      itemExtent: 25.0,
+      onSelectedItemChanged: (position){
+        leftSelect=position;
+      },
+      children:widegets1,
+      useMagnifier: true,
+      backgroundColor:Colors.white,
     );
-  }
-
-  Widget _renderItemView(DatePickerTheme theme) {
     return Container(
-      color:  Colors.white,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: <Widget>[
-          Container(
-            child:  _renderColumnView(
-                ValueKey(widget.pickerModel.currentLeftIndex()),
-                theme,
-                widget.pickerModel.leftStringAtIndex,
-                leftScrollCtrl,
-                widget.pickerModel.layoutProportions()[0],
-                    (index) {
-                  widget.pickerModel.setLeftIndex(index);
-                }, (index) {
-              setState(() {
-                refreshScrollOffset();
-                _notifyDateChanged();
-              });
-            }),
-          ),
-          Text(
-            widget.pickerModel.leftDivider(),
-            style: theme.itemStyle,
-          ),
-          Container(
-            child: _renderColumnView(
-                ValueKey(widget.pickerModel.currentLeftIndex()),
-                theme,
-                widget.pickerModel.middleStringAtIndex,
-                middleScrollCtrl,
-                widget.pickerModel.layoutProportions()[1], (index) {
-              widget.pickerModel.setMiddleIndex(index);
-            }, (index) {
-              setState(() {
-                refreshScrollOffset();
-                _notifyDateChanged();
-              });
-            }),
-          ),
-          Text(
-            widget.pickerModel.rightDivider(),
-            style: theme.itemStyle,
-          ),
-          Container(
-            child:  _renderColumnView(
-                ValueKey(widget.pickerModel.currentMiddleIndex() * 100 +
-                    widget.pickerModel.currentLeftIndex()),
-                theme,
-                widget.pickerModel.rightStringAtIndex,
-                rightScrollCtrl,
-                widget.pickerModel.layoutProportions()[2], (index) {
-              widget.pickerModel.setRightIndex(index);
-              _notifyDateChanged();
-            }, null),
-          ),
-        ],
-      ),
+      height: 300,
+      width: 50,
+      child:picker1,
+    );
+  }
+  Widget getView2(){
+
+    var picker2  = CupertinoPicker(
+      itemExtent: 25.0,
+      onSelectedItemChanged: (position){
+        rightSelect=position;
+      },
+      children:widegets2,
+      useMagnifier: true,
+      backgroundColor:Colors.white,
+    );
+    return     Container(
+      height: 300,
+      width: 50,
+      child:picker2,
     );
   }
 }
+

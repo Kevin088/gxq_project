@@ -26,6 +26,7 @@ abstract class BasePickerModel {
   int currentRightIndex();
   //return final time
   DateTime finalTime();
+  double finalTemp();
   //return left divider string
   String leftDivider();
   //return right divider string
@@ -111,6 +112,12 @@ class CommonPickerModel extends BasePickerModel {
 
   @override
   DateTime finalTime() {
+    return null;
+  }
+
+  @override
+  double finalTemp() {
+    // TODO: implement finalTemp
     return null;
   }
 }
@@ -610,6 +617,178 @@ class DateTimePickerModel extends CommonPickerModel {
   @override
   List<int> layoutProportions() {
     return [4, 1, 1];
+  }
+
+  @override
+  String rightDivider() {
+    return ':';
+  }
+}
+
+
+
+//a base class for picker data model
+class TemperaturePickerModel extends BasePickerModel {
+  List<String> leftList;
+  List<String> middleList;
+  List<String> rightList;
+  double currentTime;
+  int _currentLeftIndex;
+  int _currentMiddleIndex;
+  int _currentRightIndex;
+
+  LocaleType locale;
+
+  TemperaturePickerModel({this.currentTime, locale})
+      : this.locale = locale ?? LocaleType.en;
+
+  @override
+  String leftStringAtIndex(int index) {
+    return null;
+  }
+
+  @override
+  String middleStringAtIndex(int index) {
+    return null;
+  }
+
+  @override
+  String rightStringAtIndex(int index) {
+    return null;
+  }
+
+  @override
+  int currentLeftIndex() {
+    return _currentLeftIndex;
+  }
+
+  @override
+  int currentMiddleIndex() {
+    return _currentMiddleIndex;
+  }
+
+  @override
+  int currentRightIndex() {
+    return _currentRightIndex;
+  }
+
+  @override
+  void setLeftIndex(int index) {
+    _currentLeftIndex = index;
+  }
+
+  @override
+  void setMiddleIndex(int index) {
+    _currentMiddleIndex = index;
+  }
+
+  @override
+  void setRightIndex(int index) {
+    _currentRightIndex = index;
+  }
+
+  @override
+  String leftDivider() {
+    return "";
+  }
+
+  @override
+  String rightDivider() {
+    return "";
+  }
+
+  @override
+  List<int> layoutProportions() {
+    return [1, 1];
+  }
+
+  @override
+  DateTime finalTime() {
+    return null;
+  }
+
+  @override
+  double finalTemp() {
+    // TODO: implement finalTemp
+    return null;
+  }
+}
+
+// a date&time picker model
+class ImplTemperaturePickerModel extends TemperaturePickerModel {
+  double maxTemp=42.0;
+  double minTemp=35.0;
+  double currentTemp=36.0;
+
+  ImplTemperaturePickerModel(){
+   leftList=List();
+   rightList=List();
+   double value=minTemp;
+   for(int i=0;i<70;i++){
+     //value+=0.1;
+     
+     leftList.add("22");
+     rightList.add("22");
+   }
+  }
+
+  bool isAtSameDay(double day1, double day2) {
+    return day1 != null &&
+        day2 != null &&
+        day1 == day2;
+  }
+
+  @override
+  void setLeftIndex(int index) {
+    // TODO: implement setLeftIndex
+    super.setLeftIndex(index);
+  }
+
+  @override
+  void setMiddleIndex(int index) {
+    // TODO: implement setMiddleIndex
+    super.setMiddleIndex(index);
+
+  }
+
+  @override
+  String leftStringAtIndex(int index) {
+    String text;
+    if(leftList!=null&&leftList.length>index){
+      text=leftList[index];
+    }
+    return text;
+  }
+
+  @override
+  String middleStringAtIndex(int index) {
+
+
+    return null;
+  }
+
+  @override
+  String rightStringAtIndex(int index) {
+    String text;
+    if(rightList!=null&&rightList.length>index){
+      text=leftList[index];
+    }
+    return text;
+  }
+
+  @override
+  DateTime finalTime() {
+
+
+    return null;
+  }
+  @override
+  double finalTemp() {
+    return currentTemp;
+  }
+  @override
+  List<int> layoutProportions() {
+    return [1, 1];
   }
 
   @override
