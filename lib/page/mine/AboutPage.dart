@@ -8,7 +8,7 @@ import 'package:image_picker/image_picker.dart';
 import 'dart:async';
 
 class AboutPage extends StatefulWidget{
-
+  var content="    我们是一家专业的生产家庭温度自检设备的企业，目前有产品，“家庭温度自检检测计”已经投放市场。我们是一家专业的生产家庭温度自检设备的企业，目前有产品，“家庭温度自检检测计”已经投放市场。我们是一家专业的生产家庭温度自检设备的企业，目前有产品，“家庭温度自检检测计”已经投放市场。我们是一家专业的生产家庭温度自检设备的企业，目前有产品，“家庭温度自检检测计”已经投放市场。我们是一家专业的生产家庭温度自检设备的企业，目前有产品，“家庭温度自检检测计”已经投放市场。我们是一家专业的生产家庭温度自检设备的企业，目前有产品，“家庭温度自检检测计”已经投放市场。我们是一家专业的生产家庭温度自检设备的企业，目前有产品，“家庭温度自检检测计”已经投放市场。我们是一家专业的生产家庭温度自检设备的企业，目前有产品，“家庭温度自检检测计”已经投放市场。我们是一家专业的生产家庭温度自检设备的企业.";
   @override
   State<StatefulWidget> createState() {
     // TODO: implement createState
@@ -27,12 +27,16 @@ class ProtocolPageState extends State<AboutPage>{
         children: <Widget>[
           Container(
             margin: EdgeInsets.fromLTRB(20, 30, 0, 0),
-            child: GestureDetector(
-              child: Image.asset(Utils.getImgPath2("ic_back")),
-              onTap: (){
-                Navigator.pop(context);
-              },
-            ),
+            child: Row(
+              children: <Widget>[
+                GestureDetector(
+                  child: Image.asset(Utils.getImgPath2("ic_back")),
+                  onTap: (){
+                    Navigator.pop(context);
+                  },
+                ),
+              ],
+            )
           ),
 
           Container(
@@ -42,13 +46,22 @@ class ProtocolPageState extends State<AboutPage>{
           ),
 
         Container(
-          margin: EdgeInsets.fromLTRB(20, 50, 20, 0),
+          margin: EdgeInsets.fromLTRB(20, 30, 20, 0),
 
           child:Text(
             "家庭温度自检检测计",
             style: TextStyle(color: MyColors.color_444444,fontSize: 22),
           )
         ),
+          Container(
+              margin: EdgeInsets.fromLTRB(20, 30, 20, 0),
+
+              child:Text(
+                widget.content,
+                style: TextStyle(color: MyColors.color_666666,fontSize: 12),
+              )
+          ),
+
 
         ],
       ),

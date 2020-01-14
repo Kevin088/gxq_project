@@ -2,6 +2,7 @@ import 'package:banner_view/banner_view.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_qrscaner/flutter_qrscaner.dart';
+import 'package:gxq_project/page/mine/AboutPage.dart';
 import 'package:gxq_project/page/mine/ProtocolPage.dart';
 import 'package:gxq_project/res/Colors.dart';
 import 'package:gxq_project/utils/Toast.dart';
@@ -132,8 +133,8 @@ class HomePageState extends State<HomePage> {
                   bottom: 70,
                   child: getHelpButton((){
                     //Navigator.push(context, CustomRoute(CommonQuestionPage()));
-                    Navigator.push(context, CustomRoute(ProtocolPage()));
-
+                    //Navigator.push(context, CustomRoute(ProtocolPage()));
+                    Navigator.push(context, CustomRoute(AboutPage()));
                   }),
                 )
               ],
