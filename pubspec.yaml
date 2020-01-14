@@ -99,6 +99,9 @@ flutter:
     - assets/images/ic_is_select.png
     - assets/images/ic_no_select.png
     - assets/images/ic_device_manage_empty.png
+    - assets/images/ic_image_1.png
+    - assets/images/ic_image_2.png
+    - assets/images/ic_about.png
 
 
 

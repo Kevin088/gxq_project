@@ -2,6 +2,7 @@ import 'package:banner_view/banner_view.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_qrscaner/flutter_qrscaner.dart';
+import 'package:gxq_project/page/mine/ProtocolPage.dart';
 import 'package:gxq_project/res/Colors.dart';
 import 'package:gxq_project/utils/Toast.dart';
 import 'package:gxq_project/utils/Utils.dart';
@@ -11,6 +12,7 @@ import 'package:gxq_project/widget/line/chart_bean.dart';
 import 'package:gxq_project/widget/line/chart_line.dart';
 
 import 'DeviceManagePage.dart';
+import 'mine/CommonQuestionPage.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -129,6 +131,8 @@ class HomePageState extends State<HomePage> {
                   right: 25,
                   bottom: 70,
                   child: getHelpButton((){
+                    //Navigator.push(context, CustomRoute(CommonQuestionPage()));
+                    Navigator.push(context, CustomRoute(ProtocolPage()));
 
                   }),
                 )
