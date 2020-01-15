@@ -27,6 +27,7 @@ dependencies:
   flutter_qrscaner: ^0.0.4
   admob_flutter: "^1.0.0-beta"
   banner_view: "^1.1.2"
+  flustars: ^0.2.6+1
 
 dev_dependencies:
   flutter_test:

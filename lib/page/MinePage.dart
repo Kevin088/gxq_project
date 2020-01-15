@@ -1,8 +1,12 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:gxq_project/page/DeviceManagePage.dart';
 import 'package:gxq_project/page/mine/MineInfoPage.dart';
 import 'package:gxq_project/utils/Utils.dart';
 import 'package:gxq_project/widget/CustomRoute.dart';
+
+import 'mine/AboutPage.dart';
+import 'mine/SetPage.dart';
 
 class MinePage extends StatefulWidget{
   @override
@@ -64,16 +68,20 @@ class MinePageState extends State<MinePage>{
                 SizedBox(height: 30.0),
                 getText("设备管理",
                     (){
-                      Navigator.push(context, CustomRoute(MineInfoPage()));
+                      Navigator.push(context, CustomRoute(DeviceManagePage()));
                     }),
                 Divider(height: 1.0,color: Color.fromARGB(255, 220, 220, 220)),
-                getText("提醒设置",null),
+                getText("提醒设置", (){
+                  Navigator.push(context, CustomRoute(SetPage()));
+                }),
                 Divider(height: 1.0,color: Color.fromARGB(255, 220, 220, 220)),
                 getText("服务条款",null),
                 Divider(height: 1.0,color: Color.fromARGB(255, 220, 220, 220)),
                 getText("意见反馈",null),
                 Divider(height: 1.0,color: Color.fromARGB(255, 220, 220, 220)),
-                getText("关于我们",null),
+                getText("关于我们",(){
+                  Navigator.push(context, CustomRoute(AboutPage()));
+                }),
                 Divider(height: 1.0,color: Color.fromARGB(255, 220, 220, 220)),
                 Expanded(child: Container()),
                 Container(
