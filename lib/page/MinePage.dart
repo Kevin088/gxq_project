@@ -6,6 +6,7 @@ import 'package:gxq_project/utils/Utils.dart';
 import 'package:gxq_project/widget/CustomRoute.dart';
 
 import 'mine/AboutPage.dart';
+import 'mine/FeedbackPage.dart';
 import 'mine/SetPage.dart';
 
 class MinePage extends StatefulWidget{
@@ -77,7 +78,9 @@ class MinePageState extends State<MinePage>{
                 Divider(height: 1.0,color: Color.fromARGB(255, 220, 220, 220)),
                 getText("服务条款",null),
                 Divider(height: 1.0,color: Color.fromARGB(255, 220, 220, 220)),
-                getText("意见反馈",null),
+                getText("意见反馈",(){
+                  Navigator.push(context, CustomRoute(FeedbackPage()));
+                }),
                 Divider(height: 1.0,color: Color.fromARGB(255, 220, 220, 220)),
                 getText("关于我们",(){
                   Navigator.push(context, CustomRoute(AboutPage()));
