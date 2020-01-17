@@ -28,7 +28,9 @@ dependencies:
   admob_flutter: "^1.0.0-beta"
   banner_view: "^1.1.2"
   flustars: ^0.2.6+1
-
+  video_player: ^0.10.5+2
+  orientation: ^1.1.0
+  seekbar: 0.0.2
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -103,6 +105,10 @@ flutter:
     - assets/images/ic_image_1.png
     - assets/images/ic_image_2.png
     - assets/images/ic_about.png
+    - assets/video.mp4
+    - assets/images/ic_play_ling.png
+    - assets/images/ic_play_no.png
+    - assets/images/ic_back_white.png
 
 
 

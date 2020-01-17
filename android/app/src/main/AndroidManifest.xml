@@ -14,7 +14,9 @@
     <application
         android:name="io.flutter.app.FlutterApplication"
         android:label="gxq_project"
-        android:icon="@mipmap/ic_launcher">
+        android:usesCleartextTraffic="true"
+        android:icon="@mipmap/ic_launcher"
+        >
         <meta-data
             android:name="com.google.android.gms.ads.AD_MANAGER_APP"
             android:value="true" />

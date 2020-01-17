@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:gxq_project/page/DeviceManagePage.dart';
-import 'package:gxq_project/page/mine/MineInfoPage.dart';
+import 'package:gxq_project/page/mine/MediaPlayerPage.dart';
 import 'package:gxq_project/utils/Utils.dart';
 import 'package:gxq_project/widget/CustomRoute.dart';
 
@@ -76,7 +76,9 @@ class MinePageState extends State<MinePage>{
                   Navigator.push(context, CustomRoute(SetPage()));
                 }),
                 Divider(height: 1.0,color: Color.fromARGB(255, 220, 220, 220)),
-                getText("服务条款",null),
+                getText("服务条款",(){
+                  Navigator.push(context, CustomRoute(MediaPlayerPage()));
+                }),
                 Divider(height: 1.0,color: Color.fromARGB(255, 220, 220, 220)),
                 getText("意见反馈",(){
                   Navigator.push(context, CustomRoute(FeedbackPage()));
