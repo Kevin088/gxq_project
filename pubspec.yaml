@@ -31,6 +31,7 @@ dependencies:
   video_player: ^0.10.5+2
   orientation: ^1.1.0
   seekbar: 0.0.2
+  sharesdk_plugin: ^1.1.7
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -109,6 +110,7 @@ flutter:
     - assets/images/ic_play_ling.png
     - assets/images/ic_play_no.png
     - assets/images/ic_back_white.png
+    - assets/images/ic_login_bg.png
 
 
 

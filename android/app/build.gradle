@@ -23,6 +23,7 @@ if (flutterVersionName == null) {
 
 apply plugin: 'com.android.application'
 apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
+apply plugin: 'com.mob.sdk'
 
 android {
     compileSdkVersion 28
@@ -54,7 +55,31 @@ android {
 flutter {
     source '../..'
 }
+MobSDK {
+    appKey "2df0f9372f598"
+    appSecret "afeae43657715eab6548c60e9ddd546e"
 
+    ShareSDK {
+        //平台配置信息
+        devInfo {
+            Wechat {
+                appId "wx9af9b57fa99042f5"
+                appSecret "f89725582f66ed27ae17239f0de57431"
+            }
+            QQ {
+                appId "101375266"
+                appKey "6466068c5e088ee00ba7a9a48d65142b"
+                shareByAppClient true
+            }
+            SinaWeibo {
+                appKey "2682983957"
+                appSecret "94c87e1eab2f5d158aeceb2f707927d2"
+                callbackUri "http://www.iqihang.com.cn/"
+                shareByAppClient true
+            }
+        }
+    }
+}
 dependencies {
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'

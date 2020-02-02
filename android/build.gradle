@@ -2,10 +2,16 @@ buildscript {
     repositories {
         google()
         jcenter()
+        maven {
+            url "http://mvn.mob.com/android"
+        }
     }
 
     dependencies {
         classpath 'com.android.tools.build:gradle:3.5.3'
+        classpath "com.mob.sdk:MobSDK:2018.0319.1724"
+
+
     }
 //    subprojects {
 //        //根據提示使用對應的版本

@@ -1,4 +1,3 @@
-import 'package:flustars/flustars.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -113,12 +112,32 @@ class MediaPlayerPageState extends State<MediaPlayerPage> {
                   progressColor: MyColors.color_00286B,
               ),
             ),
-
+            Positioned(
+              left: 30,
+              right: 30,
+              bottom: 30,
+              child:SeekBar(
+                value: totalTime,
+                secondValue: currentTime,
+                progressColor: MyColors.color_00286B,
+              ),
+            ),
+            Container(
+            margin: EdgeInsets.fromLTRB(0, 20, 0, 0),
+            alignment: FractionalOffset.topCenter,
+              child: Text(
+                  "检测体温需要注意的问题",
+                style: TextStyle(color: Colors.white,fontSize: 20),
+              ),
+            )
 
           ],
         ),
 
       ),
+
+
+
       onWillPop: (){
         OrientationPlugin.forceOrientation(DeviceOrientation.portraitUp);
         Navigator.pop(context);

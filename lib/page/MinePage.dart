@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:gxq_project/page/DeviceManagePage.dart';
+import 'package:gxq_project/page/mine/LoginPage.dart';
 import 'package:gxq_project/page/mine/MediaPlayerPage.dart';
 import 'package:gxq_project/utils/Utils.dart';
 import 'package:gxq_project/widget/CustomRoute.dart';
@@ -94,7 +95,7 @@ class MinePageState extends State<MinePage>{
                   child: FlatButton(
 
                     onPressed: (){
-                      print(1);
+                      Navigator.push(context, CustomRoute(LoginPage()));
                     },
                     child: Container(
                       margin:  EdgeInsets.fromLTRB(20,0,20,0),

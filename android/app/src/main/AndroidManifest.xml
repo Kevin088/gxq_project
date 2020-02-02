@@ -1,4 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.gxq.gxq_project">
 
     <!-- io.flutter.app.FlutterApplication is an android.app.Application that
@@ -11,15 +12,21 @@
     <uses-permission android:name="android.permission.FLASHLIGHT" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <application
         android:name="io.flutter.app.FlutterApplication"
         android:label="gxq_project"
         android:usesCleartextTraffic="true"
+        tools:replace="android:name"
         android:icon="@mipmap/ic_launcher"
         >
         <meta-data
             android:name="com.google.android.gms.ads.AD_MANAGER_APP"
             android:value="true" />
+        <meta-data android:name="Mob-AppKey" android:value="2df0f9372f598"/>
+        <meta-data android:name="Mob-AppSecret" android:value="afeae43657715eab6548c60e9ddd546e"/>
         <activity
             android:name=".MainActivity"
             android:launchMode="singleTop"
@@ -39,5 +46,8 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
+
+
+
     </application>
 </manifest>
