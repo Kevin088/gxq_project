@@ -1,6 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.gxq.gxq_project">
+    package="com.ghost.thermoai">
 
     <!-- io.flutter.app.FlutterApplication is an android.app.Application that
          calls FlutterMain.startInitialization(this); in its onCreate method.
@@ -17,7 +17,7 @@
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <application
         android:name="io.flutter.app.FlutterApplication"
-        android:label="gxq_project"
+        android:label="thermoai"
         android:usesCleartextTraffic="true"
         tools:replace="android:name"
         android:icon="@mipmap/ic_launcher"
@@ -28,7 +28,7 @@
         <meta-data android:name="Mob-AppKey" android:value="2df0f9372f598"/>
         <meta-data android:name="Mob-AppSecret" android:value="afeae43657715eab6548c60e9ddd546e"/>
         <activity
-            android:name=".MainActivity"
+            android:name="com.ghost.thermoai.MainActivity"
             android:launchMode="singleTop"
             android:theme="@style/LaunchTheme"
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"

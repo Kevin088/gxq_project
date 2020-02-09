@@ -1,4 +1,4 @@
-package com.gxq.gxq_project;
+package com.ghost.thermoai;
 
 import android.os.Bundle;
 import io.flutter.app.FlutterActivity;
