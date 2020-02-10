@@ -17,7 +17,7 @@
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <application
         android:allowBackup="false"
-        android:name="io.flutter.app.FlutterApplication"
+        android:name=".MyApp"
         android:label="thermoai"
         android:usesCleartextTraffic="true"
         tools:replace="android:allowBackup,android:label,android:icon"
@@ -28,6 +28,13 @@
             android:value="true" />
         <meta-data android:name="Mob-AppKey" android:value="2df0f9372f598"/>
         <meta-data android:name="Mob-AppSecret" android:value="afeae43657715eab6548c60e9ddd546e"/>
+        <meta-data
+            android:name="com.alibaba.app.appkey"
+            android:value="28244760" /> <!-- 请填写你自己的- appKey -->
+        <meta-data
+            android:name="com.alibaba.app.appsecret"
+            android:value="1ebb934bfb13bc88a8f7b1d7b0643888" /><!-- 请填写你自己的- appsecret -->
+
         <activity
             android:name="com.ghost.thermoai.MainActivity"
             android:launchMode="singleTop"
