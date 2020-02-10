@@ -16,10 +16,11 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <application
+        android:allowBackup="false"
         android:name="io.flutter.app.FlutterApplication"
         android:label="thermoai"
         android:usesCleartextTraffic="true"
-        tools:replace="android:name"
+        tools:replace="android:allowBackup,android:label,android:icon"
         android:icon="@mipmap/ic_launcher"
         >
         <meta-data

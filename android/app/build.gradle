@@ -24,7 +24,9 @@ if (flutterVersionName == null) {
 apply plugin: 'com.android.application'
 apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
 apply plugin: 'com.mob.sdk'
+apply plugin: 'seal'
 
+def projectRoot = project.getRootProject().rootDir.absolutePath
 android {
     compileSdkVersion 28
 
@@ -48,6 +50,39 @@ android {
             // TODO: Add your own signing config for the release build.
             // Signing with the debug keys for now, so `flutter run --release` works.
             signingConfig signingConfigs.debug
+        }
+    }
+    //添加
+    def manifestPath = [
+            // for AAR of Release
+            // see note below
+            projectRoot + '/build-cache',
+            projectRoot + '/rammus',
+            // for AAR of SNAPSHOT
+            projectRoot + '/app/build/intermediates/exploded-aar'
+    ]
+
+    def removeAttrs = [
+            'android:theme'
+    ]
+
+    def replaceValues = [
+            'android:theme'
+    ]
+
+
+    seal {
+        enabled = true
+        manifests = manifestPath
+
+        appAttrs {
+            enabled = true
+            attrsShouldRemove = removeAttrs
+        }
+
+        appReplaceValues {
+            enabled = true
+            valuesShouldRemove = replaceValues
         }
     }
 }

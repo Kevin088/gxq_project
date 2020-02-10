@@ -198,6 +198,13 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "2.0.5"
+  rammus:
+    dependency: "direct main"
+    description:
+      name: rammus
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "0.0.5"
   rational:
     dependency: transitive
     description:
