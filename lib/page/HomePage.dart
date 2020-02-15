@@ -1,6 +1,7 @@
 import 'package:banner_view/banner_view.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_blue/flutter_blue.dart';
 import 'package:flutter_qrscaner/flutter_qrscaner.dart';
 import 'package:gxq_project/page/mine/AboutPage.dart';
 import 'package:gxq_project/page/mine/ProtocolPage.dart';
@@ -60,6 +61,15 @@ class HomePageState extends State<HomePage> {
     rammus.onMessageArrived.listen((data){
       print("received data -=============> ${data.content}");
     });
+
+
+
+
+
+    /// 关闭扫描操作，避免内存泄漏
+    //scanSubscription.cancel();
+
+
   }
 
   //获取device id的方法
@@ -187,9 +197,15 @@ class HomePageState extends State<HomePage> {
                   right: 25,
                   bottom: 70,
                   child: getHelpButton((){
-                    //Navigator.push(context, CustomRoute(CommonQuestionPage()));
-                    //Navigator.push(context, CustomRoute(ProtocolPage()));
-                    Navigator.push(context, CustomRoute(AboutPage()));
+                    //蓝牙测试
+                    FlutterBlue flutterBlue = FlutterBlue.instance;
+                    /// 使用实例方法scan(),并使用listen()监听，scanResult做参数
+                    flutterBlue.scan().listen((scanResult) {
+                      // do something with scan result
+                      var device = scanResult.device;
+                      print('${device.name} found! rssi: ==============================>>${scanResult.rssi}');
+                    });
+                    //Navigator.push(context, CustomRoute(AboutPage()));
                   }),
                 )
               ],
