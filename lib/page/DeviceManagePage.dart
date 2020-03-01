@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
 import 'package:gxq_project/page/TemperatureSetPage.dart';
 import 'package:gxq_project/res/Colors.dart';
 import 'package:gxq_project/utils/Toast.dart';
@@ -20,8 +21,26 @@ class DeviceManagePage extends StatefulWidget{
 
 class DeviceManageState extends State<DeviceManagePage>{
   List<SlideButton> list = List<SlideButton>();
-  var currentSelect=0;
+
   var isEmpty=true;
+  List<BluetoothDevice> devicesList=new List();
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    // Setup a list of the bonded devices
+    FlutterBluetoothSerial.instance.getBondedDevices().then((List<BluetoothDevice> bondedDevices) {
+       setState(() {
+         devicesList.clear();
+         devicesList.addAll(bondedDevices);
+         isEmpty=devicesList.length==0;
+       });
+    });
+
+
+  }
+
+
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
@@ -41,12 +60,12 @@ class DeviceManageState extends State<DeviceManagePage>{
                   },
                 ),
                 Expanded(child: Container(),),
-                GestureDetector(
-                  child: Image.asset(Utils.getImgPath2("ic_add")),
-                  onTap: (){
-                    Navigator.pop(context);
-                  },
-                ),
+//                GestureDetector(
+//                  child: Image.asset(Utils.getImgPath2("ic_add")),
+//                  onTap: (){
+//                    Navigator.pop(context);
+//                  },
+//                ),
               ],
             )
           ),
@@ -85,9 +104,9 @@ class DeviceManageState extends State<DeviceManagePage>{
         },
         child: Container(
           decoration:BoxDecoration(
-            border: new Border.all(width: 1.0, color: index==currentSelect?MyColors.color_00286B:MyColors.color_divider),
+            border: new Border.all(width: 1.0, color: devicesList[index].isConnected?MyColors.color_00286B:MyColors.color_divider),
             borderRadius: new BorderRadius.all(new Radius.circular(10.0)),
-            color: index==currentSelect?MyColors.color_00286B:Colors.white,
+            color: devicesList[index].isConnected?MyColors.color_00286B:Colors.white,
           ),
           height: 92,
           child: Container(
@@ -99,23 +118,39 @@ class DeviceManageState extends State<DeviceManagePage>{
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
                       Text(
-                          "KHO温度设背景名称",
-                          style: TextStyle(color: index==currentSelect?Colors.white:MyColors.color_444444,fontSize: 16),
+                            devicesList[index].name,
+                          style: TextStyle(color: devicesList[index].isConnected?Colors.white:MyColors.color_444444,fontSize: 16),
                       ),
                     Text(
-                      "未连接",
-                      style: TextStyle(color: index==currentSelect?Colors.white:MyColors.color_9A9A9A,fontSize: 12),
+                      devicesList[index].isConnected?"已连接":"未连接",
+                      style: TextStyle(color: devicesList[index].isConnected?Colors.white:MyColors.color_9A9A9A,fontSize: 12),
                     ),
                   ],
                 ),
                 Expanded(child: Container(),),
                 GestureDetector(
-                  child:Image.asset(index==currentSelect?Utils.getImgPath2("ic_is_select"):Utils.getImgPath2("ic_no_select")),
+                  child:Image.asset(devicesList[index].isConnected?Utils.getImgPath2("ic_is_select"):Utils.getImgPath2("ic_no_select")),
                   onTap: (){
-                    setState(() {
-                      currentSelect=index;
+
+//                    BluetoothConnection.toAddress(devicesList[index].address).then((_connection) {
+//                      print('Connected to the device========================');
+//                    }).catchError((error){
+//                      Toast.toast(context,msg: error.toString());
+//                      print("${error.toString()}==============");
+//                    });
+                    FlutterBluetoothSerial.instance.isConnected.then((isConnected) {
+                      if (!isConnected) {
+                        FlutterBluetoothSerial.instance
+                            .connect(devicesList[index])
+                            .timeout(Duration(seconds: 10))
+                            .catchError((error) {
+                                Toast.toast(context,msg:error.toString());
+                            });
+
+                      }
                     });
-                  },
+
+                  }
                 ),
               ],
             ),
@@ -128,7 +163,8 @@ class DeviceManageState extends State<DeviceManagePage>{
             key.currentState.close();
           }),
           buildAction1(key, "删除设备", MyColors.color_DF6565, () {
-            Toast.toast(context,msg:"删除");
+            deleteDevice(devicesList[index]);
+
             key.currentState.close();
           }),
         ],
@@ -234,7 +270,7 @@ class DeviceManageState extends State<DeviceManagePage>{
         child: Container(
           margin: EdgeInsets.fromLTRB(20, 20, 20, 0),
           child: ListView.separated(
-            itemCount: 5,
+            itemCount: devicesList.length,
             separatorBuilder: (BuildContext context, int index) => new Divider(height: 20,color: Colors.white,),  // 添加分割线
             itemBuilder: (context, index) {
               return getSlides(index);
@@ -243,5 +279,14 @@ class DeviceManageState extends State<DeviceManagePage>{
         ),
       );
     }
+  }
+
+  deleteDevice(BluetoothDevice device) async {
+    await FlutterBluetoothSerial.instance.removeDeviceBondWithAddress(device.address);
+    devicesList.remove(device);
+    Toast.toast(context,msg:"删除成功");
+    setState(() {
+
+    });
   }
 }

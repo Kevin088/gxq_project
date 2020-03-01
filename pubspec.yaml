@@ -33,7 +33,7 @@ dependencies:
   seekbar: 0.0.2
   sharesdk_plugin: ^1.1.7
   rammus: ^0.0.3
-  flutter_blue: 0.6.0+1
+  flutter_bluetooth_serial: 0.2.2
 
 dev_dependencies:
   flutter_test:

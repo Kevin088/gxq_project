@@ -1,10 +1,8 @@
-import 'package:banner_view/banner_view.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_blue/flutter_blue.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
 import 'package:flutter_qrscaner/flutter_qrscaner.dart';
-import 'package:gxq_project/page/mine/AboutPage.dart';
-import 'package:gxq_project/page/mine/ProtocolPage.dart';
 import 'package:gxq_project/res/Colors.dart';
 import 'package:gxq_project/utils/Toast.dart';
 import 'package:gxq_project/utils/Utils.dart';
@@ -12,11 +10,9 @@ import 'package:gxq_project/widget/CustomRoute.dart';
 import 'package:gxq_project/widget/banner/widget_banner.dart';
 import 'package:gxq_project/widget/line/chart_bean.dart';
 import 'package:gxq_project/widget/line/chart_line.dart';
+import 'package:rammus/rammus.dart' as rammus; //导包
 
 import 'DeviceManagePage.dart';
-import 'mine/CommonQuestionPage.dart';
-import 'package:rammus/rammus.dart' as rammus; //导包
-import 'package:flutter/services.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -29,6 +25,7 @@ class HomePage extends StatefulWidget {
 class HomePageState extends State<HomePage> {
   int tabButton = 0;
   String _deviceId="";
+  List<BluetoothDevice> devices = List<BluetoothDevice>();
   @override
   void initState() {
     // TODO: implement initState
@@ -63,11 +60,6 @@ class HomePageState extends State<HomePage> {
     });
 
 
-
-
-
-    /// 关闭扫描操作，避免内存泄漏
-    //scanSubscription.cancel();
 
 
   }
@@ -198,13 +190,24 @@ class HomePageState extends State<HomePage> {
                   bottom: 70,
                   child: getHelpButton((){
                     //蓝牙测试
-                    FlutterBlue flutterBlue = FlutterBlue.instance;
-                    /// 使用实例方法scan(),并使用listen()监听，scanResult做参数
-                    flutterBlue.scan().listen((scanResult) {
-                      // do something with scan result
-                      var device = scanResult.device;
-                      print('${device.name} found! rssi: ==============================>>${scanResult.rssi}');
+                    FlutterBluetoothSerial.instance.state.then((state) {
+                      print("$state================ssss");
                     });
+                    // Setup a list of the bonded devices
+                    FlutterBluetoothSerial.instance.startDiscovery().listen((r) {
+                      print("======ssssss1====${r.device.name}");
+                    });
+
+                    // Setup a list of the bonded devices
+                    FlutterBluetoothSerial.instance.getBondedDevices().then((List<BluetoothDevice> bondedDevices) {
+                      bondedDevices.forEach((device)=>{
+                        print("${device.name}=============")
+                      });
+                    });
+
+
+
+
                     //Navigator.push(context, CustomRoute(AboutPage()));
                   }),
                 )
@@ -225,7 +228,6 @@ class HomePageState extends State<HomePage> {
   }
 
   void setting() {
-    Toast.toast(context, msg: "设置");
     Navigator.push(context, CustomRoute(DeviceManagePage()));
   }
 
