@@ -22,7 +22,7 @@
     <application
         android:allowBackup="false"
         android:name=".MyApp"
-        android:label="thermoai"
+        android:label="智能温度计"
         android:usesCleartextTraffic="true"
         tools:replace="android:allowBackup,android:label,android:icon"
         android:icon="@mipmap/ic_launcher"

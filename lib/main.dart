@@ -13,9 +13,9 @@ void main() {
 
   register.setupWechat("wx9af9b57fa99042f5","f89725582f66ed27ae17239f0de57431","http://www.iqihang.com.cn/");
 
-  register.setupSinaWeibo("2682983957","94c87e1eab2f5d158aeceb2f707927d2","http://www.iqihang.com.cn/");
+  register.setupSinaWeibo("1044815840","c150477094bc8c045b87826b89ff9c07","http://mobile.iqihang.com");
 
-  register.setupQQ("101375266", "6466068c5e088ee00ba7a9a48d65142b");
+  register.setupQQ("1110255218", "KEVOjmNgXbMTaEfu");
 
   SharesdkPlugin.regist(register);
   if(Platform.isAndroid){

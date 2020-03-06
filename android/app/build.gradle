@@ -44,14 +44,25 @@ android {
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
     }
-
-    buildTypes {
+    //增加签名文件
+    signingConfigs {
         release {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
-            signingConfig signingConfigs.debug
+            storeFile file("../keystore/android.keystore")
+            storePassword "111111"
+            keyAlias "android.keystore"
+            keyPassword "111111"
         }
     }
+    buildTypes {
+        release {
+            minifyEnabled true
+            shrinkResources true
+            signingConfig signingConfigs.release
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+
+        }
+    }
+
     //添加
     def manifestPath = [
             // for AAR of Release
@@ -102,14 +113,14 @@ MobSDK {
                 appSecret "f89725582f66ed27ae17239f0de57431"
             }
             QQ {
-                appId "101375266"
-                appKey "6466068c5e088ee00ba7a9a48d65142b"
+                appId "1110255218"
+                appKey "KEVOjmNgXbMTaEfu"
                 shareByAppClient true
             }
             SinaWeibo {
-                appKey "2682983957"
-                appSecret "94c87e1eab2f5d158aeceb2f707927d2"
-                callbackUri "http://www.iqihang.com.cn/"
+                appKey "1044815840"
+                appSecret "c150477094bc8c045b87826b89ff9c07"
+                callbackUri "http://mobile.iqihang.com"
                 shareByAppClient true
             }
         }

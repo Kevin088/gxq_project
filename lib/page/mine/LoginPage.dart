@@ -95,12 +95,12 @@ class LoginPageState extends State<LoginPage>{
                 ),
               ),
               onPressed: (){
-                Toast.toast(context,msg:"微信");
 
                 SharesdkPlugin.getUserInfo(
-                    ShareSDKPlatforms.wechatSession, (SSDKResponseState state,
+                    ShareSDKPlatforms.sina, (SSDKResponseState state,
                     Map user, SSDKError error) {
                   Toast.toast(context,msg: user.toString());
+
                 });
               },
               shape: RoundedRectangleBorder(
@@ -125,12 +125,11 @@ class LoginPageState extends State<LoginPage>{
                 ),
               ),
               onPressed: (){
-                Toast.toast(context,msg:"微信");
-
                 SharesdkPlugin.getUserInfo(
-                    ShareSDKPlatforms.wechatSession, (SSDKResponseState state,
+                    ShareSDKPlatforms.qq, (SSDKResponseState state,
                     Map user, SSDKError error) {
                   Toast.toast(context,msg: user.toString());
+                  print(user.toString());
                 });
               },
               shape: RoundedRectangleBorder(
