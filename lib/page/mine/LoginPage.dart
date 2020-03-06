@@ -6,10 +6,10 @@ import 'package:gxq_project/res/Colors.dart';
 import 'package:gxq_project/utils/Toast.dart';
 import 'package:gxq_project/utils/Utils.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:sharesdk_plugin/sharesdk_defines.dart';
+//import 'package:sharesdk_plugin/sharesdk_defines.dart';
 import 'dart:async';
 
-import 'package:sharesdk_plugin/sharesdk_interface.dart';
+//import 'package:sharesdk_plugin/sharesdk_interface.dart';
 
 class LoginPage extends StatefulWidget{
   @override
@@ -67,11 +67,11 @@ class LoginPageState extends State<LoginPage>{
               onPressed: (){
                 Toast.toast(context,msg:"微信");
 
-                SharesdkPlugin.getUserInfo(
-                    ShareSDKPlatforms.wechatSession, (SSDKResponseState state,
-                    Map user, SSDKError error) {
-                  Toast.toast(context,msg: user.toString());
-                });
+//                SharesdkPlugin.getUserInfo(
+//                    ShareSDKPlatforms.wechatSession, (SSDKResponseState state,
+//                    Map user, SSDKError error) {
+//                  Toast.toast(context,msg: user.toString());
+//                });
               },
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.all(Radius.circular(28)),
@@ -96,12 +96,12 @@ class LoginPageState extends State<LoginPage>{
               ),
               onPressed: (){
 
-                SharesdkPlugin.getUserInfo(
-                    ShareSDKPlatforms.sina, (SSDKResponseState state,
-                    Map user, SSDKError error) {
-                  Toast.toast(context,msg: user.toString());
-
-                });
+//                SharesdkPlugin.getUserInfo(
+//                    ShareSDKPlatforms.sina, (SSDKResponseState state,
+//                    Map user, SSDKError error) {
+//                  Toast.toast(context,msg: user.toString());
+//
+//                });
               },
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.all(Radius.circular(28)),
@@ -125,12 +125,12 @@ class LoginPageState extends State<LoginPage>{
                 ),
               ),
               onPressed: (){
-                SharesdkPlugin.getUserInfo(
-                    ShareSDKPlatforms.qq, (SSDKResponseState state,
-                    Map user, SSDKError error) {
-                  Toast.toast(context,msg: user.toString());
-                  print(user.toString());
-                });
+//                SharesdkPlugin.getUserInfo(
+//                    ShareSDKPlatforms.qq, (SSDKResponseState state,
+//                    Map user, SSDKError error) {
+//                  Toast.toast(context,msg: user.toString());
+//                  print(user.toString());
+//                });
               },
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.all(Radius.circular(28)),

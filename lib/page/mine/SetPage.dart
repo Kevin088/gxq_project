@@ -1,4 +1,4 @@
-import 'package:flustars/flustars.dart';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:gxq_project/res/Colors.dart';
@@ -16,14 +16,14 @@ class SetPage extends StatefulWidget{
   @override
   State<StatefulWidget> createState() {
     // TODO: implement createState
-    get();
+   // get();
 
     return SetPageState();
   }
-  Future<void> get() async {
-    await  SpUtil.getInstance();
-
-  }
+//  Future<void> get() async {
+//    await  SpUtil.getInstance();
+//
+//  }
 }
 
 class SetPageState extends State<SetPage>{
@@ -33,12 +33,12 @@ class SetPageState extends State<SetPage>{
     // TODO: implement initState
     super.initState();
     setState(() {
-      widget.isOpen1=SpUtil.getBool("DeviceDisconnectedTip", defValue: true);
-
-      widget.isOpen2=SpUtil.getBool("DeviceConnectedTip", defValue: true);
-      widget.isOpen3=SpUtil.getBool("HotTip", defValue: true);
-      widget.isOpen4=SpUtil.getBool("LOWTip", defValue: true);
-      widget.isOpen5=SpUtil.getBool("BatteryTip", defValue: true);
+//      widget.isOpen1=SpUtil.getBool("DeviceDisconnectedTip", defValue: true);
+//
+//      widget.isOpen2=SpUtil.getBool("DeviceConnectedTip", defValue: true);
+//      widget.isOpen3=SpUtil.getBool("HotTip", defValue: true);
+//      widget.isOpen4=SpUtil.getBool("LOWTip", defValue: true);
+//      widget.isOpen5=SpUtil.getBool("BatteryTip", defValue: true);
     });
   }
 
@@ -99,7 +99,7 @@ class SetPageState extends State<SetPage>{
                   activeColor: MyColors.color_00286B,
                   inactiveThumbColor:MyColors.color_D4D4D4,
                   onChanged: (value)  {
-                    SpUtil.putBool("DeviceDisconnectedTip",value);
+                    //SpUtil.putBool("DeviceDisconnectedTip",value);
                     print("==1111==$widget.isOpen1");
                     setState(() {
                       widget.isOpen1=value;
@@ -132,7 +132,7 @@ class SetPageState extends State<SetPage>{
                   activeColor: MyColors.color_00286B,
                   inactiveThumbColor:MyColors.color_D4D4D4,
                   onChanged: (value){
-                    SpUtil.putBool("DeviceConnectedTip",value);
+                   // SpUtil.putBool("DeviceConnectedTip",value);
                     setState(() {
                       widget.isOpen2=value;
                     });
@@ -164,7 +164,7 @@ class SetPageState extends State<SetPage>{
                   activeColor: MyColors.color_00286B,
                   inactiveThumbColor:MyColors.color_D4D4D4,
                   onChanged: (value)  {
-                    SpUtil.putBool("HotTip",value);
+                    //SpUtil.putBool("HotTip",value);
                     setState(() {
                       widget.isOpen3=value;
                     });
@@ -196,7 +196,7 @@ class SetPageState extends State<SetPage>{
                   activeColor: MyColors.color_00286B,
                   inactiveThumbColor:MyColors.color_D4D4D4,
                   onChanged: (value) async {
-                    SpUtil.putBool("LOWTip",value);
+                  //  SpUtil.putBool("LOWTip",value);
                     setState(() {
                       widget.isOpen4=value;
                     });
@@ -228,7 +228,7 @@ class SetPageState extends State<SetPage>{
                   activeColor: MyColors.color_00286B,
                   inactiveThumbColor:MyColors.color_D4D4D4,
                   onChanged: (value){
-                    SpUtil.putBool("BatteryTip",value);
+                  //  SpUtil.putBool("BatteryTip",value);
                     setState(() {
                       widget.isOpen5=value;
 

@@ -23,7 +23,7 @@ if (flutterVersionName == null) {
 
 apply plugin: 'com.android.application'
 apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
-apply plugin: 'com.mob.sdk'
+//apply plugin: 'com.mob.sdk'
 apply plugin: 'seal'
 
 def projectRoot = project.getRootProject().rootDir.absolutePath
@@ -55,11 +55,9 @@ android {
     }
     buildTypes {
         release {
-            minifyEnabled true
-            shrinkResources true
+            minifyEnabled false
+            shrinkResources false
             signingConfig signingConfigs.release
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-
         }
     }
 
@@ -101,31 +99,31 @@ android {
 flutter {
     source '../..'
 }
-MobSDK {
-    appKey "2df0f9372f598"
-    appSecret "afeae43657715eab6548c60e9ddd546e"
-
-    ShareSDK {
-        //平台配置信息
-        devInfo {
-            Wechat {
-                appId "wx9af9b57fa99042f5"
-                appSecret "f89725582f66ed27ae17239f0de57431"
-            }
-            QQ {
-                appId "1110255218"
-                appKey "KEVOjmNgXbMTaEfu"
-                shareByAppClient true
-            }
-            SinaWeibo {
-                appKey "1044815840"
-                appSecret "c150477094bc8c045b87826b89ff9c07"
-                callbackUri "http://mobile.iqihang.com"
-                shareByAppClient true
-            }
-        }
-    }
-}
+//MobSDK {
+//    appKey "2df0f9372f598"
+//    appSecret "afeae43657715eab6548c60e9ddd546e"
+//
+//    ShareSDK {
+//        //平台配置信息
+//        devInfo {
+//            Wechat {
+//                appId "wx9af9b57fa99042f5"
+//                appSecret "f89725582f66ed27ae17239f0de57431"
+//            }
+//            QQ {
+//                appId "1110255218"
+//                appKey "KEVOjmNgXbMTaEfu"
+//                shareByAppClient true
+//            }
+//            SinaWeibo {
+//                appKey "1044815840"
+//                appSecret "c150477094bc8c045b87826b89ff9c07"
+//                callbackUri "http://mobile.iqihang.com"
+//                shareByAppClient true
+//            }
+//        }
+//    }
+//}
 dependencies {
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'

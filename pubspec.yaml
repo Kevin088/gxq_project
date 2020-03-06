@@ -25,13 +25,14 @@ dependencies:
   cupertino_icons: ^0.1.2
   image_picker: ^0.6.2+3
   flutter_qrscaner: ^0.0.4
-  admob_flutter: "^1.0.0-beta"
+#  admob_flutter: "^1.0.0-beta"
   banner_view: "^1.1.2"
-  flustars: ^0.2.6+1
+#  flustars: ^0.2.6+1
   video_player: ^0.10.5+2
   orientation: ^1.1.0
   seekbar: 0.0.2
-  sharesdk_plugin: ^1.1.7
+#  sharesdk_plugin: ^1.1.7
+  #阿里推送
   rammus: ^0.0.3
   flutter_bluetooth_serial: 0.2.2
 
