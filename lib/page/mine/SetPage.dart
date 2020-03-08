@@ -1,9 +1,11 @@
 
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:gxq_project/res/Colors.dart';
 import 'package:gxq_project/utils/Utils.dart';
-import 'dart:async';
+
+import 'package:shared_preferences/shared_preferences.dart';
 
 
 // ignore: must_be_immutable
@@ -16,14 +18,11 @@ class SetPage extends StatefulWidget{
   @override
   State<StatefulWidget> createState() {
     // TODO: implement createState
-   // get();
+
 
     return SetPageState();
   }
-//  Future<void> get() async {
-//    await  SpUtil.getInstance();
-//
-//  }
+
 }
 
 class SetPageState extends State<SetPage>{
@@ -32,17 +31,21 @@ class SetPageState extends State<SetPage>{
   void initState() {
     // TODO: implement initState
     super.initState();
-    setState(() {
-//      widget.isOpen1=SpUtil.getBool("DeviceDisconnectedTip", defValue: true);
-//
-//      widget.isOpen2=SpUtil.getBool("DeviceConnectedTip", defValue: true);
-//      widget.isOpen3=SpUtil.getBool("HotTip", defValue: true);
-//      widget.isOpen4=SpUtil.getBool("LOWTip", defValue: true);
-//      widget.isOpen5=SpUtil.getBool("BatteryTip", defValue: true);
-    });
+    getData();
+
   }
 
-
+  void getData() async{
+    final prefs = await SharedPreferences.getInstance();
+    if (!mounted) return;
+    setState(() {
+      widget.isOpen1=prefs.getBool("DeviceDisconnectedTip")??true;
+      widget.isOpen2=prefs.getBool("DeviceConnectedTip")??true;
+      widget.isOpen3=prefs.getBool("HotTip")??true;
+      widget.isOpen4=prefs.getBool("LOWTip")??true;
+      widget.isOpen5=prefs.getBool("BatteryTip")??true;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -98,8 +101,9 @@ class SetPageState extends State<SetPage>{
                   value: widget.isOpen1,
                   activeColor: MyColors.color_00286B,
                   inactiveThumbColor:MyColors.color_D4D4D4,
-                  onChanged: (value)  {
-                    //SpUtil.putBool("DeviceDisconnectedTip",value);
+                  onChanged: (value)  async {
+                    final prefs = await SharedPreferences.getInstance();
+                    prefs.setBool("DeviceDisconnectedTip", value);
                     print("==1111==$widget.isOpen1");
                     setState(() {
                       widget.isOpen1=value;
@@ -131,7 +135,9 @@ class SetPageState extends State<SetPage>{
                   value: widget.isOpen2,
                   activeColor: MyColors.color_00286B,
                   inactiveThumbColor:MyColors.color_D4D4D4,
-                  onChanged: (value){
+                  onChanged: (value) async {
+                    final prefs = await SharedPreferences.getInstance();
+                    prefs.setBool("DeviceConnectedTip", value);
                    // SpUtil.putBool("DeviceConnectedTip",value);
                     setState(() {
                       widget.isOpen2=value;
@@ -163,8 +169,10 @@ class SetPageState extends State<SetPage>{
                   value: widget.isOpen3,
                   activeColor: MyColors.color_00286B,
                   inactiveThumbColor:MyColors.color_D4D4D4,
-                  onChanged: (value)  {
-                    //SpUtil.putBool("HotTip",value);
+                  onChanged: (value)  async {
+                    final prefs = await SharedPreferences.getInstance();
+                    prefs.setBool("HotTip", value);
+                   // SpUtil.putBool("HotTip",value);
                     setState(() {
                       widget.isOpen3=value;
                     });
@@ -196,7 +204,9 @@ class SetPageState extends State<SetPage>{
                   activeColor: MyColors.color_00286B,
                   inactiveThumbColor:MyColors.color_D4D4D4,
                   onChanged: (value) async {
-                  //  SpUtil.putBool("LOWTip",value);
+                    final prefs = await SharedPreferences.getInstance();
+                    prefs.setBool("LOWTip", value);
+                    //SpUtil.putBool("LOWTip",value);
                     setState(() {
                       widget.isOpen4=value;
                     });
@@ -227,8 +237,10 @@ class SetPageState extends State<SetPage>{
                   value: widget.isOpen5,
                   activeColor: MyColors.color_00286B,
                   inactiveThumbColor:MyColors.color_D4D4D4,
-                  onChanged: (value){
-                  //  SpUtil.putBool("BatteryTip",value);
+                  onChanged: (value) async {
+                    final prefs = await SharedPreferences.getInstance();
+                    prefs.setBool("BatteryTip", value);
+                    //SpUtil.putBool("BatteryTip",value);
                     setState(() {
                       widget.isOpen5=value;
 
