@@ -32,7 +32,7 @@ class HttpUtil {
       headers: {
         //do something
         "version": "1.0.0",
-        "tenantName": "account"
+        "tenantName": "thermo"
       },
       //请求的Content-Type，默认值是[ContentType.json]. 也可以用ContentType.parse("application/x-www-form-urlencoded")
       contentType: "application/json; charset=utf-8",
