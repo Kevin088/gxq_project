@@ -1,8 +1,12 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
 import 'package:flutter_qrscaner/flutter_qrscaner.dart';
+import 'package:gxq_project/common/api.dart';
+import 'package:gxq_project/common/param_name.dart';
+import 'package:gxq_project/http/httpUtil.dart';
 import 'package:gxq_project/res/Colors.dart';
 import 'package:gxq_project/utils/Toast.dart';
 import 'package:gxq_project/utils/Utils.dart';
@@ -11,7 +15,8 @@ import 'package:gxq_project/widget/banner/widget_banner.dart';
 import 'package:gxq_project/widget/line/chart_bean.dart';
 import 'package:gxq_project/widget/line/chart_line.dart';
 import 'package:rammus/rammus.dart' as rammus; //导包
-
+import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:convert';
 import 'DeviceManagePage.dart';
 
 class HomePage extends StatefulWidget {
@@ -59,8 +64,8 @@ class HomePageState extends State<HomePage> {
       print("received data -=============> ${data.content}");
     });
 
-
-
+//    getData();
+    initPlatformState();
 
   }
 
@@ -73,15 +78,25 @@ class HomePageState extends State<HomePage> {
       deviceId = 'Failed to get device id.';
     }
     print("===deviceId========>$deviceId");
-    if (!mounted) return;
-    setState(() {
-      _deviceId = deviceId;
-      //接下来你要做的事情
-      //1.将device id通过接口post给后台，然后进行指定设备的推送
-      //2.推送的时候，在Android8.0以上的设备都要设置通知通道
-    });
+    final prefs = await SharedPreferences.getInstance();
+    prefs.setString(ParamName.DEVICE_ID,deviceId);
+//    if (!mounted) return;
+//    setState(() {
+//      _deviceId = deviceId;
+//      //接下来你要做的事情
+//      //1.将device id通过接口post给后台，然后进行指定设备的推送
+//      //2.推送的时候，在Android8.0以上的设备都要设置通知通道
+//
+//    });
   }
 
+  getData() async {
+    Response response=await HttpUtil.getInstance().get(Api.BANNER);
+    if(!mounted){
+      return;
+    }
+    print(response?.data.toString());
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -189,23 +204,23 @@ class HomePageState extends State<HomePage> {
                   right: 25,
                   bottom: 70,
                   child: getHelpButton((){
-                    //蓝牙测试
-                    FlutterBluetoothSerial.instance.state.then((state) {
-                      print("$state================ssss");
-                    });
-                    // Setup a list of the bonded devices
-                    FlutterBluetoothSerial.instance.startDiscovery().listen((r) {
-                      print("======ssssss1====${r.device.name}");
-                    });
+//                    //蓝牙测试
+//                    FlutterBluetoothSerial.instance.state.then((state) {
+//                      print("$state================ssss");
+//                    });
+//                    // Setup a list of the bonded devices
+//                    FlutterBluetoothSerial.instance.startDiscovery().listen((r) {
+//                      print("======ssssss1====${r.device.name}");
+//                    });
+//
+//                    // Setup a list of the bonded devices
+//                    FlutterBluetoothSerial.instance.getBondedDevices().then((List<BluetoothDevice> bondedDevices) {
+//                      bondedDevices.forEach((device)=>{
+//                        print("${device.name}=============")
+//                      });
+//                    });
 
-                    // Setup a list of the bonded devices
-                    FlutterBluetoothSerial.instance.getBondedDevices().then((List<BluetoothDevice> bondedDevices) {
-                      bondedDevices.forEach((device)=>{
-                        print("${device.name}=============")
-                      });
-                    });
-
-
+                      getData();
 
 
                     //Navigator.push(context, CustomRoute(AboutPage()));

@@ -36,11 +36,13 @@ dependencies:
   rammus: ^0.0.3
   #蓝牙
   flutter_bluetooth_serial: 0.2.2
-
+  dio: 3.0.9
+  json_annotation: ^3.0.1
 dev_dependencies:
   flutter_test:
     sdk: flutter
-
+  build_runner: ^1.8.0
+  json_serializable: ^3.2.5
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

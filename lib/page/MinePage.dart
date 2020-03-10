@@ -1,16 +1,19 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:gxq_project/common/param_name.dart';
 import 'package:gxq_project/page/DeviceManagePage.dart';
 import 'package:gxq_project/page/mine/LoginPage.dart';
 import 'package:gxq_project/page/mine/MediaPlayerPage.dart';
 import 'package:gxq_project/utils/Utils.dart';
 import 'package:gxq_project/widget/CustomRoute.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'mine/AboutPage.dart';
 import 'mine/FeedbackPage.dart';
 import 'mine/SetPage.dart';
 
 class MinePage extends StatefulWidget{
+
   @override
   State<StatefulWidget> createState() {
     // TODO: implement createState
@@ -20,6 +23,28 @@ class MinePage extends StatefulWidget{
 }
 
 class MinePageState extends State<MinePage>{
+  bool isLogin=false;
+  String name;
+  String phone;
+  String img;
+
+
+  @override
+  void initState(){
+    // TODO: implement initState
+    super.initState();
+
+    getData();
+  }
+
+  Future<void> getData() async {
+    final prefs = await SharedPreferences.getInstance();
+    if (!mounted) return;
+    isLogin==prefs.getBool(ParamName.IS_LOGIN)??false;
+    setState(() {
+
+    });
+  }
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
@@ -45,7 +70,7 @@ class MinePageState extends State<MinePage>{
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
                         Text(
-                          "比格",
+                          isLogin?name:"",
                           style: TextStyle(
                             fontSize: 18.0,
                             fontWeight: FontWeight.bold,
@@ -93,16 +118,25 @@ class MinePageState extends State<MinePage>{
                 Container(
                   margin: EdgeInsets.fromLTRB(0, 0, 0, 30),
                   child: FlatButton(
+                    onPressed: () async {
+                      if(!isLogin){
+                        Navigator.push(context, CustomRoute(LoginPage()));
+                      }else{
+                        var prefs = await SharedPreferences.getInstance();
+                        if (!mounted) return;
+                        prefs.setBool(ParamName.IS_LOGIN,false);
+                        isLogin=false;
+                        setState(() {
 
-                    onPressed: (){
-                      Navigator.push(context, CustomRoute(LoginPage()));
+                        });
+                      }
                     },
                     child: Container(
                       margin:  EdgeInsets.fromLTRB(20,0,20,0),
                       height: 40,
                       alignment: const Alignment(0,0),
                       child: Text(
-                          "退出登录",
+                          isLogin?"退出登录":"登录",
                         style: TextStyle(
                           fontSize: 16,
                           color: Color.fromARGB(255, 136, 136, 136)
@@ -124,8 +158,6 @@ class MinePageState extends State<MinePage>{
             ),
           ),
       ),
-
-
     );
   }
   GestureDetector getText(String text,Function callBack){

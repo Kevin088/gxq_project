@@ -54,6 +54,11 @@ android {
         }
     }
     buildTypes {
+        debug {
+            debuggable true
+            minifyEnabled false
+            signingConfig signingConfigs.release
+        }
         release {
             minifyEnabled false
             shrinkResources false
