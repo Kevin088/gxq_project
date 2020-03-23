@@ -37,7 +37,7 @@ class HomePageState extends State<HomePage> {
     super.initState();
 
     //推送通知的处理 (注意，这里的id:针对Android8.0以上的设备来设置通知通道,客户端的id跟阿里云的通知通道要一致，否则收不到通知)
-    rammus.setupNotificationManager(id: "alipush notification",name: "rammus",description: "rammus test",);
+    rammus.setupNotificationManager(id: "1",name: "rammus",description: "rammus test",);
     rammus.onNotification.listen((data){
       print("-=============>notification here ${data.summary}");
     });
