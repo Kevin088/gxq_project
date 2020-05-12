@@ -35,7 +35,7 @@ dependencies:
   #阿里推送
   rammus: ^0.0.3
   #蓝牙
-  flutter_bluetooth_serial: 0.2.2
+  flutter_blue: ^0.7.2
   dio: 3.0.9
   json_annotation: ^3.0.1
 dev_dependencies:

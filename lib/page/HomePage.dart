@@ -2,7 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
+import 'package:flutter_blue/flutter_blue.dart';
 import 'package:flutter_qrscaner/flutter_qrscaner.dart';
 import 'package:gxq_project/common/api.dart';
 import 'package:gxq_project/common/param_name.dart';
@@ -10,14 +10,12 @@ import 'package:gxq_project/http/httpUtil.dart';
 import 'package:gxq_project/res/Colors.dart';
 import 'package:gxq_project/utils/Toast.dart';
 import 'package:gxq_project/utils/Utils.dart';
-import 'package:gxq_project/widget/CustomRoute.dart';
 import 'package:gxq_project/widget/banner/widget_banner.dart';
 import 'package:gxq_project/widget/line/chart_bean.dart';
 import 'package:gxq_project/widget/line/chart_line.dart';
 import 'package:rammus/rammus.dart' as rammus; //导包
 import 'package:shared_preferences/shared_preferences.dart';
-import 'dart:convert';
-import 'DeviceManagePage.dart';
+
 
 class HomePage extends StatefulWidget {
   @override
@@ -30,7 +28,7 @@ class HomePage extends StatefulWidget {
 class HomePageState extends State<HomePage> {
   int tabButton = 0;
   String _deviceId="";
-  List<BluetoothDevice> devices = List<BluetoothDevice>();
+  //List<BluetoothDevice> devices = List<BluetoothDevice>();
   @override
   void initState() {
     // TODO: implement initState
@@ -66,7 +64,26 @@ class HomePageState extends State<HomePage> {
 
 //    getData();
     initPlatformState();
+    //蓝牙=====================================
 
+    FlutterBlue flutterBlue = FlutterBlue.instance;
+
+    // Start scanning
+    flutterBlue.startScan(timeout: Duration(seconds: 60));
+
+// Listen to scan results
+    flutterBlue.scanResults.listen((results) {
+      // do something with scan results
+      for (ScanResult r in results) {
+        if(r.device.name.contains("Rdf")){
+          flutterBlue.stopScan();
+          r.device.connect();
+        }
+      }
+    });
+
+// Stop scanning
+  //  flutterBlue.stopScan();
   }
 
   //获取device id的方法
@@ -243,7 +260,7 @@ class HomePageState extends State<HomePage> {
   }
 
   void setting() {
-    Navigator.push(context, CustomRoute(DeviceManagePage()));
+    //Navigator.push(context, CustomRoute(DeviceManagePage()));
   }
 
   Widget getBanner() {
