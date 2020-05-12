@@ -30,6 +30,7 @@ dependencies:
   video_player: ^0.10.5+2
   orientation: ^1.1.0
   seekbar: 0.0.2
+  popup_window: ^1.0.0+3
 #  三方登录
   sharesdk_plugin: ^1.1.7
   #阿里推送

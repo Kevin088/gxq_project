@@ -7,14 +7,20 @@ import 'package:flutter_qrscaner/flutter_qrscaner.dart';
 import 'package:gxq_project/common/api.dart';
 import 'package:gxq_project/common/param_name.dart';
 import 'package:gxq_project/http/httpUtil.dart';
+import 'package:gxq_project/page/test/LearnDropdownButton.dart';
 import 'package:gxq_project/res/Colors.dart';
 import 'package:gxq_project/utils/Toast.dart';
 import 'package:gxq_project/utils/Utils.dart';
+import 'package:gxq_project/widget/CustomRoute.dart';
 import 'package:gxq_project/widget/banner/widget_banner.dart';
 import 'package:gxq_project/widget/line/chart_bean.dart';
 import 'package:gxq_project/widget/line/chart_line.dart';
+import 'package:popup_window/popup_window.dart';
 import 'package:rammus/rammus.dart' as rammus; //导包
 import 'package:shared_preferences/shared_preferences.dart';
+
+import 'mine/AboutPage.dart';
+import 'mine/SetPage.dart';
 
 
 class HomePage extends StatefulWidget {
@@ -29,6 +35,13 @@ class HomePageState extends State<HomePage> {
   int tabButton = 0;
   String _deviceId="";
   //List<BluetoothDevice> devices = List<BluetoothDevice>();
+  String blueToothName="KHO温度设备名称";
+
+  double xPosition = 0;
+  double yPosition = 0;
+
+  final GlobalKey globalKey = GlobalKey();
+
   @override
   void initState() {
     // TODO: implement initState
@@ -72,12 +85,14 @@ class HomePageState extends State<HomePage> {
     flutterBlue.startScan(timeout: Duration(seconds: 60));
 
 // Listen to scan results
-    flutterBlue.scanResults.listen((results) {
+    flutterBlue.scanResults.listen((results) async {
       // do something with scan results
       for (ScanResult r in results) {
+        print('${r.device.name} found! rssi: ${r.rssi}');
         if(r.device.name.contains("Rdf")){
           flutterBlue.stopScan();
           r.device.connect();
+          //print("已连接       -=============>");
         }
       }
     });
@@ -117,138 +132,147 @@ class HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
+
+    //xPosition = MediaQuery.of(context).size.width-10;
     return new MaterialApp(
-      home: Scaffold(
-        body: Column(
-          children: <Widget>[
-            Container(
-              margin: EdgeInsets.fromLTRB(10, 20, 10, 0),
-              height: 50,
-              child: Row(
-                children: <Widget>[
-                  Container(
-                    width: 50,
-                    child: FlatButton(
-                      onPressed: scan,
-                      child: Image.asset(Utils.getImgPath2("ic_saoyisao")),
+      home: AnnotatedRegion<SystemUiOverlayStyle>(
+        value: SystemUiOverlayStyle.dark,
+        child: Scaffold(
+          body: Column(
+            children: <Widget>[
+              Container(
+                margin: EdgeInsets.fromLTRB(10, 20, 10, 0),
+                height: 50,
+                child: Row(
+                  children: <Widget>[
+                    Container(
+                      width: 50,
+                      child: FlatButton(
+                        onPressed: scan,
+                        child: Image.asset(Utils.getImgPath2("ic_saoyisao")),
+                      ),
                     ),
-                  ),
-                  Expanded(
-                      flex: 1,
-                      child: Container(
-                        alignment: Alignment.center,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: <Widget>[
-                            Padding(
-                              padding: EdgeInsets.only(right: 10),
-                              child:  ClipOval(
-                                child: Container(
-                                  width: 7,
-                                  height: 7,
-                                  color: MyColors.color_3464BA,
+                    Expanded(
+                        flex: 1,
+                        child: Container(
+                          alignment: Alignment.center,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: <Widget>[
+                              Padding(
+                                padding: EdgeInsets.only(right: 10),
+                                child:  ClipOval(
+                                  child: Container(
+                                    width: 7,
+                                    height: 7,
+                                    color: MyColors.color_3464BA,
+                                  ),
                                 ),
                               ),
-                            ),
 
-                             Text(
-                                "KHO温度设备名称",
+                              Text(
+                                blueToothName,
                                 style: TextStyle(
                                     fontSize: 19,
                                     color: Color.fromARGB(255, 68, 68, 68)),
                               ),
 
-                            Padding(
-                              padding: EdgeInsets.fromLTRB(10,5,0,0),
-                              child:  Image.asset(Utils.getImgPath2("ic_arraw_down")),
-                            ),
-                          ],
+                              Padding(
+                                padding: EdgeInsets.fromLTRB(10,5,0,0),
+                                child:  Image.asset(Utils.getImgPath2("ic_arraw_down")),
+                              ),
+                            ],
+                          ),
+                        )),
+                    Container(
+                      child: Container(
+                        width: 50,
+                        child: FlatButton(
+                          onPressed: setting,
+                          child: Image.asset(Utils.getImgPath2("ic_setting")),
                         ),
-                      )),
-                  Container(
-                    child: Container(
-                      width: 50,
-                      child: FlatButton(
-                        onPressed: setting,
-                        child: Image.asset(Utils.getImgPath2("ic_setting")),
                       ),
+                    )
+                  ],
+                ),
+              ),
+              getPopuWindow(),
+              Container(
+                height: 100,
+                child: getBanner(),
+              ),
+              Container(
+                margin: EdgeInsets.fromLTRB(20, 30, 20, 0),
+                child: Row(
+                  children: <Widget>[
+                    Expanded(
+                      flex: 1,
+                      child: getTabButton("体温", () {
+                        setState(() {
+                          tabButton = 0;
+                        });
+                      }, 0),
+                    ),
+                    Expanded(
+                      flex: 1,
+                      child: getTabButton("室温", () {
+                        setState(() {
+                          tabButton = 1;
+                        });
+                      }, 1),
+                    ),
+                    Expanded(
+                      flex: 1,
+                      child: getTabButton("水温", () {
+                        setState(() {
+                          tabButton = 2;
+                        });
+                      }, 2),
+                    ),
+                  ],
+                ),
+              ),
+              currentTemperatureView(),
+              Stack(
+                children: <Widget>[
+                  getLineView(context),
+                  Positioned(
+                    left: xPosition,
+                    top: yPosition,
+                    child: GestureDetector(
+                      onPanUpdate: (detail){
+                        double x=xPosition;
+                        x += detail.delta.dx;
+                        if(x>0&&x<MediaQuery.of(context).size.width-110){
+                          setState(() {
+                            xPosition=x;
+                          });
+                        }
+
+                        double y=yPosition;
+                        y += detail.delta.dy;
+                        if(y<150&&y>0){
+                          setState(() {
+                            yPosition=y;
+                          });
+                        }
+                      },
+                      onPanEnd: (detail){
+
+                      },
+                      child:getHelpButton((){
+                        Navigator.push(context, CustomRoute(AboutPage()));
+
+                      })
                     ),
                   )
                 ],
               ),
-            ),
-            Container(
-              height: 100,
-              child: getBanner(),
-            ),
-            Container(
-              margin: EdgeInsets.fromLTRB(20, 30, 20, 0),
-              child: Row(
-                children: <Widget>[
-                  Expanded(
-                    flex: 1,
-                    child: getTabButton("体温", () {
-                      setState(() {
-                        tabButton = 0;
-                      });
-                    }, 0),
-                  ),
-                  Expanded(
-                    flex: 1,
-                    child: getTabButton("室温", () {
-                      setState(() {
-                        tabButton = 1;
-                      });
-                    }, 1),
-                  ),
-                  Expanded(
-                    flex: 1,
-                    child: getTabButton("水温", () {
-                      setState(() {
-                        tabButton = 2;
-                      });
-                    }, 2),
-                  ),
-                ],
-              ),
-            ),
-            currentTemperatureView(),
-            Stack(
-              children: <Widget>[
-                getLineView(context),
-                Positioned(
-                  right: 25,
-                  bottom: 70,
-                  child: getHelpButton((){
-//                    //蓝牙测试
-//                    FlutterBluetoothSerial.instance.state.then((state) {
-//                      print("$state================ssss");
-//                    });
-//                    // Setup a list of the bonded devices
-//                    FlutterBluetoothSerial.instance.startDiscovery().listen((r) {
-//                      print("======ssssss1====${r.device.name}");
-//                    });
-//
-//                    // Setup a list of the bonded devices
-//                    FlutterBluetoothSerial.instance.getBondedDevices().then((List<BluetoothDevice> bondedDevices) {
-//                      bondedDevices.forEach((device)=>{
-//                        print("${device.name}=============")
-//                      });
-//                    });
 
-                      getData();
-
-
-                    //Navigator.push(context, CustomRoute(AboutPage()));
-                  }),
-                )
-              ],
-            ),
-
-          ],
+            ],
+          ),
         ),
-      ),
+      )
     );
 
   }
@@ -260,13 +284,13 @@ class HomePageState extends State<HomePage> {
   }
 
   void setting() {
-    //Navigator.push(context, CustomRoute(DeviceManagePage()));
+    Navigator.push(context, CustomRoute(SetPage()));
   }
 
   Widget getBanner() {
     final List<String> _imgData = [
-      "https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1563852038472&di=de56cb53c9725ec5ee7cc9ea04d3e423&imgtype=0&src=http%3A%2F%2Fimg.zcool.cn%2Fcommunity%2F0183cb5859e975a8012060c82510f6.jpg",
-      "https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1563815013125&di=6e774e0ec425a5036a9f0b657c6f7d39&imgtype=0&src=http%3A%2F%2Fimg.zcool.cn%2Fcommunity%2F01a949581aeb9fa84a0d304fd05eeb.jpg",
+      "https://oss1.iqihang.com/oss/img/2020/05/08/1588929308153141481.png",
+      "https://oss1.iqihang.com/oss/img/2020/05/09/1588986214650157754.png",
     ];
 
     return CustomBanner(_imgData);
@@ -366,6 +390,7 @@ class HomePageState extends State<HomePage> {
       duration: Duration(milliseconds: 2000),
     );
     return Container(
+      key: globalKey,
       margin: EdgeInsets.only(left: 0, right: 16, top: 20, bottom: 0),
       child: chartLine,
     );
@@ -403,7 +428,22 @@ class HomePageState extends State<HomePage> {
     );
   }
 
-
+  Widget getPopuWindow(){
+    return PopupWindowButton(
+      offset: Offset(0, 200),
+      child: Image(image: AssetImage("images/ic_share.png")),
+      window: Container(
+        padding: EdgeInsets.all(50),
+        alignment: Alignment.center,
+        color: Colors.greenAccent,
+        height: 200,
+        child: Container(
+          color: Colors.white,
+          height: 50,
+        ) ,
+      ),
+    );
+  }
 
 
 }
