@@ -35,12 +35,21 @@ class HomePageState extends State<HomePage> {
   int tabButton = 0;
   String _deviceId="";
   //List<BluetoothDevice> devices = List<BluetoothDevice>();
-  String blueToothName="KHO温度设备名称";
+
 
   double xPosition = 0;
   double yPosition = 0;
 
   final GlobalKey globalKey = GlobalKey();
+
+
+  var value='1';
+  var list=List();
+  String blueToothName="KHO温度设备名称";
+
+  String UUID="0000fff6-0000-1000-8000-00805f9b34fb";
+
+  BluetoothCharacteristic bluetoothCharacteristic;
 
   @override
   void initState() {
@@ -88,11 +97,42 @@ class HomePageState extends State<HomePage> {
     flutterBlue.scanResults.listen((results) async {
       // do something with scan results
       for (ScanResult r in results) {
-        print('${r.device.name} found! rssi: ${r.rssi}');
+
         if(r.device.name.contains("Rdf")){
-          flutterBlue.stopScan();
-          r.device.connect();
-          //print("已连接       -=============>");
+          setState(() {
+            blueToothName=r.device.name;
+          });
+          print('${r.device.name} found! rssi: ${r.rssi}');
+          //flutterBlue.stopScan();
+          await r.device.disconnect();
+          await r.device.connect();
+          print("已连接======= -=============>");
+          List<BluetoothService> services = await r.device.discoverServices();
+          services.forEach((service) {
+            var characteristics = service.characteristics;
+            print("${service.uuid}================service========");
+            characteristics.forEach((characteristic) {
+              print("${characteristic.uuid}================charact========");
+              if(UUID.compareTo(characteristic.uuid.toString().toLowerCase())==0){
+                bluetoothCharacteristic=characteristic;
+                print("${bluetoothCharacteristic.uuid}================charact===相等=====");
+              }
+            });
+
+          });
+          if(bluetoothCharacteristic!=null){
+            print("================bluetoothCharacteristic!=null========");
+//            await bluetoothCharacteristic.setNotifyValue(true);
+//            bluetoothCharacteristic.value.listen((value) {
+//              print("$value================value========");
+//            });
+            await bluetoothCharacteristic.write([0xfb, 0x01, 0x00, 0x00]);
+            while(1==1){
+              List<int> value = await bluetoothCharacteristic.read();
+              print(value);
+            }
+
+          }
         }
       }
     });
@@ -133,7 +173,7 @@ class HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
 
-    //xPosition = MediaQuery.of(context).size.width-10;
+    xPosition = MediaQuery.of(context).size.width-130;
     return new MaterialApp(
       home: AnnotatedRegion<SystemUiOverlayStyle>(
         value: SystemUiOverlayStyle.dark,
@@ -156,33 +196,7 @@ class HomePageState extends State<HomePage> {
                         flex: 1,
                         child: Container(
                           alignment: Alignment.center,
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: <Widget>[
-                              Padding(
-                                padding: EdgeInsets.only(right: 10),
-                                child:  ClipOval(
-                                  child: Container(
-                                    width: 7,
-                                    height: 7,
-                                    color: MyColors.color_3464BA,
-                                  ),
-                                ),
-                              ),
-
-                              Text(
-                                blueToothName,
-                                style: TextStyle(
-                                    fontSize: 19,
-                                    color: Color.fromARGB(255, 68, 68, 68)),
-                              ),
-
-                              Padding(
-                                padding: EdgeInsets.fromLTRB(10,5,0,0),
-                                child:  Image.asset(Utils.getImgPath2("ic_arraw_down")),
-                              ),
-                            ],
-                          ),
+                          child: getDropDownMenu(),
                         )),
                     Container(
                       child: Container(
@@ -196,7 +210,6 @@ class HomePageState extends State<HomePage> {
                   ],
                 ),
               ),
-              getPopuWindow(),
               Container(
                 height: 100,
                 child: getBanner(),
@@ -261,8 +274,8 @@ class HomePageState extends State<HomePage> {
 
                       },
                       child:getHelpButton((){
-                        Navigator.push(context, CustomRoute(AboutPage()));
-
+                        //Navigator.push(context, CustomRoute(LearnDropdownButton()));
+                        bluetoothCharacteristic.write([0xFB, 0x03, 0x00, 0x00]);
                       })
                     ),
                   )
@@ -428,20 +441,78 @@ class HomePageState extends State<HomePage> {
     );
   }
 
-  Widget getPopuWindow(){
-    return PopupWindowButton(
-      offset: Offset(0, 200),
-      child: Image(image: AssetImage("images/ic_share.png")),
-      window: Container(
-        padding: EdgeInsets.all(50),
-        alignment: Alignment.center,
-        color: Colors.greenAccent,
-        height: 200,
-        child: Container(
-          color: Colors.white,
-          height: 50,
-        ) ,
-      ),
+
+
+  //下拉菜单
+
+  List<DropdownMenuItem> getListData(){
+    list.clear();
+    list.add("1");
+    list.add("蓝牙名字2");
+    list.add("蓝牙名字3");
+    list.add("蓝牙名字4");
+    list.add("蓝牙名字5");
+     List<DropdownMenuItem> items=new List();
+      list.forEach((element) {
+        DropdownMenuItem item=new DropdownMenuItem(
+          child:Text(
+            element,
+            style: TextStyle(
+                fontSize: 19,
+                color: Color.fromARGB(255, 68, 68, 68)),
+          ),
+          value: element,
+        );
+        items.add(item);
+      });
+    return items;
+  }
+
+  getDropDownMenu(){
+   return new DropdownButton(
+      items: getListData(),
+      hint:getTitleView(blueToothName),//当没有默认值的时候可以设置的提示
+      //value: value,//下拉菜单选择完之后显示给用户的值
+      onChanged: (T){//下拉菜单item点击之后的回调
+        setState(() {
+          value=T;
+        });
+      },
+      elevation: 24,//设置阴影的高度
+      iconSize: 0,//设置三角标icon的大小
+      isDense: true,
+      //isExpanded:true,
+      underline: new Container(),
+    );
+  }
+
+  getTitleView(String name){
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: <Widget>[
+        Padding(
+          padding: EdgeInsets.only(right: 10),
+          child:  ClipOval(
+            child: Container(
+              width: 7,
+              height: 7,
+              color: MyColors.color_3464BA,
+            ),
+          ),
+        ),
+
+        Text(
+          name,
+          style: TextStyle(
+              fontSize: 19,
+              color: Color.fromARGB(255, 68, 68, 68)),
+        ),
+
+        Padding(
+          padding: EdgeInsets.fromLTRB(10,5,0,0),
+          child:  Image.asset(Utils.getImgPath2("ic_arraw_down")),
+        ),
+      ],
     );
   }
 

@@ -91,7 +91,7 @@ class _LearnDropdownButton extends State<LearnDropdownButton>{
                 color: Colors.red
               ),
 //              isDense: false,//减少按钮的高度。默认情况下，此按钮的高度与其菜单项的高度相同。如果isDense为true，则按钮的高度减少约一半。 这个当按钮嵌入添加的容器中时，非常有用
-              iconSize: 50.0,//设置三角标icon的大小
+              iconSize: 0,//设置三角标icon的大小
             ),
           ),
         ],
