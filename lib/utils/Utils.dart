@@ -5,5 +5,29 @@ class Utils{
   static String getImgPath2(String name) {
     return 'assets/images/$name.png';
   }
+
+
+  static String getTemperature(List<int> param){
+    double value=0;
+    if(param!=null&&param.length==3){
+      value=(param[0]-48)*100.0;
+      value+=(param[1]-48)*10;
+      value+=param[2]-48;
+      value=value*0.0625;
+    }
+    return "${formatNum(value,2)}℃";
+  }
+
+  static String formatNum(double num,int postion){
+    if((num.toString().length-num.toString().lastIndexOf(".")-1)<postion){
+      //小数点后有几位小数
+      return( num.toStringAsFixed(postion).substring(0,num.toString().lastIndexOf(".")+postion+1).toString());
+    }else{
+      return( num.toString().substring(0,num.toString().lastIndexOf(".")+postion+1).toString());
+    }
+  }
+
+
+
 }
 

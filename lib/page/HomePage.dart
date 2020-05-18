@@ -50,7 +50,7 @@ class HomePageState extends State<HomePage> {
   String UUID="0000fff6-0000-1000-8000-00805f9b34fb";
 
   BluetoothCharacteristic bluetoothCharacteristic;
-
+  BluetoothDevice bluetoothDevice;
   @override
   void initState() {
     // TODO: implement initState
@@ -99,14 +99,15 @@ class HomePageState extends State<HomePage> {
       for (ScanResult r in results) {
 
         if(r.device.name.contains("Rdf")){
+          bluetoothDevice=r.device;
+          print('${r.device.name} found! rssi: ${r.rssi}');
+          //flutterBlue.stopScan();
+          //await r.device.disconnect();
+          await r.device.connect();
+          print("已连接======= -=============>");
           setState(() {
             blueToothName=r.device.name;
           });
-          print('${r.device.name} found! rssi: ${r.rssi}');
-          //flutterBlue.stopScan();
-          await r.device.disconnect();
-          await r.device.connect();
-          print("已连接======= -=============>");
           List<BluetoothService> services = await r.device.discoverServices();
           services.forEach((service) {
             var characteristics = service.characteristics;
@@ -115,6 +116,7 @@ class HomePageState extends State<HomePage> {
               print("${characteristic.uuid}================charact========");
               if(UUID.compareTo(characteristic.uuid.toString().toLowerCase())==0){
                 bluetoothCharacteristic=characteristic;
+                //bluetoothCharacteristic.write([0xFB,0x02,0x00,0x00]);
                 print("${bluetoothCharacteristic.uuid}================charact===相等=====");
               }
             });
@@ -122,17 +124,14 @@ class HomePageState extends State<HomePage> {
           });
           if(bluetoothCharacteristic!=null){
             print("================bluetoothCharacteristic!=null========");
-//            await bluetoothCharacteristic.setNotifyValue(true);
-//            bluetoothCharacteristic.value.listen((value) {
-//              print("$value================value========");
-//            });
-            await bluetoothCharacteristic.write([0xfb, 0x01, 0x00, 0x00]);
-            while(1==1){
-              List<int> value = await bluetoothCharacteristic.read();
-              print(value);
-            }
-
+            await bluetoothCharacteristic.setNotifyValue(true);
+            bluetoothCharacteristic.value.listen((value) {
+              print("${Utils.getTemperature(value)}================$value========");
+              
+            });
           }
+
+
         }
       }
     });
@@ -140,6 +139,17 @@ class HomePageState extends State<HomePage> {
 // Stop scanning
   //  flutterBlue.stopScan();
   }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+    // ignore: unrelated_type_equality_checks
+    if(bluetoothDevice!=null&&bluetoothDevice.state==BluetoothDeviceState.connected){
+      bluetoothDevice.disconnect();
+    }
+    print("===dispose==================");  }
+
 
   //获取device id的方法
   Future<void> initPlatformState() async {
