@@ -51,10 +51,17 @@ class HomePageState extends State<HomePage> {
 
   BluetoothCharacteristic bluetoothCharacteristic;
   BluetoothDevice bluetoothDevice;
+
+
+  String currentTemperature="";
+  String tempperatureValue="36.42℃";
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+
+
 
     //推送通知的处理 (注意，这里的id:针对Android8.0以上的设备来设置通知通道,客户端的id跟阿里云的通知通道要一致，否则收不到通知)
     rammus.setupNotificationManager(id: "1",name: "rammus",description: "rammus test",);
@@ -126,7 +133,8 @@ class HomePageState extends State<HomePage> {
             print("================bluetoothCharacteristic!=null========");
             await bluetoothCharacteristic.setNotifyValue(true);
             bluetoothCharacteristic.value.listen((value) {
-              print("${Utils.getTemperature(value)}================$value========");
+              currentTemperature=Utils.getTemperature(value);
+              print("${Utils.getTemperature(value)}℃================$value========");
               
             });
           }
@@ -182,8 +190,11 @@ class HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    if(xPosition==0){
+      xPosition = MediaQuery.of(context).size.width-130;
 
-    xPosition = MediaQuery.of(context).size.width-130;
+    }
+
     return new MaterialApp(
       home: AnnotatedRegion<SystemUiOverlayStyle>(
         value: SystemUiOverlayStyle.dark,
@@ -355,7 +366,7 @@ class HomePageState extends State<HomePage> {
           Stack(
             children: <Widget>[
               Text(
-                "40.5",
+                tempperatureValue,
                 style: TextStyle(
                   color: MyColors.color_DF6565,
                   fontSize: 48,

@@ -15,7 +15,7 @@ class Utils{
       value+=param[2]-48;
       value=value*0.0625;
     }
-    return "${formatNum(value,2)}℃";
+    return formatNum(value,2);
   }
 
   static String formatNum(double num,int postion){
