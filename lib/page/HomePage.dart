@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -44,8 +46,8 @@ class HomePageState extends State<HomePage> {
 
 
   var value='1';
-  var list=List();
-  String blueToothName="KHO温度设备名称";
+
+  String blueToothName="设备连接中...";
 
   String UUID="0000fff6-0000-1000-8000-00805f9b34fb";
 
@@ -56,6 +58,10 @@ class HomePageState extends State<HomePage> {
   String currentTemperature="";
   String tempperatureValue="36.42℃";
 
+  //设备
+  List<BluetoothDevice> devicelist=List();
+
+  List<ChartBean>listData=List();
   @override
   void initState() {
     // TODO: implement initState
@@ -104,8 +110,8 @@ class HomePageState extends State<HomePage> {
     flutterBlue.scanResults.listen((results) async {
       // do something with scan results
       for (ScanResult r in results) {
-
-        if(r.device.name.contains("Rdf")){
+        devicelist.add(r.device);
+        if(r.device.name.contains("Rdf")&&bluetoothDevice==null){
           bluetoothDevice=r.device;
           print('${r.device.name} found! rssi: ${r.rssi}');
           //flutterBlue.stopScan();
@@ -135,17 +141,21 @@ class HomePageState extends State<HomePage> {
             bluetoothCharacteristic.value.listen((value) {
               currentTemperature=Utils.getTemperature(value);
               print("${Utils.getTemperature(value)}℃================$value========");
-              
+
             });
           }
-
-
+          break;
         }
       }
-    });
+      if(devicelist.length>0){
+        setState(() {
 
+        });
+      }
+    });
+    timeStart();
 // Stop scanning
-  //  flutterBlue.stopScan();
+    //  flutterBlue.stopScan();
   }
 
   @override
@@ -156,7 +166,9 @@ class HomePageState extends State<HomePage> {
     if(bluetoothDevice!=null&&bluetoothDevice.state==BluetoothDeviceState.connected){
       bluetoothDevice.disconnect();
     }
-    print("===dispose==================");  }
+    print("===dispose==================");
+    cancelTimer();
+  }
 
 
   //获取device id的方法
@@ -196,117 +208,117 @@ class HomePageState extends State<HomePage> {
     }
 
     return new MaterialApp(
-      home: AnnotatedRegion<SystemUiOverlayStyle>(
-        value: SystemUiOverlayStyle.dark,
-        child: Scaffold(
-          body: Column(
-            children: <Widget>[
-              Container(
-                margin: EdgeInsets.fromLTRB(10, 20, 10, 0),
-                height: 50,
-                child: Row(
-                  children: <Widget>[
-                    Container(
-                      width: 50,
-                      child: FlatButton(
-                        onPressed: scan,
-                        child: Image.asset(Utils.getImgPath2("ic_saoyisao")),
-                      ),
-                    ),
-                    Expanded(
-                        flex: 1,
-                        child: Container(
-                          alignment: Alignment.center,
-                          child: getDropDownMenu(),
-                        )),
-                    Container(
-                      child: Container(
+        home: AnnotatedRegion<SystemUiOverlayStyle>(
+          value: SystemUiOverlayStyle.dark,
+          child: Scaffold(
+            body: Column(
+              children: <Widget>[
+                Container(
+                  margin: EdgeInsets.fromLTRB(10, 20, 10, 0),
+                  height: 50,
+                  child: Row(
+                    children: <Widget>[
+                      Container(
                         width: 50,
                         child: FlatButton(
-                          onPressed: setting,
-                          child: Image.asset(Utils.getImgPath2("ic_setting")),
+                          onPressed: scan,
+                          child: Image.asset(Utils.getImgPath2("ic_saoyisao")),
                         ),
+                      ),
+                      Expanded(
+                          flex: 1,
+                          child: Container(
+                            alignment: Alignment.center,
+                            child: getDropDownMenu(),
+                          )),
+                      Container(
+                        child: Container(
+                          width: 50,
+                          child: FlatButton(
+                            onPressed: setting,
+                            child: Image.asset(Utils.getImgPath2("ic_setting")),
+                          ),
+                        ),
+                      )
+                    ],
+                  ),
+                ),
+                Container(
+                  height: 100,
+                  child: getBanner(),
+                ),
+                Container(
+                  margin: EdgeInsets.fromLTRB(20, 30, 20, 0),
+                  child: Row(
+                    children: <Widget>[
+                      Expanded(
+                        flex: 1,
+                        child: getTabButton("体温", () {
+                          setState(() {
+                            tabButton = 0;
+                          });
+                        }, 0),
+                      ),
+                      Expanded(
+                        flex: 1,
+                        child: getTabButton("室温", () {
+                          setState(() {
+                            tabButton = 1;
+                          });
+                        }, 1),
+                      ),
+                      Expanded(
+                        flex: 1,
+                        child: getTabButton("水温", () {
+                          setState(() {
+                            tabButton = 2;
+                          });
+                        }, 2),
+                      ),
+                    ],
+                  ),
+                ),
+                currentTemperatureView(),
+                Stack(
+                  children: <Widget>[
+                    getLineView(context),
+                    Positioned(
+                      left: xPosition,
+                      top: yPosition,
+                      child: GestureDetector(
+                          onPanUpdate: (detail){
+                            double x=xPosition;
+                            x += detail.delta.dx;
+                            if(x>0&&x<MediaQuery.of(context).size.width-110){
+                              setState(() {
+                                xPosition=x;
+                              });
+                            }
+
+                            double y=yPosition;
+                            y += detail.delta.dy;
+                            if(y<150&&y>0){
+                              setState(() {
+                                yPosition=y;
+                              });
+                            }
+                          },
+                          onPanEnd: (detail){
+
+                          },
+                          child:getHelpButton((){
+                            //Navigator.push(context, CustomRoute(LearnDropdownButton()));
+                            bluetoothCharacteristic.write([0xFB, 0x03, 0x00, 0x00]);
+                          })
                       ),
                     )
                   ],
                 ),
-              ),
-              Container(
-                height: 100,
-                child: getBanner(),
-              ),
-              Container(
-                margin: EdgeInsets.fromLTRB(20, 30, 20, 0),
-                child: Row(
-                  children: <Widget>[
-                    Expanded(
-                      flex: 1,
-                      child: getTabButton("体温", () {
-                        setState(() {
-                          tabButton = 0;
-                        });
-                      }, 0),
-                    ),
-                    Expanded(
-                      flex: 1,
-                      child: getTabButton("室温", () {
-                        setState(() {
-                          tabButton = 1;
-                        });
-                      }, 1),
-                    ),
-                    Expanded(
-                      flex: 1,
-                      child: getTabButton("水温", () {
-                        setState(() {
-                          tabButton = 2;
-                        });
-                      }, 2),
-                    ),
-                  ],
-                ),
-              ),
-              currentTemperatureView(),
-              Stack(
-                children: <Widget>[
-                  getLineView(context),
-                  Positioned(
-                    left: xPosition,
-                    top: yPosition,
-                    child: GestureDetector(
-                      onPanUpdate: (detail){
-                        double x=xPosition;
-                        x += detail.delta.dx;
-                        if(x>0&&x<MediaQuery.of(context).size.width-110){
-                          setState(() {
-                            xPosition=x;
-                          });
-                        }
 
-                        double y=yPosition;
-                        y += detail.delta.dy;
-                        if(y<150&&y>0){
-                          setState(() {
-                            yPosition=y;
-                          });
-                        }
-                      },
-                      onPanEnd: (detail){
-
-                      },
-                      child:getHelpButton((){
-                        //Navigator.push(context, CustomRoute(LearnDropdownButton()));
-                        bluetoothCharacteristic.write([0xFB, 0x03, 0x00, 0x00]);
-                      })
-                    ),
-                  )
-                ],
-              ),
-
-            ],
+              ],
+            ),
           ),
-        ),
-      )
+        )
     );
 
   }
@@ -386,22 +398,23 @@ class HomePageState extends State<HomePage> {
   ///curve
   Widget getLineView(context) {
     var chartLine = ChartLine(
-      chartBeans: [
-        ChartBean(x: '12-01', y: 30),
-        ChartBean(x: '12-02', y: 88),
-        ChartBean(x: '12-03', y: 20),
-        ChartBean(x: '12-04', y: 67),
-        ChartBean(x: '12-05', y: 10),
-        ChartBean(x: '12-06', y: 40),
-        ChartBean(x: '12-07', y: 10),
-        ChartBean(x: '12-08', y: 30),
-        ChartBean(x: '12-09', y: 88),
-        ChartBean(x: '12-10', y: 20),
-        ChartBean(x: '12-11', y: 67),
-        ChartBean(x: '12-12', y: 10),
-        ChartBean(x: '12-13', y: 40),
-        ChartBean(x: '12-14', y: 10),
-      ],
+        chartBeans: listData,
+//      chartBeans: [
+//        ChartBean(x: '12-01', y: 30),
+//        ChartBean(x: '12-02', y: 88),
+//        ChartBean(x: '12-03', y: 20),
+//        ChartBean(x: '12-04', y: 67),
+//        ChartBean(x: '12-05', y: 10),
+//        ChartBean(x: '12-06', y: 40),
+//        ChartBean(x: '12-07', y: 10),
+//        ChartBean(x: '12-08', y: 30),
+//        ChartBean(x: '12-09', y: 88),
+//        ChartBean(x: '12-10', y: 20),
+//        ChartBean(x: '12-11', y: 67),
+//        ChartBean(x: '12-12', y: 10),
+//        ChartBean(x: '12-13', y: 40),
+//        ChartBean(x: '12-14', y: 10),
+//      ],
       size: Size(MediaQuery.of(context).size.width, 180),
       isCurve: true,
       lineWidth: 2,
@@ -442,14 +455,14 @@ class HomePageState extends State<HomePage> {
           children: <Widget>[
             Image.asset(Utils.getImgPath2("ic_help")),
             Padding(
-              padding: EdgeInsets.only(left: 5),
-              child: Text(
-                "使用帮助",
-                style: TextStyle(
-                    color: MyColors.color_444444,
-                    fontSize: 12
-                ),
-              )
+                padding: EdgeInsets.only(left: 5),
+                child: Text(
+                  "使用帮助",
+                  style: TextStyle(
+                      color: MyColors.color_444444,
+                      fontSize: 12
+                  ),
+                )
             ),
 
           ],
@@ -465,77 +478,109 @@ class HomePageState extends State<HomePage> {
 
 
   //下拉菜单
-
   List<DropdownMenuItem> getListData(){
-    list.clear();
-    list.add("1");
-    list.add("蓝牙名字2");
-    list.add("蓝牙名字3");
-    list.add("蓝牙名字4");
-    list.add("蓝牙名字5");
-     List<DropdownMenuItem> items=new List();
-      list.forEach((element) {
+    List<DropdownMenuItem> items=new List();
+    if(devicelist.length==0){
+      DropdownMenuItem item=new DropdownMenuItem(
+        child:Text(
+          "设备连接中...",
+          style: TextStyle(
+              fontSize: 19,
+              color: Color.fromARGB(255, 68, 68, 68)),
+
+        ),
+        value: "设备连接中...",
+      );
+      items.add(item);
+    }else{
+      devicelist.forEach((it) {
         DropdownMenuItem item=new DropdownMenuItem(
           child:Text(
-            element,
+            it?.name,
             style: TextStyle(
                 fontSize: 19,
                 color: Color.fromARGB(255, 68, 68, 68)),
           ),
-          value: element,
+          value: bluetoothDevice?.name,
         );
         items.add(item);
       });
+    }
     return items;
   }
 
   getDropDownMenu(){
-   return new DropdownButton(
-      items: getListData(),
-      hint:getTitleView(blueToothName),//当没有默认值的时候可以设置的提示
-      //value: value,//下拉菜单选择完之后显示给用户的值
-      onChanged: (T){//下拉菜单item点击之后的回调
-        setState(() {
-          value=T;
-        });
-      },
-      elevation: 24,//设置阴影的高度
-      iconSize: 0,//设置三角标icon的大小
-      isDense: true,
-      //isExpanded:true,
-      underline: new Container(),
-    );
+    return
+        new DropdownButton(
+          items: getListData(),
+          hint:getTitleView(blueToothName),//当没有默认值的时候可以设置的提示
+          //value: value,//下拉菜单选择完之后显示给用户的值
+          onChanged: (T){//下拉菜单item点击之后的回调
+            setState(() {
+              value=T;
+            });
+          },
+          elevation: 24,//设置阴影的高度
+          iconSize: 0,//设置三角标icon的大小
+          isDense: true,
+          //isExpanded:true,
+          underline: Container(),
+        );
   }
 
   getTitleView(String name){
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: <Widget>[
-        Padding(
-          padding: EdgeInsets.only(right: 10),
-          child:  ClipOval(
-            child: Container(
-              width: 7,
-              height: 7,
-              color: MyColors.color_3464BA,
+    return Container(
+
+      child: Row(
+        //mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+
+          Padding(
+            padding: EdgeInsets.only(right: 7),
+            child:  ClipOval(
+              child: Container(
+                width: 7,
+                height: 7,
+                color: MyColors.color_3464BA,
+              ),
             ),
           ),
-        ),
+          Text(
+            name,
+            style: TextStyle(
+                fontSize: 19,
+                color: Color.fromARGB(255, 68, 68, 68)),
+          ),
 
-        Text(
-          name,
-          style: TextStyle(
-              fontSize: 19,
-              color: Color.fromARGB(255, 68, 68, 68)),
-        ),
 
-        Padding(
-          padding: EdgeInsets.fromLTRB(10,5,0,0),
-          child:  Image.asset(Utils.getImgPath2("ic_arraw_down")),
-        ),
-      ],
+          Padding(
+            padding: EdgeInsets.fromLTRB(10,5,0,0),
+            child:  Image.asset(Utils.getImgPath2("ic_arraw_down")),
+          ),
+        ],
+      ),
     );
+
   }
 
+  Timer _timer;
+  timeStart(){
+
+    const period = const Duration(seconds: 1);
+
+    Timer.periodic(period, (timer) {
+      _timer=timer;
+      print("timer========");
+      currentTemperature;
+    });
+
+  }
+
+  void cancelTimer() {
+    if (_timer != null) {
+      _timer.cancel();
+      _timer = null;
+    }
+  }
 
 }

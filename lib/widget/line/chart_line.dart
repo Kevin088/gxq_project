@@ -164,7 +164,6 @@ class ChartLineState extends State<ChartLine>
           setState(() {
             xOffSet += details.primaryDelta;
           });
-          print("xOffSet========$xOffSet");
         },
 //        onLongPressUp: () async {
 //          await Future.delayed(Duration(milliseconds: 800)).then((_) {
