@@ -426,7 +426,7 @@ class HomePageState extends State<HomePage> {
         Colors.blueAccent.withOpacity(0.1)
       ],
       fontSize: 12,
-      yNum: 8,
+      //yNum: 8,
       isAnimation: true,
       isReverse: false,
       isCanTouch: true,

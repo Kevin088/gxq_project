@@ -44,6 +44,11 @@ class ChartLinePainter extends BasePainter {
   double xOffset;
 
   Rect innerRect;
+
+//  List<ChartBean>chartBeansDefault=[
+//    ChartBean(),
+//  ];
+
   ChartLinePainter(
     this.chartBeans,
     this.lineColor, {
@@ -60,7 +65,7 @@ class ChartLinePainter extends BasePainter {
     this.rulerWidth = 8,
     this.shaderColors,
     this.xyColor = defaultColor,
-    this.yNum = 5,
+    this.yNum = 4,
     this.isShowFloat = false,
     this.fontSize = 10,
     this.fontColor = defaultColor,
@@ -111,7 +116,7 @@ class ChartLinePainter extends BasePainter {
       pressedHintLineColor = defaultColor;
     }
     if (yNum == null) {
-      yNum = 5;
+      yNum = 4;
     }
     if (isShowFloat == null) {
       isShowFloat = false;
@@ -126,12 +131,16 @@ class ChartLinePainter extends BasePainter {
     if(xOffset>0){
       xOffset=0;
     }
-    if(chartBeans.length*xGap+xOffset<size.width-xGap){
-      xOffset=-chartBeans.length*xGap+size.width-xGap;
-    }
+//    if(chartBeans.length*xGap+xOffset<size.width-xGap){
+//      xOffset=-chartBeans.length*xGap+size.width-xGap;
+//    }
     startX = temp +xOffset;
-    //endX = size.width - basePadding * 2;
-    endX = xGap * chartBeans.length+xOffset;
+    if(chartBeans.length==0){
+      endX = size.width - basePadding * 2;
+    }else{
+      endX = xGap * chartBeans.length+xOffset;
+    }
+
     startY = size.height - (isShowXyRuler ? basePadding * 3 : basePadding * 2);
     endY = basePadding * 2;
     _fixedHeight = startY - endY;
@@ -206,7 +215,7 @@ class ChartLinePainter extends BasePainter {
           ),
         );
       }
-      canvas.drawLine(Offset(startX, startY),
+      canvas.drawLine(Offset(startXNoOff, startY),
           Offset(endX + basePadding, startY), paint); //x轴
       if(xOffset<0){
         canvas.restore();
@@ -229,9 +238,9 @@ class ChartLinePainter extends BasePainter {
 
   ///x,y轴刻度 & 辅助线
   void drawRuler(Canvas canvas, Paint paint) {
-    if (chartBeans != null && chartBeans.length > 0) {
+    if (chartBeans != null && chartBeans.length >= 0) {
       //int length = chartBeans.length > 7 ? 7 : chartBeans.length; //最多绘制7个
-      int length = chartBeans.length;
+      int length = chartBeans.length==0?7:chartBeans.length;
       double dw =xGap; //两个点之间的x方向距离
       double dh = _fixedHeight / (length - 1); //两个点之间的y方向距离
 
@@ -248,13 +257,40 @@ class ChartLinePainter extends BasePainter {
             ),
           );
         }
-
+        String text="";
+        if(chartBeans.length==0){
+          switch(i){
+           case 0:
+             text="0:00";
+             break;
+            case 1:
+              text="0:10";
+              break;
+            case 2:
+              text="0:20";
+              break;
+            case 3:
+              text="0:30";
+              break;
+            case 4:
+              text="0:40";
+              break;
+            case 5:
+              text="0:50";
+              break;
+            case 6:
+              text="1:00";
+              break;
+          }
+        }else{
+          text=chartBeans[i].x;
+        }
         ///绘制x轴文本
         TextPainter(
             textAlign: TextAlign.center,
             ellipsis: '.',
             text: TextSpan(
-                text: chartBeans[i].x,
+                text: text,
                 style: TextStyle(color: fontColor, fontSize: fontSize)),
             textDirection: TextDirection.ltr)
           ..layout(minWidth: 40, maxWidth: 40)
@@ -297,13 +333,31 @@ class ChartLinePainter extends BasePainter {
         }
 
       }
-      int yLength = yNum + 1; //包含原点,所以 +1
+      int yLength = yNum ; //包含原点,所以 +1
       double dValue = maxMin[0] / yNum; //一段对应的值
-      double dV = _fixedHeight / yNum; //一段对应的高度
+      double dV = _fixedHeight / (yNum-1); //一段对应的高度
       for (int i = 0; i < yLength; i++) {
         if (isShowYValue) {
           ///绘制y轴文本，保留1位小数
-          var yValue = (dValue * i).toStringAsFixed(isShowFloat ? 1 : 0);
+          var yValue;
+          if(chartBeans.length==0){
+            switch(i){
+              case 0:
+                yValue="35";
+                break;
+              case 1:
+                yValue="37";
+                break;
+              case 2:
+                yValue="39";
+                break;
+              case 3:
+                yValue="41";
+                break;
+            }
+          }else{
+            yValue = (dValue * i).toStringAsFixed(isShowFloat ? 1 : 0);
+          }
           TextPainter(
               textAlign: TextAlign.center,
               ellipsis: '.',
