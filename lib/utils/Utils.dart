@@ -1,3 +1,5 @@
+import 'package:date_format/date_format.dart';
+
 class Utils{
   static String getImgPath(String name, {String format: 'png'}) {
     return 'assets/images/$name.$format';
@@ -26,8 +28,29 @@ class Utils{
       return( num.toString().substring(0,num.toString().lastIndexOf(".")+postion+1).toString());
     }
   }
+  static double formatDouble(String num){
+    try{
+      return double.parse(num);
+    }catch(Exception){
 
+    }
+    return 0;
+  }
 
+  static String getTime(){
+    return formatDate(DateTime.now(), [yyyy, "-", mm, "-", dd, " "," ", HH, ":", nn, ":", ss]);
+  }
+  static String formatXvalue(int time){
+    time++;
+    time=time*10;
+    if(time<60){
+        return "0:$time";
+    }else if(time<60*60){
+        return "${(time/60).floor()}:${time%60}";
+    }else{
+      return "${(time/60*60).floor()}:${((time-(time/60*60).floor())/60).floor()}:${time%60}";
+    }
+  }
 
 }
 

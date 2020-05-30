@@ -48,7 +48,7 @@ class ChartLinePainter extends BasePainter {
 //  List<ChartBean>chartBeansDefault=[
 //    ChartBean(),
 //  ];
-
+  bool scrollEndx;
   ChartLinePainter(
     this.chartBeans,
     this.lineColor, {
@@ -62,6 +62,7 @@ class ChartLinePainter extends BasePainter {
     this.isShowHintY = false,
     this.isShowBorderTop = false,
     this.isShowBorderRight = false,
+        this.scrollEndx=false,
     this.rulerWidth = 8,
     this.shaderColors,
     this.xyColor = defaultColor,
@@ -80,6 +81,9 @@ class ChartLinePainter extends BasePainter {
 
   @override
   void paint(Canvas canvas, Size size) {
+    if(scrollEndx&&chartBeans.length>7){
+      xOffset=-40*(chartBeans.length-7).roundToDouble();
+    }
     _init(size);
     _drawXy(canvas, size); //坐标轴
     _drawLine(canvas, size); //曲线或折线
@@ -94,6 +98,7 @@ class ChartLinePainter extends BasePainter {
 
   ///初始化
   void _init(Size size) {
+
     initValue();
     initBorder(size);
     initPath(size);
@@ -135,7 +140,7 @@ class ChartLinePainter extends BasePainter {
 //      xOffset=-chartBeans.length*xGap+size.width-xGap;
 //    }
     startX = temp +xOffset;
-    if(chartBeans.length==0){
+    if(chartBeans.length<=7){
       endX = size.width - basePadding * 2;
     }else{
       endX = xGap * chartBeans.length+xOffset;
@@ -240,7 +245,7 @@ class ChartLinePainter extends BasePainter {
   void drawRuler(Canvas canvas, Paint paint) {
     if (chartBeans != null && chartBeans.length >= 0) {
       //int length = chartBeans.length > 7 ? 7 : chartBeans.length; //最多绘制7个
-      int length = chartBeans.length==0?7:chartBeans.length;
+      int length = chartBeans.length<=7?7:chartBeans.length;
       double dw =xGap; //两个点之间的x方向距离
       double dh = _fixedHeight / (length - 1); //两个点之间的y方向距离
 
@@ -283,7 +288,34 @@ class ChartLinePainter extends BasePainter {
               break;
           }
         }else{
-          text=chartBeans[i].x;
+          if(i>=chartBeans.length){
+            switch(i){
+              case 0:
+                text="0:00";
+                break;
+              case 1:
+                text="0:10";
+                break;
+              case 2:
+                text="0:20";
+                break;
+              case 3:
+                text="0:30";
+                break;
+              case 4:
+                text="0:40";
+                break;
+              case 5:
+                text="0:50";
+                break;
+              case 6:
+                text="1:00";
+                break;
+            }
+          }else{
+            text=chartBeans[i].x;
+          }
+
         }
         ///绘制x轴文本
         TextPainter(
@@ -356,7 +388,7 @@ class ChartLinePainter extends BasePainter {
                 break;
             }
           }else{
-            yValue = (dValue * i).toStringAsFixed(isShowFloat ? 1 : 0);
+            yValue = (dValue * (i+1)).toStringAsFixed(isShowFloat ? 1 : 0);
           }
           TextPainter(
               textAlign: TextAlign.center,

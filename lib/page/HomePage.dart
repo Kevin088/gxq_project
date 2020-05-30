@@ -9,15 +9,12 @@ import 'package:flutter_qrscaner/flutter_qrscaner.dart';
 import 'package:gxq_project/common/api.dart';
 import 'package:gxq_project/common/param_name.dart';
 import 'package:gxq_project/http/httpUtil.dart';
-import 'package:gxq_project/page/test/LearnDropdownButton.dart';
 import 'package:gxq_project/res/Colors.dart';
 import 'package:gxq_project/utils/Toast.dart';
 import 'package:gxq_project/utils/Utils.dart';
-import 'package:gxq_project/widget/CustomRoute.dart';
 import 'package:gxq_project/widget/banner/widget_banner.dart';
 import 'package:gxq_project/widget/line/chart_bean.dart';
 import 'package:gxq_project/widget/line/chart_line.dart';
-import 'package:popup_window/popup_window.dart';
 import 'package:rammus/rammus.dart' as rammus; //导包
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -33,7 +30,7 @@ class HomePage extends StatefulWidget {
   }
 }
 
-class HomePageState extends State<HomePage> {
+class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin{
   int tabButton = 0;
   String _deviceId="";
   //List<BluetoothDevice> devices = List<BluetoothDevice>();
@@ -54,14 +51,19 @@ class HomePageState extends State<HomePage> {
   BluetoothCharacteristic bluetoothCharacteristic;
   BluetoothDevice bluetoothDevice;
 
-
-  String currentTemperature="";
-  String tempperatureValue="36.42℃";
+  String currentTime="";
+  String currentTemperature="0";
 
   //设备
   List<BluetoothDevice> devicelist=List();
 
   List<ChartBean>listData=List();
+
+  bool isCaiJing=false;
+
+
+
+
   @override
   void initState() {
     // TODO: implement initState
@@ -104,7 +106,7 @@ class HomePageState extends State<HomePage> {
     FlutterBlue flutterBlue = FlutterBlue.instance;
 
     // Start scanning
-    flutterBlue.startScan(timeout: Duration(seconds: 60));
+    flutterBlue.startScan(timeout: Duration(seconds: 60*60));
 
 // Listen to scan results
     flutterBlue.scanResults.listen((results) async {
@@ -153,9 +155,12 @@ class HomePageState extends State<HomePage> {
         });
       }
     });
-    timeStart();
 // Stop scanning
     //  flutterBlue.stopScan();
+
+
+    initData();
+
   }
 
   @override
@@ -202,6 +207,7 @@ class HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     if(xPosition==0){
       xPosition = MediaQuery.of(context).size.width-130;
 
@@ -328,9 +334,58 @@ class HomePageState extends State<HomePage> {
       Toast.toast(context, msg: value);
     });
   }
-
+  //设置
   void setting() {
-    Navigator.push(context, CustomRoute(SetPage()));
+    if(!isCaiJing){
+
+      showDialog(
+          context: context,
+          barrierDismissible: true,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              content: Text('开始采集'),
+              actions: <Widget>[
+                FlatButton(
+                    onPressed: () {
+                      timeStart();
+                      Navigator.of(context).pop();
+                    },
+                    child: Text('确定')),
+                FlatButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    child: Text('取消')),
+              ],
+            );
+          });
+
+
+    }else{
+      showDialog(
+          context: context,
+          barrierDismissible: true,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              content: Text('结束采集'),
+              actions: <Widget>[
+                FlatButton(
+                    onPressed: () {
+                      cancelTimer();
+                      Navigator.of(context).pop();
+                    },
+                    child: Text('确定')),
+                FlatButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    child: Text('取消')),
+              ],
+            );
+          });
+
+    }
+
   }
 
   Widget getBanner() {
@@ -368,7 +423,7 @@ class HomePageState extends State<HomePage> {
           Align(
             alignment: FractionalOffset.centerLeft,
             child: Text(
-              "2019-10-18 10:00:00",
+              currentTime,
               style: TextStyle(
                 color: MyColors.gray_999999,
                 fontSize: 14,
@@ -378,7 +433,7 @@ class HomePageState extends State<HomePage> {
           Stack(
             children: <Widget>[
               Text(
-                tempperatureValue,
+                currentTemperature+"℃",
                 style: TextStyle(
                   color: MyColors.color_DF6565,
                   fontSize: 48,
@@ -398,23 +453,7 @@ class HomePageState extends State<HomePage> {
   ///curve
   Widget getLineView(context) {
     var chartLine = ChartLine(
-        chartBeans: listData,
-//      chartBeans: [
-//        ChartBean(x: '12-01', y: 30),
-//        ChartBean(x: '12-02', y: 88),
-//        ChartBean(x: '12-03', y: 20),
-//        ChartBean(x: '12-04', y: 67),
-//        ChartBean(x: '12-05', y: 10),
-//        ChartBean(x: '12-06', y: 40),
-//        ChartBean(x: '12-07', y: 10),
-//        ChartBean(x: '12-08', y: 30),
-//        ChartBean(x: '12-09', y: 88),
-//        ChartBean(x: '12-10', y: 20),
-//        ChartBean(x: '12-11', y: 67),
-//        ChartBean(x: '12-12', y: 10),
-//        ChartBean(x: '12-13', y: 40),
-//        ChartBean(x: '12-14', y: 10),
-//      ],
+      chartBeans: listData,
       size: Size(MediaQuery.of(context).size.width, 180),
       isCurve: true,
       lineWidth: 2,
@@ -427,6 +466,7 @@ class HomePageState extends State<HomePage> {
       ],
       fontSize: 12,
       //yNum: 8,
+      scrollEndX: true,
       isAnimation: true,
       isReverse: false,
       isCanTouch: true,
@@ -564,23 +604,45 @@ class HomePageState extends State<HomePage> {
   }
 
   Timer _timer;
+  int count;
   timeStart(){
+    isCaiJing=true;
+    count=0;
+    const period = const Duration(seconds: 2);
 
-    const period = const Duration(seconds: 1);
-
-    Timer.periodic(period, (timer) {
+    Timer.periodic(period, (timer) async {
       _timer=timer;
       print("timer========");
-      currentTemperature;
+
+      if(currentTemperature!="0"){
+         setState(() {
+          currentTime=Utils.getTime();
+          listData.add(ChartBean(x:Utils.formatXvalue(count),y:Utils.formatDouble(currentTemperature)));
+        });
+        //currentTemperature="0";
+      }
+      count++;
     });
 
   }
 
   void cancelTimer() {
     if (_timer != null) {
+      isCaiJing=false;
       _timer.cancel();
       _timer = null;
     }
   }
+  void initData(){
+//    listData.add(ChartBean(x:'0:00',y:37));
+//    listData.add(ChartBean(x:'0:10',y:37));
+//    listData.add(ChartBean(x:'0:20',y:37));
+//    listData.add(ChartBean(x:'0:30',y:37));
+
+  }
+
+  @override
+  bool get wantKeepAlive => true;
+
 
 }

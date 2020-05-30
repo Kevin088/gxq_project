@@ -39,6 +39,7 @@ dependencies:
   flutter_blue: ^0.7.2
   dio: 3.0.9
   json_annotation: ^3.0.1
+  date_format: ^1.0.8
 dev_dependencies:
   flutter_test:
     sdk: flutter

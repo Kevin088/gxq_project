@@ -17,7 +17,7 @@ class BasePainter extends CustomPainter {
   ///计算极值 最大值,最小值
   List<double> calculateMaxMin(List<ChartBean> chatBeans) {
     if (chatBeans == null || chatBeans.length == 0) return [0, 0];
-    double max = 0.0, min = 0.0;
+    double max = 0.0, min = 100.0;
     for (ChartBean bean in chatBeans) {
       if (max < bean.y) {
         max = bean.y;
@@ -25,6 +25,9 @@ class BasePainter extends CustomPainter {
       if (min > bean.y) {
         min = bean.y;
       }
+    }
+    if(max==min){
+      min=0;
     }
     return [max, min];
   }

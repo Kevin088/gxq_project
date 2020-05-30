@@ -32,7 +32,7 @@ class ChartLine extends StatefulWidget {
   final double pressedPointRadius; //触摸点半径
   final double pressedHintLineWidth; //触摸辅助线宽度
   final Color pressedHintLineColor; //触摸辅助线颜色
-
+  final scrollEndX;
   const ChartLine({
     Key key,
     @required this.size,
@@ -50,6 +50,7 @@ class ChartLine extends StatefulWidget {
     this.isShowHintY = false,
     this.isShowBorderTop = false,
     this.isShowBorderRight = false,
+    this.scrollEndX=false,
     this.yNum,
     this.isShowFloat,
     this.fontSize,
@@ -110,6 +111,7 @@ class ChartLineState extends State<ChartLine>
 
   @override
   Widget build(BuildContext context) {
+
     var painter = ChartLinePainter(widget.chartBeans, widget.lineColor,
         shaderColors: widget.shaderColors,
         isCurve: widget.isCurve,
@@ -127,6 +129,7 @@ class ChartLineState extends State<ChartLine>
         isShowBorderTop: widget.isShowBorderTop,
         isShowBorderRight: widget.isShowBorderRight,
         rulerWidth: widget.rulerWidth,
+        scrollEndx: widget.scrollEndX,
         isShowPressedHintLine: widget.isShowPressedHintLine,
         pressedHintLineColor: widget.pressedHintLineColor,
         pressedHintLineWidth: widget.pressedHintLineWidth,
