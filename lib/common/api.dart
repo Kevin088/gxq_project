@@ -1,7 +1,7 @@
 
 class Api {
 
-  static const String BASE_URL = "http://47.94.214.199:9003/thermo/";
+  static const String BASE_URL = "http://121.36.246.249:9003/thermo-provider/";
   //首页banner
   static const String BANNER = "api/shuffling";
 

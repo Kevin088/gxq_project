@@ -3,6 +3,8 @@ import 'dart:io';
 import 'package:dio/adapter.dart';
 import 'package:dio/dio.dart';
 import 'package:gxq_project/common/api.dart';
+import 'package:gxq_project/common/param_name.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class HttpUtil {
   static HttpUtil instance;
@@ -10,7 +12,7 @@ class HttpUtil {
   BaseOptions options;
 
   CancelToken cancelToken = CancelToken();
-
+  String token="11";
   static HttpUtil getInstance() {
     if (null == instance) instance = HttpUtil();
     return instance;
@@ -19,7 +21,7 @@ class HttpUtil {
   /*
    * config it and create
    */
-  HttpUtil() {
+  HttpUtil()  {
     //BaseOptions、Options、RequestOptions 都可以配置参数，优先级别依次递增，且可以根据优先级别覆盖参数
     options = BaseOptions(
       //请求基地址,可以包含子路径
@@ -32,8 +34,8 @@ class HttpUtil {
       headers: {
         //do something
         "version": "1.0.0",
-        "tenantName": "thermo",
-        "Authorization": "11",
+        "tenantName": "watch",
+        "Authorization": token,
       },
       //请求的Content-Type，默认值是[ContentType.json]. 也可以用ContentType.parse("application/x-www-form-urlencoded")
       contentType: "application/json; charset=utf-8",
@@ -50,7 +52,7 @@ class HttpUtil {
     (dio.httpClientAdapter as DefaultHttpClientAdapter).onHttpClientCreate = (client){
       client.findProxy = (url){
         //设置代理 电脑ip地址
-        return "PROXY 192.168.100.25:8888";
+        return "PROXY 192.168.8.102:8888";
         //不设置代理
         //return 'DIRECT';
       };
@@ -74,8 +76,12 @@ class HttpUtil {
       // Do something with response error
       return e; //continue
     }));
+    getToken();
   }
-
+  Future<void> getToken() async {
+    final prefs = await SharedPreferences.getInstance();
+    token==prefs.getString(ParamName.SP_USER_TOKEN)??"11";
+  }
   /*
    * get请求
    */
@@ -167,5 +173,9 @@ class HttpUtil {
    */
   void cancelRequests(CancelToken token) {
     token.cancel("cancelled");
+  }
+
+  void setToken(String token){
+    this.token=token;
   }
 }

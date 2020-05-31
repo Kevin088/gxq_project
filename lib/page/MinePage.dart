@@ -1,10 +1,15 @@
+import 'dart:async';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:gxq_project/bean/LoginInfoEvent.dart';
 import 'package:gxq_project/common/param_name.dart';
 import 'package:gxq_project/page/DeviceManagePage.dart';
 import 'package:gxq_project/page/mine/LoginPage.dart';
 import 'package:gxq_project/page/mine/MediaPlayerPage.dart';
+import 'package:gxq_project/utils/Toast.dart';
 import 'package:gxq_project/utils/Utils.dart';
+import 'package:gxq_project/utils/event_bus.dart';
 import 'package:gxq_project/widget/CustomRoute.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -28,19 +33,39 @@ class MinePageState extends State<MinePage>{
   String phone;
   String img;
 
-
+  StreamSubscription eventBusOn;
   @override
   void initState(){
     // TODO: implement initState
     super.initState();
 
+
+
+    eventBusOn=eventBus.on<LoginInfoEvent>().listen((event){
+      Toast.toast(context,msg: event.nickName);
+      setState(() {
+        isLogin=true;
+        name=event.nickName;
+        img=event.avatar;
+      });
+    });
     getData();
   }
 
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+    eventBusOn.cancel();
+  }
+
+
   Future<void> getData() async {
-    final prefs = await SharedPreferences.getInstance();
+    SharedPreferences  prefs = await SharedPreferences.getInstance();
     if (!mounted) return;
-    isLogin==prefs.getBool(ParamName.IS_LOGIN)??false;
+    isLogin= prefs.getBool(ParamName.IS_LOGIN)??false;
+    name= prefs.getString(ParamName.SP_USER_NAME)??"";
+    img= prefs.getString(ParamName.SP_USER_AVATOR)??"";
     setState(() {
 
     });
@@ -60,9 +85,16 @@ class MinePageState extends State<MinePage>{
             child: Column(
               children: <Widget>[
                 Row(children: <Widget>[
-                  CircleAvatar(
-                    radius: 36.0,
-                    backgroundImage: AssetImage(Utils.getImgPath2("ic_avatar")),
+//                img==""?
+//                      CircleAvatar(
+//                        radius: 36.0,
+//                        backgroundImage: AssetImage(Utils.getImgPath2("ic_avatar"))
+//
+//                      ):Image.network(img,fit: BoxFit.fill),
+                  new ClipRRect(
+                    borderRadius: BorderRadius.circular(30.0),
+                    child:img==""? new Image.asset(Utils.getImgPath('ali_connors')):
+                    Image.network(img,fit: BoxFit.fill),
                   ),
                   Container(
                     margin: EdgeInsets.fromLTRB(20, 0, 20, 0),
@@ -80,7 +112,7 @@ class MinePageState extends State<MinePage>{
                           margin: EdgeInsets.fromLTRB(0, 10, 0, 0),
                           child:
                             Text(
-                              "电话号码：15313729066",
+                              "",
                               style: TextStyle(
                                   fontSize: 14.0,
                                   color: Color.fromARGB(255, 178, 178, 178)
@@ -122,7 +154,7 @@ class MinePageState extends State<MinePage>{
                       if(!isLogin){
                         Navigator.push(context, CustomRoute(LoginPage()));
                       }else{
-                        var prefs = await SharedPreferences.getInstance();
+                        SharedPreferences prefs = await SharedPreferences.getInstance();
                         if (!mounted) return;
                         prefs.setBool(ParamName.IS_LOGIN,false);
                         isLogin=false;

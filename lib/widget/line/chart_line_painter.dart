@@ -136,9 +136,9 @@ class ChartLinePainter extends BasePainter {
     if(xOffset>0){
       xOffset=0;
     }
-//    if(chartBeans.length*xGap+xOffset<size.width-xGap){
-//      xOffset=-chartBeans.length*xGap+size.width-xGap;
-//    }
+    if(chartBeans.length*xGap+xOffset<size.width-xGap){
+      xOffset=-chartBeans.length*xGap+size.width-xGap;
+    }
     startX = temp +xOffset;
     if(chartBeans.length<=7){
       endX = size.width - basePadding * 2;

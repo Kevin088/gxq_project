@@ -1,11 +1,14 @@
 import 'dart:io';
 
+import 'package:event_bus/event_bus.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:gxq_project/utils/Toast.dart';
 import 'package:gxq_project/utils/Utils.dart';
+import 'package:gxq_project/utils/event_bus.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:async';
-
+import 'package:gxq_project/bean/LoginInfoEvent.dart';
 class MineInfoPage extends StatefulWidget{
   @override
   State<StatefulWidget> createState() {
@@ -17,6 +20,15 @@ class MineInfoPage extends StatefulWidget{
 
 class MineInfoPageState extends State<MineInfoPage>{
   File _image;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    //监听广播
+
+
+  }
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
@@ -192,4 +204,6 @@ class MineInfoPageState extends State<MineInfoPage>{
       _image = image;
     });
   }
+
+
 }

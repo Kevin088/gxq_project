@@ -32,8 +32,8 @@ class ChartLine extends StatefulWidget {
   final double pressedPointRadius; //触摸点半径
   final double pressedHintLineWidth; //触摸辅助线宽度
   final Color pressedHintLineColor; //触摸辅助线颜色
-  final scrollEndX;
-  const ChartLine({
+  bool scrollEndX;
+  ChartLine({
     Key key,
     @required this.size,
     @required this.chartBeans,
@@ -79,7 +79,6 @@ class ChartLineState extends State<ChartLine>
   double begin = 0.0, end = 1.0;
   Offset globalPosition;
   double xOffSet=0;
-
   @override
   void initState() {
     super.initState();
@@ -111,7 +110,7 @@ class ChartLineState extends State<ChartLine>
 
   @override
   Widget build(BuildContext context) {
-
+    print(widget.scrollEndX.toString()+"==========scrollEndX======");
     var painter = ChartLinePainter(widget.chartBeans, widget.lineColor,
         shaderColors: widget.shaderColors,
         isCurve: widget.isCurve,
@@ -144,12 +143,14 @@ class ChartLineState extends State<ChartLine>
         onTapDown: (details){
           setState(() {
             globalPosition = details.globalPosition;
+            print("============onTapDown");
           });
         },
         onTapUp: (details) async{
           await Future.delayed(Duration(milliseconds: 800)).then((_) {
             setState(() {
               globalPosition = null;
+              print("============onTapUp");
             });
           });
         },
@@ -164,9 +165,11 @@ class ChartLineState extends State<ChartLine>
 //          });
 //        },
         onHorizontalDragUpdate: (details) {
-          setState(() {
-            xOffSet += details.primaryDelta;
-          });
+          if(widget.chartBeans.length>7){
+            setState(() {
+              xOffSet += details.primaryDelta;
+            });
+          }
         },
 //        onLongPressUp: () async {
 //          await Future.delayed(Duration(milliseconds: 800)).then((_) {

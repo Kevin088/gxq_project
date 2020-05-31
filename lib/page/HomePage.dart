@@ -99,7 +99,6 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin{
       print("received data -=============> ${data.content}");
     });
 
-//    getData();
     initPlatformState();
     //蓝牙=====================================
 
@@ -197,13 +196,6 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin{
 //    });
   }
 
-  getData() async {
-    Response response=await HttpUtil.getInstance().get(Api.BANNER);
-    if(!mounted){
-      return;
-    }
-    print(response?.data.toString());
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -372,6 +364,9 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin{
                 FlatButton(
                     onPressed: () {
                       cancelTimer();
+                      setState(() {
+
+                      });
                       Navigator.of(context).pop();
                     },
                     child: Text('确定')),
@@ -465,8 +460,7 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin{
         Colors.blueAccent.withOpacity(0.1)
       ],
       fontSize: 12,
-      //yNum: 8,
-      scrollEndX: true,
+      scrollEndX: isCaiJing,
       isAnimation: true,
       isReverse: false,
       isCanTouch: true,
@@ -633,12 +627,16 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin{
       _timer = null;
     }
   }
-  void initData(){
+  Future<void> initData() async {
 //    listData.add(ChartBean(x:'0:00',y:37));
 //    listData.add(ChartBean(x:'0:10',y:37));
 //    listData.add(ChartBean(x:'0:20',y:37));
 //    listData.add(ChartBean(x:'0:30',y:37));
-
+    Response response=await HttpUtil.getInstance().get(Api.BANNER);
+    if(!mounted){
+      return;
+    }
+    print(response?.data.toString());
   }
 
   @override

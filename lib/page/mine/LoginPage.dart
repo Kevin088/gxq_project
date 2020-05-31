@@ -2,17 +2,20 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:dio/dio.dart';
+import 'package:event_bus/event_bus.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:gxq_project/bean/q_q_login_bean.dart';
 import 'package:gxq_project/bean/request_login_bean.dart';
+import 'package:gxq_project/bean/LoginInfoEvent.dart';
 import 'package:gxq_project/bean/webo_login_bean.dart';
 import 'package:gxq_project/common/api.dart';
 import 'package:gxq_project/common/param_name.dart';
 import 'package:gxq_project/http/httpUtil.dart';
 import 'package:gxq_project/res/Colors.dart';
-import 'package:gxq_project/utils/Toast.dart';
 import 'package:gxq_project/utils/Utils.dart';
+import 'package:gxq_project/utils/event_bus.dart';
+import 'package:gxq_project/utils/Toast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sharesdk_plugin/sharesdk_defines.dart';
 
@@ -205,6 +208,31 @@ class LoginPageState extends State<LoginPage>{
       "openId":data.openId,
     };
     Response response=await HttpUtil.getInstance().post(Api.LOGIN,data: param);
-    print(response?.data.toString());
+    if (!mounted) return;
+    var loginInfo=response?.data;
+    var dataInfo=loginInfo['data'];
+    int userId=dataInfo['id'];
+    String avatar=dataInfo['avatar'];
+    String nickName=dataInfo['nickName'];
+    String token=dataInfo['token'];
+    HttpUtil.getInstance().setToken(token);
+    final prefs = await SharedPreferences.getInstance();
+    if (!mounted) return;
+    prefs.setInt(ParamName.SP_USER_ID, userId);
+    prefs.setString(ParamName.SP_USER_AVATOR, avatar);
+    prefs.setString(ParamName.SP_USER_NAME, nickName);
+    prefs.setString(ParamName.SP_USER_TOKEN, token);
+    prefs.setBool(ParamName.IS_LOGIN, true);
+
+
+    LoginInfoEvent loginInfoEvent=new LoginInfoEvent();
+    loginInfoEvent.userId=userId;
+    loginInfoEvent.avatar=avatar;
+    loginInfoEvent.nickName=nickName;
+    loginInfoEvent.token=token;
+
+    eventBus.fire(loginInfoEvent);
+
+    Navigator.pop(context);
   }
 }
