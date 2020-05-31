@@ -32,7 +32,7 @@ dependencies:
   seekbar: 0.0.2
   popup_window: ^1.0.0+3
 #  三方登录
-  sharesdk_plugin: ^1.1.7
+  sharesdk_plugin: ^1.2.4
   #阿里推送
   rammus: ^0.0.3
   #蓝牙

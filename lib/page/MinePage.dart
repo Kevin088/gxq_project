@@ -31,7 +31,7 @@ class MinePageState extends State<MinePage>{
   bool isLogin=false;
   String name;
   String phone;
-  String img;
+  String img="";
 
   StreamSubscription eventBusOn;
   @override
@@ -93,8 +93,8 @@ class MinePageState extends State<MinePage>{
 //                      ):Image.network(img,fit: BoxFit.fill),
                   new ClipRRect(
                     borderRadius: BorderRadius.circular(30.0),
-                    child:img==""? new Image.asset(Utils.getImgPath('ali_connors')):
-                    Image.network(img,fit: BoxFit.fill),
+                    child:img==""? new Image.asset(Utils.getImgPath2('ic_avatar')):
+                    Image.network(img,fit: BoxFit.fill,width: 66,height: 66,),
                   ),
                   Container(
                     margin: EdgeInsets.fromLTRB(20, 0, 20, 0),
