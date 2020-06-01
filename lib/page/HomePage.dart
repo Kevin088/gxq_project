@@ -7,8 +7,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_blue/flutter_blue.dart';
 import 'package:flutter_qrscaner/flutter_qrscaner.dart';
+import 'package:gxq_project/bean/point_info.dart';
 import 'package:gxq_project/common/api.dart';
 import 'package:gxq_project/common/param_name.dart';
+import 'package:gxq_project/db/database_helper.dart';
 import 'package:gxq_project/http/httpUtil.dart';
 import 'package:gxq_project/res/Colors.dart';
 import 'package:gxq_project/utils/Toast.dart';
@@ -368,10 +370,12 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin{
                 FlatButton(
                     onPressed: () {
                       cancelTimer();
+
                       setState(() {
 
                       });
                       Navigator.of(context).pop();
+                      _saveData(listData);
                     },
                     child: Text('确定')),
                 FlatButton(
@@ -678,7 +682,19 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin{
     String tempValueMin=minTemp.toString();
     String tempValueAverage=(allTem/count).toString();
     String detailInfo=jsonEncode(listData);
+    var pointInfo=PointInfo();
+    pointInfo.id=id;
+    pointInfo.createTime=createTime;
+    pointInfo.tempType=tempType;
+    pointInfo.isUpload=isUpload;
+    pointInfo.deviceId=deviceId;
+    pointInfo.blueToothId=blueToothId;
+    pointInfo.blueToothName=blueToothName;
+    pointInfo.tempValueMax=tempValueMax;
+    pointInfo.tempValueMin=tempValueMin;
+    pointInfo.tempValueAverage=tempValueAverage;
+    pointInfo.detailInfo=detailInfo;
 
-    String detailInfo1=jsonEncode(listData);
+    DatabaseHelper().saveItem(pointInfo);
   }
 }

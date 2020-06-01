@@ -41,17 +41,17 @@ class DatabaseHelper {
   void _onCreate(Database db, int version) async {
     await db.execute(
         "create table $tableName($columnId text not null primary key,"
-            "$columnCreateTime text not null ,"
-            "$columnTempType text not null ,"
-            "$columnUserId text not null ,"
-            "$columnIsUpload text not null ,"
-            "$columnBlueToothId text not null ,"
-            "$columnBlueToothName text not null ,"
-            "$columnDeviceId text not null ,"
-            "$columnTempValueMax text not null ,"
-            "$columnTempValueMin text not null ,"
-            "$columnTempValueAverage text not null ,"
-            "$columnDetailInfo text not null )");
+            "$columnCreateTime text   ,"
+            "$columnTempType text   ,"
+            "$columnUserId text   ,"
+            "$columnIsUpload text   ,"
+            "$columnBlueToothId text   ,"
+            "$columnBlueToothName text   ,"
+            "$columnDeviceId text   ,"
+            "$columnTempValueMax text   ,"
+            "$columnTempValueMin text   ,"
+            "$columnTempValueAverage text   ,"
+            "$columnDetailInfo text   )");
 
     print("Table is created");
   }
