@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
@@ -17,6 +18,7 @@ import 'package:gxq_project/widget/line/chart_bean.dart';
 import 'package:gxq_project/widget/line/chart_line.dart';
 import 'package:rammus/rammus.dart' as rammus; //导包
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:uuid/uuid.dart';
 
 import 'mine/AboutPage.dart';
 import 'mine/SetPage.dart';
@@ -44,7 +46,7 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin{
 
   var value='1';
 
-  String blueToothName="设备连接中...";
+
 
   String UUID="0000fff6-0000-1000-8000-00805f9b34fb";
 
@@ -62,7 +64,8 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin{
   bool isCaiJing=false;
 
 
-
+  String blueToothId="";
+  String blueToothName="设备连接中...";
 
   @override
   void initState() {
@@ -119,6 +122,7 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin{
           //await r.device.disconnect();
           await r.device.connect();
           print("已连接======= -=============>");
+          blueToothId=r.device.id.id;
           setState(() {
             blueToothName=r.device.name;
           });
@@ -611,7 +615,17 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin{
       if(currentTemperature!="0"){
          setState(() {
           currentTime=Utils.getTime();
-          listData.add(ChartBean(x:Utils.formatXvalue(count),y:Utils.formatDouble(currentTemperature)));
+          var chartBean=ChartBean(x:Utils.formatXvalue(count),
+              y:Utils.formatDouble(currentTemperature),
+          millisSeconds: DateTime.now().millisecond);
+          listData.add(chartBean);
+
+          if(minTemp>double.parse(currentTemperature)){
+            minTemp=double.parse(currentTemperature);
+          }else if(maxTemp<double.parse(currentTemperature)){
+            maxTemp=double.parse(currentTemperature);
+          }
+          allTem+=double.parse(currentTemperature);
         });
         //currentTemperature="0";
       }
@@ -628,10 +642,7 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin{
     }
   }
   Future<void> initData() async {
-//    listData.add(ChartBean(x:'0:00',y:37));
-//    listData.add(ChartBean(x:'0:10',y:37));
-//    listData.add(ChartBean(x:'0:20',y:37));
-//    listData.add(ChartBean(x:'0:30',y:37));
+
     Response response=await HttpUtil.getInstance().get(Api.BANNER);
     if(!mounted){
       return;
@@ -643,4 +654,31 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin{
   bool get wantKeepAlive => true;
 
 
+  double maxTemp=-1000;
+  double minTemp=1000;
+  double allTem=0;
+
+
+  Future<void> _saveData(List<ChartBean>listData) async {
+    if(listData==null){
+      return;
+    }
+    var prefs = await SharedPreferences.getInstance();
+    if (!mounted) return;
+    String userId= prefs.getString(ParamName.SP_USER_ID);
+    var uuid = Uuid();
+    String id=uuid.v1();
+    String createTime=listData[0]?.millisSeconds?.toString();
+    String tempType=tabButton.toString();
+    String isUpload="0";
+    String deviceId=prefs.getString(ParamName.DEVICE_ID);
+    String blueToothId=this.blueToothId;
+    String blueToothName=this.blueToothName;
+    String tempValueMax=maxTemp.toString();
+    String tempValueMin=minTemp.toString();
+    String tempValueAverage=(allTem/count).toString();
+    String detailInfo=jsonEncode(listData);
+
+    String detailInfo1=jsonEncode(listData);
+  }
 }
