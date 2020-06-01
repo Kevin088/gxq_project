@@ -621,7 +621,7 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin{
           currentTime=Utils.getTime();
           var chartBean=ChartBean(x:Utils.formatXvalue(count),
               y:Utils.formatDouble(currentTemperature),
-          millisSeconds: DateTime.now().millisecond);
+          millisSeconds: DateTime.now().millisecondsSinceEpoch);
           listData.add(chartBean);
 
           if(minTemp>double.parse(currentTemperature)){
@@ -672,7 +672,7 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin{
     String userId= prefs.getString(ParamName.SP_USER_ID);
     var uuid = Uuid();
     String id=uuid.v1();
-    String createTime=listData[0]?.millisSeconds?.toString();
+    int createTime=listData[0]?.millisSeconds;
     String tempType=tabButton.toString();
     String isUpload="0";
     String deviceId=prefs.getString(ParamName.DEVICE_ID);

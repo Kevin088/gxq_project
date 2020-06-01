@@ -41,7 +41,7 @@ class DatabaseHelper {
   void _onCreate(Database db, int version) async {
     await db.execute(
         "create table $tableName($columnId text not null primary key,"
-            "$columnCreateTime text   ,"
+            "$columnCreateTime INTEGER   ,"
             "$columnTempType text   ,"
             "$columnUserId text   ,"
             "$columnIsUpload text   ,"

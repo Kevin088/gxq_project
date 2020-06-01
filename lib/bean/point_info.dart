@@ -1,6 +1,6 @@
 class PointInfo{
   String id;       //uuid
-  String createTime; //创建时间
+  int createTime; //创建时间
   String tempType;//温度类型
   String userId;  //用户id
   String isUpload;//是否同步到服务器了  后端不需要
