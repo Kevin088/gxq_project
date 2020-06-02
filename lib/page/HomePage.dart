@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_blue/flutter_blue.dart';
 import 'package:flutter_qrscaner/flutter_qrscaner.dart';
+import 'package:gxq_project/bean/banner_info.dart';
 import 'package:gxq_project/bean/point_info.dart';
 import 'package:gxq_project/common/api.dart';
 import 'package:gxq_project/common/param_name.dart';
@@ -72,7 +73,8 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin{
 
   String blueToothId="";
   String blueToothName="设备连接中...";
-
+  //banner
+  List<String> _imgData =List<String>();
   @override
   void initState() {
     // TODO: implement initState
@@ -256,7 +258,7 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin{
                 ),
                 Container(
                   height: 100,
-                  child: getBanner(),
+                  child: _imgData.length>0?getBanner():Container(),
                 ),
                 Container(
                   margin: EdgeInsets.fromLTRB(20, 30, 20, 0),
@@ -409,10 +411,7 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin{
   }
 
   Widget getBanner() {
-    final List<String> _imgData = [
-      "https://oss1.iqihang.com/oss/img/2020/05/08/1588929308153141481.png",
-      "https://oss1.iqihang.com/oss/img/2020/05/09/1588986214650157754.png",
-    ];
+
 
     return CustomBanner(_imgData);
   }
@@ -674,7 +673,15 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin{
     if(!mounted){
       return;
     }
-    print(response?.data.toString());
+    var data=response?.data;
+    var list=data["data"];
+    List<BannerInfo>listBanner=BannerInfo.fromMapList(list);
+    listBanner?.forEach((element){
+       _imgData.add(element.url);
+    });
+    setState(() {
+
+    });
   }
 
   @override
