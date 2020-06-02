@@ -342,7 +342,6 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin{
   //设置
   void setting() {
     if(!isCaiJing){
-
       showDialog(
           context: context,
           barrierDismissible: true,
@@ -370,8 +369,6 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin{
               ],
             );
           });
-
-
     }else{
       showDialog(
           context: context,
@@ -382,20 +379,27 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin{
               actions: <Widget>[
                 FlatButton(
                     onPressed: () {
+                      Navigator.of(context).pop();
                       cancelTimer();
-
                       setState(() {
 
                       });
-                      Navigator.of(context).pop();
                       _saveData(listData);
                     },
-                    child: Text('确定')),
+                    child: Padding(
+                      child: Text('确定'),
+                      padding: EdgeInsets.all(4),
+                    )
+                ),
                 FlatButton(
                     onPressed: () {
                       Navigator.of(context).pop();
                     },
-                    child: Text('取消')),
+                    child:Padding(
+                      child:  Text('取消'),
+                      padding: EdgeInsets.all(4),
+                    )
+                ),
               ],
             );
           });
@@ -699,11 +703,19 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin{
     String blueToothName=this.blueToothName;
     String tempValueMax=maxTemp.toString();
     String tempValueMin=minTemp.toString();
-    String tempValueAverage=(allTem/count).toString();
+    String tempValueAverage=(allTem/count).toStringAsFixed(2);
     String detailInfo=jsonEncode(listData);
+
+    int lowValue=prefs.getInt(ParamName.SP_LOW_TEMP)??34;
+    int hightValue=prefs.getInt(ParamName.SP_HIGH_TEMP)??40;
+    int status=0;
+    if(hightValue<maxTemp||lowValue>minTemp){
+      status=1;
+    }
     var pointInfo=PointInfo();
     pointInfo.id=id;
     pointInfo.createTime=createTime;
+    pointInfo.userId=userId;
     pointInfo.tempType=tempType;
     pointInfo.isUpload=isUpload;
     pointInfo.deviceId=deviceId;
@@ -713,7 +725,7 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin{
     pointInfo.tempValueMin=tempValueMin;
     pointInfo.tempValueAverage=tempValueAverage;
     pointInfo.detailInfo=detailInfo;
-
+    pointInfo.status=status;
     DatabaseHelper().saveItem(pointInfo);
   }
 }

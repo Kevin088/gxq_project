@@ -16,7 +16,7 @@ class DatabaseHelper {
   final String columnTempValueMax = "tempValueMax";
   final String columnTempValueMin = "tempValueMin";
   final String columnTempValueAverage = "tempValueAverage";
-  final String columnTempStatus = "tempValueStatus";
+  final String columnTempStatus = "status";
   final String columnDetailInfo = "detailInfo";
 
   static Database _db;
@@ -69,7 +69,7 @@ class DatabaseHelper {
   //查询
   Future<List> getTotalList() async {
     var dbClient = await db;
-    var result = await dbClient.rawQuery("SELECT * FROM $tableName ");
+    var result = await dbClient.rawQuery("SELECT * FROM $tableName WHERE $columnTempType=0");
     return result.toList();
   }
 

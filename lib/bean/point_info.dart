@@ -11,6 +11,7 @@ class PointInfo{
   String tempValueMin;//最小温度值
   String tempValueAverage;//平均温度
   String detailInfo;//json串 存放 x y坐标点
+  int status;//状态 0 正常 1 警报 2 中断
 
   Map<String, dynamic> toMap() {
     var map = new Map<String, dynamic>();
@@ -26,6 +27,7 @@ class PointInfo{
     map['tempValueMin'] = tempValueMin;
     map['tempValueAverage'] = tempValueAverage;
     map['detailInfo'] = detailInfo;
+    map['status'] = status;
     return map;
   }
 
@@ -43,6 +45,7 @@ class PointInfo{
     pointInfo.tempValueMin = map['tempValueMin'];
     pointInfo.tempValueAverage = map['tempValueAverage'];
     pointInfo.detailInfo = map['detailInfo'];
+    pointInfo.status = map['status'];
     return pointInfo;
   }
 

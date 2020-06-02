@@ -1,5 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:gxq_project/bean/point_info.dart';
+import 'package:gxq_project/db/database_helper.dart';
 import 'package:gxq_project/page/TemperatureDetailPage.dart';
 import 'package:gxq_project/res/Colors.dart';
 import 'package:gxq_project/res/style.dart';
@@ -15,8 +17,31 @@ class SecondPage extends StatefulWidget {
 }
 
 class SecondPageState extends State<SecondPage> {
-  List<String> _list = List.generate(10, (i) => '原始数据${i + 1}');
+
+
+  var mList=List<PointInfo>();
   bool isLoading = false;
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    initData();
+  }
+
+  void initData(){
+    DatabaseHelper().getTotalList().then((value){
+      mList.clear();
+      mList.addAll(PointInfo.fromMapList(value));
+       setState(() {
+
+       });
+
+    });
+
+
+
+
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -124,32 +149,32 @@ class SecondPageState extends State<SecondPage> {
     );
   }
 
-  Widget getListView() {
-    return Expanded(
-        child: NotificationListener<ScrollNotification>(
-      onNotification: (ScrollNotification scrollNotification) {
-        if (scrollNotification.metrics.pixels >=
-            scrollNotification.metrics.maxScrollExtent) {
-          _loadMore();
-        }
-        return false;
-      },
-      child: RefreshIndicator(
-        child: ListView.builder(
-          itemBuilder: (context, index) {
-            if (index < _list.length) {
-              return getItemView(index);
-            } else {
-              // 最后一项，显示加载更多布局
-              return _buildLoadMoreItem();
-            }
-          },
-          itemCount: _list.length + 1,
-        ),
-        onRefresh: _handleRefresh,
-      ),
-    ));
-  }
+//  Widget getListView() {
+//    return Expanded(
+//        child: NotificationListener<ScrollNotification>(
+//      onNotification: (ScrollNotification scrollNotification) {
+//        if (scrollNotification.metrics.pixels >=
+//            scrollNotification.metrics.maxScrollExtent) {
+//          //_loadMore();
+//        }
+//        return false;
+//      },
+//      child: RefreshIndicator(
+//        child: ListView.builder(
+//          itemBuilder: (context, index) {
+//            if (index < mList.length) {
+//              return getItemView(index);
+//            } else {
+//              // 最后一项，显示加载更多布局
+//              return _buildLoadMoreItem();
+//            }
+//          },
+//          itemCount: mList.length + 1,
+//        ),
+//        //onRefresh: _handleRefresh,
+//      ),
+//    ));
+//  }
 
   Widget getListView1() {
     return Expanded(
@@ -158,14 +183,9 @@ class SecondPageState extends State<SecondPage> {
             removeTop: true,
             child: ListView.builder(
               itemBuilder: (context, index) {
-                if (index < _list.length) {
-                  return getItemView(index);
-                } else {
-                  // 最后一项，显示加载更多布局
-                  return _buildLoadMoreItem();
-                }
+                return getItemView(index);
               },
-              itemCount: _list.length,
+              itemCount: mList.length,
             )));
   }
 
@@ -180,39 +200,52 @@ class SecondPageState extends State<SecondPage> {
   }
 
   // 下拉刷新方法
-  Future<Null> _handleRefresh() async {
-    // 模拟数据的延迟加载
-    await Future.delayed(Duration(seconds: 2), () {
-      setState(() {
-        // 在列表开头添加几条数据
-        List<String> _refreshData = List.generate(5, (i) => '下拉刷新数据${i + 1}');
-        _list.insertAll(0, _refreshData);
-      });
-    });
-  }
+//  Future<Null> _handleRefresh() async {
+//    // 模拟数据的延迟加载
+//    await Future.delayed(Duration(seconds: 2), () {
+//      setState(() {
+//        // 在列表开头添加几条数据
+//        List<String> _refreshData = List.generate(5, (i) => '下拉刷新数据${i + 1}');
+//        _list.insertAll(0, _refreshData);
+//      });
+//    });
+//  }
 
   // 上拉加载
-  Future<Null> _loadMore() async {
-    if (!isLoading) {
-      setState(() {
-        isLoading = true;
-      });
-      // 模拟数据的延迟加载
-      await Future.delayed(Duration(seconds: 2), () {
-        setState(() {
-          isLoading = false;
-          List<String> _loadMoreData =
-              List.generate(5, (i) => '上拉加载数据${i + 1}');
-          _list.addAll(_loadMoreData);
-        });
-      });
-    }
-  }
+//  Future<Null> _loadMore() async {
+//    if (!isLoading) {
+//      setState(() {
+//        isLoading = true;
+//      });
+//      // 模拟数据的延迟加载
+//      await Future.delayed(Duration(seconds: 2), () {
+//        setState(() {
+//          isLoading = false;
+//          List<String> _loadMoreData =
+//              List.generate(5, (i) => '上拉加载数据${i + 1}');
+//          _list.addAll(_loadMoreData);
+//        });
+//      });
+//    }
+//  }
 
   Widget getItemView(int index) {
+    var pointInfo=mList[index];
+    var title;
+    var temp;
+    if(pointInfo.status==0){
+      var title="体温正常";
+      temp=pointInfo.tempValueAverage;
+    } else if(pointInfo.status==2){
+      title="体温中断";
+      temp=pointInfo.tempValueAverage;
+    }else if(pointInfo.status==1){
+      title="体温报警";
+      temp=pointInfo.tempValueMax;
+    }
     return GestureDetector(
       onTap: () {
-        Navigator.push(context, CustomRoute(TemperatureDetailPage()));
+        Navigator.push(context, CustomRoute(TemperatureDetailPage(pointInfo: pointInfo)));
       },
       child: Container(
         decoration: BoxDecoration(
@@ -227,7 +260,7 @@ class SecondPageState extends State<SecondPage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 Text(
-                  "体温正常",
+                  title,
                   style: TextStyle(
                       color: MyColors.color_444444,
                       fontSize: 16,
@@ -235,14 +268,14 @@ class SecondPageState extends State<SecondPage> {
                 ),
                 SizedBox(height: 10.0),
                 Text(
-                  "2019/12/31 13:00:00",
+                  Utils.formatTime(pointInfo.createTime),
                   style: TextStyle(
                     color: MyColors.gray_999999,
                     fontSize: 12,
                   ),
                 ),
                 Text(
-                  "KHO温度",
+                  pointInfo.blueToothName,
                   style: TextStyle(
                     color: MyColors.gray_999999,
                     fontSize: 12,
@@ -254,7 +287,7 @@ class SecondPageState extends State<SecondPage> {
               child: Container(),
             ),
             Text(
-              "37.5",
+              temp,
               style: TextStyle(color: MyColors.color_3464BA, fontSize: 20),
             ),
             Container(

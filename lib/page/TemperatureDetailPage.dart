@@ -1,13 +1,18 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:gxq_project/bean/point_info.dart';
 import 'package:gxq_project/res/Colors.dart';
 import 'package:gxq_project/utils/Utils.dart';
 import 'package:gxq_project/widget/line/chart_bean.dart';
 import 'package:gxq_project/widget/line/chart_line.dart';
 
 class TemperatureDetailPage extends StatefulWidget {
+  PointInfo pointInfo;
+  TemperatureDetailPage({Key key, @required this.pointInfo})
+      : super(key: key);
   @override
   State<StatefulWidget> createState() {
     // TODO: implement createState
@@ -16,9 +21,37 @@ class TemperatureDetailPage extends StatefulWidget {
 }
 
 class TemperatureDetailState extends State<TemperatureDetailPage> {
+
+  List<ChartBean>listData=List();
+  var startTime;
+  var endTime;
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    var list=jsonDecode(widget.pointInfo?.detailInfo);
+    listData.addAll(ChartBean.fromMapList(list));
+
+  }
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
+    var title;
+    var temp;
+    if(widget.pointInfo.status==0){
+      var title="体温正常";
+      temp=widget.pointInfo.tempValueAverage;
+    } else if(widget.pointInfo.status==2){
+      title="体温中断";
+      temp=widget.pointInfo.tempValueAverage;
+    }else if(widget.pointInfo.status==1){
+      title="体温报警";
+      temp=widget.pointInfo.tempValueMax;
+    }
+
+    if(listData.length>0){
+      startTime=Utils.formatTime(listData[0]?.millisSeconds);
+      endTime=Utils.formatTime(listData[listData.length-1]?.millisSeconds);
+    }
     return Scaffold(
         body: Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -46,7 +79,7 @@ class TemperatureDetailState extends State<TemperatureDetailPage> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
                         Text(
-                          "体温警报",
+                          title,
                           style: TextStyle(
                               color: Colors.white,
                               fontSize: 22,
@@ -56,7 +89,7 @@ class TemperatureDetailState extends State<TemperatureDetailPage> {
                           height: 10,
                         ),
                         Text(
-                          "40.5℃",
+                          "$temp℃",
                           style: TextStyle(
                               color: Colors.white,
                               fontSize: 48,
@@ -66,7 +99,7 @@ class TemperatureDetailState extends State<TemperatureDetailPage> {
                           height: 10,
                         ),
                         Text(
-                          "2019/12/31 13:00:00 ",
+                          Utils.formatTime(widget.pointInfo.createTime),
                           style: TextStyle(
                             color: Colors.white,
                             fontSize: 16,
@@ -97,7 +130,7 @@ class TemperatureDetailState extends State<TemperatureDetailPage> {
                               width: 6,
                             ),
                             Text(
-                              "36.9",
+                              widget.pointInfo.tempValueMin,
                               style: TextStyle(
                                 color: Colors.white,
                                 fontSize: 24,
@@ -147,7 +180,7 @@ class TemperatureDetailState extends State<TemperatureDetailPage> {
                               width: 6,
                             ),
                             Text(
-                              "36.9",
+                              widget.pointInfo.tempValueMax,
                               style: TextStyle(
                                 color: Colors.white,
                                 fontSize: 24,
@@ -243,7 +276,7 @@ class TemperatureDetailState extends State<TemperatureDetailPage> {
                 height: 6,
               ),
               Text(
-                "2019-12-31 09:37:55 ",
+                startTime,
                 style: TextStyle(color: MyColors.color_444444, fontSize: 16),
               ),
               Expanded(
@@ -257,7 +290,7 @@ class TemperatureDetailState extends State<TemperatureDetailPage> {
                 height: 6,
               ),
               Text(
-                "2019-12-31 09:37:55 ",
+                endTime,
                 style: TextStyle(color: MyColors.color_444444, fontSize: 16),
               ),
             ],
@@ -270,22 +303,7 @@ class TemperatureDetailState extends State<TemperatureDetailPage> {
   ///curve
   Widget getLineView(context) {
     var chartLine = ChartLine(
-      chartBeans: [
-        ChartBean(x: '12-01', y: 30),
-        ChartBean(x: '12-02', y: 88),
-        ChartBean(x: '12-03', y: 20),
-        ChartBean(x: '12-04', y: 67),
-        ChartBean(x: '12-05', y: 10),
-        ChartBean(x: '12-06', y: 40),
-        ChartBean(x: '12-07', y: 10),
-        ChartBean(x: '12-08', y: 30),
-        ChartBean(x: '12-09', y: 88),
-        ChartBean(x: '12-10', y: 20),
-        ChartBean(x: '12-11', y: 67),
-        ChartBean(x: '12-12', y: 10),
-        ChartBean(x: '12-13', y: 40),
-        ChartBean(x: '12-14', y: 10),
-      ],
+      chartBeans: listData,
       size: Size(MediaQuery.of(context).size.width, 180),
       isCurve: true,
       lineWidth: 2,
@@ -297,7 +315,6 @@ class TemperatureDetailState extends State<TemperatureDetailPage> {
         Colors.blueAccent.withOpacity(0.1)
       ],
       fontSize: 12,
-      yNum: 8,
       isAnimation: true,
       isReverse: false,
       isCanTouch: true,

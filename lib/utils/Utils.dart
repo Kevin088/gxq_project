@@ -40,6 +40,9 @@ class Utils{
   static String getTime(){
     return formatDate(DateTime.now(), [yyyy, "-", mm, "-", dd, " "," ", HH, ":", nn, ":", ss]);
   }
+  static String formatTime(int time){
+    return formatDate(DateTime.fromMillisecondsSinceEpoch(time), [yyyy, "-", mm, "-", dd, " "," ", HH, ":", nn, ":", ss]);
+  }
   static String formatXvalue(int time){
     time++;
     time=time*10;

@@ -1,6 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:gxq_project/common/param_name.dart';
 import 'package:gxq_project/res/Colors.dart';
+import 'package:gxq_project/utils/Toast.dart';
+import 'package:rammus/rammus.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 typedef DateChangedCallback(double time);
 typedef String StringAtIndexCallBack(int index);
@@ -22,12 +26,11 @@ class TemperatureSetPageState extends State<TemperatureSetPage> {
   int rightSelect=0;
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
-    for(double i=42.0;i>35.0;i-=0.1){
-      dataList.add(i.toStringAsFixed(1));
-      widegets1.add(Text(i.toStringAsFixed(1),style: const TextStyle(color: MyColors.color_00286B, fontSize: 18),));
-      widegets2.add(Text(i.toStringAsFixed(1),style: const TextStyle(color: Color(0xFF000046), fontSize: 18),));
+    for(int i=40;i>=34;i-=1){
+      dataList.add(i.toString());
+      widegets1.add(Text(i.toString(),style: const TextStyle(color: MyColors.color_00286B, fontSize: 18),));
+      widegets2.add(Text(i.toString(),style: const TextStyle(color: Color(0xFF000046), fontSize: 18),));
     }
   }
 
@@ -98,8 +101,17 @@ class TemperatureSetPageState extends State<TemperatureSetPage> {
                 color: MyColors.color_00286B ,
                 textColor: Colors.white ,
 
-                onPressed: (){
-
+                onPressed: () async {
+                  int leftValue=int.parse(dataList[leftSelect]);
+                  int rightValue=int.parse(dataList[rightSelect]);
+                  if(leftValue>=rightValue){
+                    Toast.toast(context,msg: "温度设置错误");
+                  }else{
+                    var prefs = await SharedPreferences.getInstance();
+                    prefs.setInt(ParamName.SP_LOW_TEMP,leftValue);
+                    prefs.setInt(ParamName.SP_HIGH_TEMP,rightValue);
+                    Navigator.pop(context);
+                  }
                   print(dataList[leftSelect]+"========"+dataList[rightSelect]);
                 },
                 shape: RoundedRectangleBorder(
