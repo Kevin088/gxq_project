@@ -12,9 +12,11 @@ import 'package:gxq_project/common/api.dart';
 import 'package:gxq_project/common/param_name.dart';
 import 'package:gxq_project/db/database_helper.dart';
 import 'package:gxq_project/http/httpUtil.dart';
+import 'package:gxq_project/page/test/LearnDropdownButton.dart';
 import 'package:gxq_project/res/Colors.dart';
 import 'package:gxq_project/utils/Toast.dart';
 import 'package:gxq_project/utils/Utils.dart';
+import 'package:gxq_project/widget/CustomRoute.dart';
 import 'package:gxq_project/widget/banner/widget_banner.dart';
 import 'package:gxq_project/widget/line/chart_bean.dart';
 import 'package:gxq_project/widget/line/chart_line.dart';
@@ -22,7 +24,9 @@ import 'package:rammus/rammus.dart' as rammus; //导包
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
 
+import 'TemperatureSetPage.dart';
 import 'mine/AboutPage.dart';
+import 'mine/CommonQuestionPage.dart';
 import 'mine/SetPage.dart';
 
 
@@ -239,7 +243,10 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin{
                         child: Container(
                           width: 50,
                           child: FlatButton(
-                            onPressed: setting,
+                            onPressed: (){
+                              Navigator.push(context, CustomRoute(TemperatureSetPage()));
+
+                            },
                             child: Image.asset(Utils.getImgPath2("ic_setting")),
                           ),
                         ),
@@ -311,8 +318,8 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin{
 
                           },
                           child:getHelpButton((){
-                            //Navigator.push(context, CustomRoute(LearnDropdownButton()));
-                            bluetoothCharacteristic.write([0xFB, 0x03, 0x00, 0x00]);
+                            Navigator.push(context, CustomRoute(CommonQuestionPage()));
+                            //bluetoothCharacteristic.write([0xFB, 0x03, 0x00, 0x00]);
                           })
                       ),
                     )
@@ -348,12 +355,18 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin{
                       timeStart();
                       Navigator.of(context).pop();
                     },
-                    child: Text('确定')),
+                    child: Padding(
+                    child: Text('确认'),
+            padding: EdgeInsets.fromLTRB(5,3,3,5),
+            )),
                 FlatButton(
                     onPressed: () {
                       Navigator.of(context).pop();
                     },
-                    child: Text('取消')),
+                    child: Padding(
+                        child: Text('取消'),
+                        padding: EdgeInsets.fromLTRB(5,3,3,5),
+                    )),
               ],
             );
           });
@@ -444,7 +457,13 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin{
               ),
               Align(
                 alignment: FractionalOffset.centerRight,
-                child: Image.asset(Utils.getImgPath2("ic_wenduji")),
+                child: GestureDetector(
+                    child:Padding(
+                      child:  Image.asset(Utils.getImgPath2("ic_wenduji")),
+                      padding: EdgeInsets.fromLTRB(5,3,3,5),
+                    ),
+                  onTap: setting,
+                ),
               ),
             ],
           )

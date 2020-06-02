@@ -16,6 +16,7 @@ class DatabaseHelper {
   final String columnTempValueMax = "tempValueMax";
   final String columnTempValueMin = "tempValueMin";
   final String columnTempValueAverage = "tempValueAverage";
+  final String columnTempStatus = "tempValueStatus";
   final String columnDetailInfo = "detailInfo";
 
   static Database _db;
@@ -51,6 +52,7 @@ class DatabaseHelper {
             "$columnTempValueMax text   ,"
             "$columnTempValueMin text   ,"
             "$columnTempValueAverage text   ,"
+            "$columnTempStatus INTEGER   ,"
             "$columnDetailInfo text   )");
 
     print("Table is created");
