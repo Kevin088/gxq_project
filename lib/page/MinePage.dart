@@ -93,7 +93,7 @@ class MinePageState extends State<MinePage>{
 //                      ):Image.network(img,fit: BoxFit.fill),
                   new ClipRRect(
                     borderRadius: BorderRadius.circular(30.0),
-                    child:img==""? new Image.asset(Utils.getImgPath2('ic_avatar')):
+                    child:!isLogin? new Image.asset(Utils.getImgPath2('ic_avatar')):
                     Image.network(img,fit: BoxFit.fill,width: 66,height: 66,),
                   ),
                   Container(

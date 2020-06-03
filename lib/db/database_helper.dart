@@ -10,8 +10,8 @@ class DatabaseHelper {
   final String columnTempType = "tempType";
   final String columnUserId = "userId";
   final String columnIsUpload = "isUpload";
-  final String columnBlueToothId = "blueToothId";
-  final String columnBlueToothName = "blueToothName";
+  final String columnBlueToothId = "bluetoothId";
+  final String columnBlueToothName = "bluetoothName";
   final String columnDeviceId = "deviceId";
   final String columnTempValueMax = "tempValueMax";
   final String columnTempValueMin = "tempValueMin";
@@ -66,10 +66,16 @@ class DatabaseHelper {
     return res;
   }
 
-  //查询
+  //查询 体温数据
   Future<List> getTotalList() async {
     var dbClient = await db;
-    var result = await dbClient.rawQuery("SELECT * FROM $tableName WHERE $columnTempType=0");
+    var result = await dbClient.rawQuery("SELECT * FROM $tableName WHERE $columnTempType='0'");
+    return result.toList();
+  }
+
+  Future<List> getUnuploadList() async {
+    var dbClient = await db;
+    var result = await dbClient.rawQuery("SELECT * FROM $tableName WHERE $columnIsUpload='0'");
     return result.toList();
   }
 

@@ -22,6 +22,13 @@ class HttpUtil {
    * config it and create
    */
   HttpUtil()  {
+    init();
+    getToken().then((value) {
+      token=value;
+      init();
+    });
+  }
+  void init(){
     //BaseOptions、Options、RequestOptions 都可以配置参数，优先级别依次递增，且可以根据优先级别覆盖参数
     options = BaseOptions(
       //请求基地址,可以包含子路径
@@ -52,7 +59,7 @@ class HttpUtil {
     (dio.httpClientAdapter as DefaultHttpClientAdapter).onHttpClientCreate = (client){
       client.findProxy = (url){
         //设置代理 电脑ip地址
-        return "PROXY 192.168.8.102:8888";
+        return "PROXY 192.168.100.72:8888";
         //不设置代理
         //return 'DIRECT';
       };
@@ -76,11 +83,11 @@ class HttpUtil {
       // Do something with response error
       return e; //continue
     }));
-    getToken();
   }
-  Future<void> getToken() async {
+
+  Future<String> getToken() async {
     final prefs = await SharedPreferences.getInstance();
-    token==prefs.getString(ParamName.SP_USER_TOKEN)??"11";
+    return prefs.getString(ParamName.SP_USER_TOKEN)??"11";
   }
   /*
    * get请求
@@ -177,5 +184,6 @@ class HttpUtil {
 
   void setToken(String token){
     this.token=token;
+    init();
   }
 }

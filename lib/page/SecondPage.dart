@@ -275,7 +275,7 @@ class SecondPageState extends State<SecondPage> {
                   ),
                 ),
                 Text(
-                  pointInfo.blueToothName,
+                  pointInfo.bluetoothName,
                   style: TextStyle(
                     color: MyColors.gray_999999,
                     fontSize: 12,

@@ -722,12 +722,12 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin{
     var pointInfo=PointInfo();
     pointInfo.id=id;
     pointInfo.createTime=createTime;
-    pointInfo.userId=userId;
+    pointInfo.userId=userId??"0";
     pointInfo.tempType=tempType;
     pointInfo.isUpload=isUpload;
-    pointInfo.deviceId=deviceId;
-    pointInfo.blueToothId=blueToothId;
-    pointInfo.blueToothName=blueToothName;
+    pointInfo.deviceId=deviceId??"0";
+    pointInfo.bluetoothId=blueToothId;
+    pointInfo.bluetoothName=blueToothName;
     pointInfo.tempValueMax=tempValueMax;
     pointInfo.tempValueMin=tempValueMin;
     pointInfo.tempValueAverage=tempValueAverage;

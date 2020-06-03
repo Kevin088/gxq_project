@@ -1,7 +1,13 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:gxq_project/common/api.dart';
+import 'package:gxq_project/common/param_name.dart';
+import 'package:gxq_project/db/database_helper.dart';
+import 'package:gxq_project/http/httpUtil.dart';
 import 'package:gxq_project/page/HomePage.dart';
 import 'package:gxq_project/page/MinePage.dart';
 import 'package:gxq_project/page/SecondPage.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class BottomNavigationWidget extends StatefulWidget {
   @override
@@ -21,6 +27,23 @@ class BottomNavigationWidgetState extends State<BottomNavigationWidget> {
       ..add(HomePage())
       ..add(SecondPage())
         ..add(MinePage());
+    initData();
+  }
+  Future<void> initData() async {
+    //下载
+    var prefs = await SharedPreferences.getInstance();
+    if (!mounted) return;
+    String deviceId=prefs.getString(ParamName.DEVICE_ID);
+    Response response= await HttpUtil.getInstance().post(Api.getList+deviceId);
+    //上传
+    DatabaseHelper().getUnuploadList().then((value) async {
+      if(value.length>0){
+        Response response=await HttpUtil.getInstance().post(Api.upload,data: value);
+
+
+
+      }
+    });
   }
   var _pageController = PageController();
   @override

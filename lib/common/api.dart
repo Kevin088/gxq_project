@@ -7,5 +7,9 @@ class Api {
 
   static const String LOGIN = "api/user/login";
 
+  static const String upload = "api/user/records";
+
+  static const String getList = "api/user/feed/";
+
 
 }
