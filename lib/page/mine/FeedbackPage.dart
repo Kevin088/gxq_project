@@ -36,85 +36,87 @@ class FeedbackPageState extends State<FeedbackPage>{
     loading= LoadingDialog(buildContext: context);
     // TODO: implement build
     return Scaffold(
-      body: Column(
-        crossAxisAlignment : CrossAxisAlignment.center,
-        children: <Widget>[
-          Container(
-            margin: EdgeInsets.fromLTRB(20, 30, 0, 0),
-            child: Row(
-              children: <Widget>[
-                GestureDetector(
-                  child: Image.asset(Utils.getImgPath2("ic_back")),
-                  onTap: (){
-                    Navigator.pop(context);
-                  },
-                ),
-              ],
-            )
-          ),
-          Container(
-            margin: EdgeInsets.fromLTRB(20, 20, 0, 0),
-            child: Row(
-              children: <Widget>[
-                Text(
-                  "意见反馈",
-                  style: TextStyle(
-                      fontSize: 28,
-                      color: Color.fromARGB(255, 0, 0, 0)
-                  ),
+      body: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment : CrossAxisAlignment.center,
+          children: <Widget>[
+            Container(
+                margin: EdgeInsets.fromLTRB(20, 30, 0, 0),
+                child: Row(
+                  children: <Widget>[
+                    GestureDetector(
+                      child: Image.asset(Utils.getImgPath2("ic_back")),
+                      onTap: (){
+                        Navigator.pop(context);
+                      },
+                    ),
+                  ],
                 )
-              ],
             ),
-          ),
-          Container(
-            height: 10,
-            margin: EdgeInsets.fromLTRB(0, 20, 0, 0),
-            color: Color.fromARGB(255, 238, 238, 238),
-          ),
-          buildTextField(controller),
-          Container(
-            margin: EdgeInsets.fromLTRB(20, 60, 20, 0),
-            child: FlatButton(
+            Container(
+              margin: EdgeInsets.fromLTRB(20, 20, 0, 0),
+              child: Row(
+                children: <Widget>[
+                  Text(
+                    "意见反馈",
+                    style: TextStyle(
+                        fontSize: 28,
+                        color: Color.fromARGB(255, 0, 0, 0)
+                    ),
+                  )
+                ],
+              ),
+            ),
+            Container(
+              height: 10,
+              margin: EdgeInsets.fromLTRB(0, 20, 0, 0),
+              color: Color.fromARGB(255, 238, 238, 238),
+            ),
+            buildTextField(controller),
+            Container(
+              margin: EdgeInsets.fromLTRB(20, 60, 20, 0),
+              child: FlatButton(
 
-              onPressed: () async {
-                if(text.isEmpty){
-                  Toast.toast(context,msg: "请输入内容");
-                  return;
-                }
-                loading?.show();
-                Response response=await HttpUtil.getInstance()
-                    .post(Api.yijianfankui,data: {"remark":text});
-                if (!mounted) return;
-                loading?.hide();
-                Toast.toast(context,msg: "提交成功");
-                Navigator.pop(context);
-              },
-              child: Container(
-                margin:  EdgeInsets.fromLTRB(20,0,20,0),
-                height: 50,
-                alignment: const Alignment(0,0),
-                child: Text(
-                  "提交",
-                  style: TextStyle(
-                      fontSize: 16,
-                      color: MyColors.color_888888
+                onPressed: () async {
+                  if(text.isEmpty){
+                    Toast.toast(context,msg: "请输入内容");
+                    return;
+                  }
+                  loading?.show();
+                  Response response=await HttpUtil.getInstance()
+                      .post(Api.yijianfankui,data: {"remark":text});
+                  if (!mounted) return;
+                  loading?.hide();
+                  Toast.toast(context,msg: "提交成功");
+                  Navigator.pop(context);
+                },
+                child: Container(
+                  margin:  EdgeInsets.fromLTRB(20,0,20,0),
+                  height: 50,
+                  alignment: const Alignment(0,0),
+                  child: Text(
+                    "提交",
+                    style: TextStyle(
+                        fontSize: 16,
+                        color: MyColors.color_888888
+                    ),
+                  ),
+                ),
+                color: MyColors.color_00286B,
+
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(30)),
+                  side: BorderSide(
+                    color: Color.fromARGB(255, 211, 211, 211),
+                    width: 1,
                   ),
                 ),
               ),
-              color: MyColors.color_00286B,
+            )
 
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.all(Radius.circular(30)),
-                side: BorderSide(
-                  color: Color.fromARGB(255, 211, 211, 211),
-                  width: 1,
-                ),
-              ),
-            ),
-          )
-
-        ],
-      ),
+          ],
+        ),
+      )
     );
   }
 

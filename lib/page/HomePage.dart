@@ -17,9 +17,11 @@ import 'package:gxq_project/res/Colors.dart';
 import 'package:gxq_project/utils/Toast.dart';
 import 'package:gxq_project/utils/Utils.dart';
 import 'package:gxq_project/widget/CustomRoute.dart';
+import 'package:gxq_project/widget/PopupWindow.dart';
 import 'package:gxq_project/widget/banner/widget_banner.dart';
 import 'package:gxq_project/widget/line/chart_bean.dart';
 import 'package:gxq_project/widget/line/chart_line.dart';
+import 'package:popup_window/popup_window.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
@@ -27,6 +29,7 @@ import 'package:uuid/uuid.dart';
 import 'TemperatureSetPage.dart';
 import 'mine/AboutPage.dart';
 import 'mine/CommonQuestionPage.dart';
+import 'mine/LoginPage.dart';
 import 'mine/SetPage.dart';
 
 
@@ -39,6 +42,7 @@ class HomePage extends StatefulWidget {
 }
 
 class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin{
+  //当前温度按钮
   int tabButton = 0;
 
 
@@ -77,7 +81,7 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin{
     // TODO: implement initState
     super.initState();
 
-
+    listData.add(ChartBean(x:"0:00",y: 0,millisSeconds: 0));
 
     //蓝牙=====================================
 
@@ -90,7 +94,10 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin{
     flutterBlue.scanResults.listen((results) async {
       // do something with scan results
       for (ScanResult r in results) {
-        devicelist.add(r.device);
+        if(r.device.name!=null&&r.device.name!=""){
+          devicelist.add(r.device);
+        }
+
         if(r.device.name.contains("Rdf")&&bluetoothDevice==null){
           bluetoothDevice=r.device;
           print('${r.device.name} found! rssi: ${r.rssi}');
@@ -99,9 +106,12 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin{
           await r.device.connect();
           print("已连接======= -=============>");
           blueToothId=r.device.id.id;
-          setState(() {
-            blueToothName=r.device.name;
-          });
+          if(r.device.name!=null&&r.device.name!=""){
+            setState(() {
+              blueToothName=r.device.name;
+            });
+          }
+
           List<BluetoothService> services = await r.device.discoverServices();
           services.forEach((service) {
             var characteristics = service.characteristics;
@@ -187,7 +197,7 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin{
                           flex: 1,
                           child: Container(
                             alignment: Alignment.center,
-                            child: getDropDownMenu(),
+                            child: getTitleView(blueToothName),
                           )),
                       Container(
                         child: Container(
@@ -215,6 +225,10 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin{
                       Expanded(
                         flex: 1,
                         child: getTabButton("体温", () {
+                          if(isCaiJing){
+                            Toast.toast(context,msg: "温度正在采集");
+                            return;
+                          }
                           setState(() {
                             tabButton = 0;
                           });
@@ -223,6 +237,10 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin{
                       Expanded(
                         flex: 1,
                         child: getTabButton("室温", () {
+                          if(isCaiJing){
+                            Toast.toast(context,msg: "温度正在采集");
+                            return;
+                          }
                           setState(() {
                             tabButton = 1;
                           });
@@ -231,6 +249,10 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin{
                       Expanded(
                         flex: 1,
                         child: getTabButton("水温", () {
+                          if(isCaiJing){
+                            Toast.toast(context,msg: "温度正在采集");
+                            return;
+                          }
                           setState(() {
                             tabButton = 2;
                           });
@@ -290,8 +312,14 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin{
     });
   }
   //设置
-  void setting() {
+  Future<void> setting() async {
     if(!isCaiJing){
+      var prefs = await SharedPreferences.getInstance();
+      bool isLogin=prefs.getBool(ParamName.IS_LOGIN)??false;
+      if(!isLogin){
+        Navigator.push(context, CustomRoute(LoginPage()));
+        return;
+      }
       showDialog(
           context: context,
           barrierDismissible: true,
@@ -359,8 +387,6 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin{
   }
 
   Widget getBanner() {
-
-
     return CustomBanner(_imgData);
   }
 
@@ -489,91 +515,150 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin{
 
 
 
-  //下拉菜单
-  List<DropdownMenuItem> getListData(){
-    List<DropdownMenuItem> items=new List();
-    if(devicelist.length==0){
-      DropdownMenuItem item=new DropdownMenuItem(
-        child:Text(
-          "设备连接中...",
-          style: TextStyle(
-              fontSize: 19,
-              color: Color.fromARGB(255, 68, 68, 68)),
+//  //下拉菜单
+//  List<DropdownMenuItem> getListData(){
+//    List<DropdownMenuItem> items=new List();
+//    if(devicelist.length==0){
+//      DropdownMenuItem item=new DropdownMenuItem(
+//        child:Text(
+//          "设备连接中...",
+//          style: TextStyle(
+//              fontSize: 19,
+//              color: Color.fromARGB(255, 68, 68, 68)),
+//
+//        ),
+//        value: "设备连接中...",
+//      );
+//      items.add(item);
+//    }else{
+//      devicelist.forEach((it) {
+//        DropdownMenuItem item=new DropdownMenuItem(
+//          child:Text(
+//            it?.name,
+//            style: TextStyle(
+//                fontSize: 19,
+//                color: Color.fromARGB(255, 68, 68, 68)),
+//          ),
+//          value: bluetoothDevice?.name,
+//        );
+//        items.add(item);
+//      });
+//    }
+//    return items;
+//  }
 
-        ),
-        value: "设备连接中...",
-      );
-      items.add(item);
-    }else{
-      devicelist.forEach((it) {
-        DropdownMenuItem item=new DropdownMenuItem(
-          child:Text(
-            it?.name,
-            style: TextStyle(
-                fontSize: 19,
-                color: Color.fromARGB(255, 68, 68, 68)),
-          ),
-          value: bluetoothDevice?.name,
-        );
-        items.add(item);
-      });
-    }
-    return items;
-  }
 
-  getDropDownMenu(){
-    return
-        new DropdownButton(
-          items: getListData(),
-          hint:getTitleView(blueToothName),//当没有默认值的时候可以设置的提示
-          //value: value,//下拉菜单选择完之后显示给用户的值
-          onChanged: (T){//下拉菜单item点击之后的回调
-            setState(() {
-              value=T;
-            });
-          },
-          elevation: 24,//设置阴影的高度
-          iconSize: 0,//设置三角标icon的大小
-          isDense: true,
-          //isExpanded:true,
-          underline: Container(),
-        );
-  }
+
+//  getDropDownMenu(){
+//    return
+//        new DropdownButton(
+//          items: getListData(),
+//          hint:getTitleView(blueToothName),//当没有默认值的时候可以设置的提示
+//          //value: value,//下拉菜单选择完之后显示给用户的值
+//          onChanged: (T){//下拉菜单item点击之后的回调
+//            setState(() {
+//              value=T;
+//            });
+//          },
+//          elevation: 24,//设置阴影的高度
+//          iconSize: 0,//设置三角标icon的大小
+//          isDense: true,
+//          //isExpanded:true,
+//          underline: Container(),
+//        );
+//  }
 
   getTitleView(String name){
     return Container(
 
-      child: Row(
-        //mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-
-          Padding(
-            padding: EdgeInsets.only(right: 7),
-            child:  ClipOval(
-              child: Container(
-                width: 7,
-                height: 7,
-                color: MyColors.color_3464BA,
+      child: GestureDetector(
+        child: Row(
+          //mainAxisAlignment: MainAxisAlignment.center,
+          key: popBottomKey,
+          children: <Widget>[
+            Expanded(
+              flex: 1,
+              child: Container(),
+            ),
+            Padding(
+              padding: EdgeInsets.only(right: 7),
+              child:  ClipOval(
+                child: Container(
+                  width: 7,
+                  height: 7,
+                  color: MyColors.color_3464BA,
+                ),
               ),
             ),
-          ),
-          Text(
-            name,
-            style: TextStyle(
-                fontSize: 19,
-                color: Color.fromARGB(255, 68, 68, 68)),
-          ),
+            Text(
+              name,
+              style: TextStyle(
+                  fontSize: 19,
+                  color: Color.fromARGB(255, 68, 68, 68)),
+            ),
 
 
-          Padding(
-            padding: EdgeInsets.fromLTRB(10,5,0,0),
-            child:  Image.asset(Utils.getImgPath2("ic_arraw_down")),
-          ),
-        ],
+            Padding(
+              padding: EdgeInsets.fromLTRB(10,5,0,0),
+              child:  Image.asset(Utils.getImgPath2("ic_arraw_down")),
+            ),
+            Expanded(
+              flex: 1,
+              child: Container(),
+            ),
+          ],
+        ),
+        onTap: showPop,
       ),
     );
+  }
+  GlobalKey popBottomKey= GlobalKey();
+
+  showPop(){
+    PopupWindow.showPopWindow(context, "bottom",
+        popBottomKey, PopDirection.bottom, getPopWindowList(), 0);
+  }
+
+  Widget getPopWindowList(){
+    if(devicelist.length==0){
+      return Container(
+        color: MyColors.color_bg_pop,
+        padding: EdgeInsets.fromLTRB(20, 0, 20, 0),
+        height: 100,
+        child: Text(
+          "设备连接中...",
+          style: TextStyle(
+              fontSize: 19,
+              color: Color.fromARGB(255, 68, 68, 68)),
+        ),
+      );
+    }else{
+      return Container(
+        color: Colors.white,
+        height: 100,
+        child: ListView.builder(
+          itemBuilder: (context, index) {
+            return GestureDetector(
+                child: Text(
+                  devicelist[index].name,
+                  style: TextStyle(
+                      fontSize: 19,
+                      color: Color.fromARGB(255, 68, 68, 68)),
+                ),
+                onTap:(){
+                  // var ss=devicelist[index].name;
+                }
+            );
+          },
+          itemCount: devicelist.length,
+        ),
+      );
+    }
 
   }
+
+
+
 
   Timer _timer;
   int count;
@@ -581,31 +666,32 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin{
     isCaiJing=true;
     count=0;
     const period = const Duration(seconds: 2);
-
+    runnable();
     Timer.periodic(period, (timer) async {
       _timer=timer;
       print("timer========");
-
-      if(currentTemperature!="0"){
-         setState(() {
-          currentTime=Utils.getTime();
-          var chartBean=ChartBean(x:Utils.formatXvalue(count),
-              y:Utils.formatDouble(currentTemperature),
-          millisSeconds: DateTime.now().millisecondsSinceEpoch);
-          listData.add(chartBean);
-
-          if(minTemp>double.parse(currentTemperature)){
-            minTemp=double.parse(currentTemperature);
-          }else if(maxTemp<double.parse(currentTemperature)){
-            maxTemp=double.parse(currentTemperature);
-          }
-          allTem+=double.parse(currentTemperature);
-        });
-        //currentTemperature="0";
-      }
+      runnable();
       count++;
     });
 
+  }
+  runnable(){
+    if(currentTemperature!="0"){
+      setState(() {
+        currentTime=Utils.getTime();
+        var chartBean=ChartBean(x:Utils.formatXvalue(count),
+            y:Utils.formatDouble(currentTemperature),
+            millisSeconds: DateTime.now().millisecondsSinceEpoch);
+        listData.add(chartBean);
+        if(minTemp>double.parse(currentTemperature)){
+          minTemp=double.parse(currentTemperature);
+        }else if(maxTemp<double.parse(currentTemperature)){
+          maxTemp=double.parse(currentTemperature);
+        }
+        allTem+=double.parse(currentTemperature);
+      });
+      //currentTemperature="0";
+    }
   }
 
   void cancelTimer() {
@@ -664,7 +750,7 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin{
     int lowValue=prefs.getInt(ParamName.SP_LOW_TEMP)??34;
     int hightValue=prefs.getInt(ParamName.SP_HIGH_TEMP)??40;
     int status=0;
-    if(hightValue<maxTemp||lowValue>minTemp){
+    if(hightValue<maxTemp){
       status=1;
     }
     var pointInfo=PointInfo();

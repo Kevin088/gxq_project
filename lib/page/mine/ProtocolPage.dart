@@ -23,43 +23,48 @@ class ProtocolPageState extends State<ProtocolPage>{
   Widget build(BuildContext context) {
     // TODO: implement build
     return Scaffold(
-      body: Column(
-        crossAxisAlignment : CrossAxisAlignment.start,
-        children: <Widget>[
-          Container(
-            margin: EdgeInsets.fromLTRB(20, 30, 0, 0),
-            child: GestureDetector(
-              child: Image.asset(Utils.getImgPath2("ic_back")),
-              onTap: (){
-                Navigator.pop(context);
-              },
-            ),
-          ),
-          Container(
-            margin: EdgeInsets.fromLTRB(20, 20, 0, 0),
-            child: Center(
-              child: Text(
-                "企业服务条款",
-                style: TextStyle(
-                    fontSize: 28,
-                    color: Color.fromARGB(255, 0, 0, 0)
-                ),
+      body: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment : CrossAxisAlignment.start,
+          children: <Widget>[
+            Container(
+              margin: EdgeInsets.fromLTRB(20, 30, 0, 0),
+              child: GestureDetector(
+                child: Image.asset(Utils.getImgPath2("ic_back")),
+                onTap: (){
+                  Navigator.pop(context);
+                },
               ),
-            )
-          ),
+            ),
 
-          Container(
-            margin: EdgeInsets.fromLTRB(20, 50, 20, 0),
+            Container(
+                margin: EdgeInsets.fromLTRB(20, 20, 0, 0),
+                child: Center(
+                  child: Text(
+                    "企业服务条款",
+                    style: TextStyle(
+                        fontSize: 28,
+                        color: Color.fromARGB(255, 0, 0, 0)
+                    ),
+                  ),
+                )
+            ),
+            SingleChildScrollView(
+              child: Container(
+                  margin: EdgeInsets.fromLTRB(20, 50, 20, 0),
 
-            child:Text(
-              widget.content
-            )
-          ),
+                  child:Text(
+                      widget.content
+                  )
+              ),
+
+            ),
 
 
 
-        ],
-      ),
+          ],
+        ),
+      )
     );
   }
 

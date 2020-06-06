@@ -2,8 +2,10 @@ import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:gxq_project/page/mine/MediaPlayerPage.dart';
 import 'package:gxq_project/res/Colors.dart';
 import 'package:gxq_project/utils/Utils.dart';
+import 'package:gxq_project/widget/CustomRoute.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:async';
 
@@ -70,7 +72,7 @@ class CommonQuestionPageState extends State<CommonQuestionPage>{
                     right: 20,
                     child: GestureDetector(
                       onTap: (){
-
+                        Navigator.push(context, CustomRoute(MediaPlayerPage()));
                       },
                       child: Row(
                         children: <Widget>[

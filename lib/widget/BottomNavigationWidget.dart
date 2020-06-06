@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/src/services/message_codec.dart';
 import 'package:gxq_project/bean/point_info.dart';
 import 'package:gxq_project/common/api.dart';
 import 'package:gxq_project/common/param_name.dart';
@@ -28,6 +29,7 @@ class BottomNavigationWidgetState extends State<BottomNavigationWidget> {
       ..add(HomePage())
       ..add(SecondPage())
         ..add(MinePage());
+    initPush();
     initData();
   }
   Future<void> initData() async {

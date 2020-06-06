@@ -14,6 +14,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'mine/AboutPage.dart';
 import 'mine/FeedbackPage.dart';
+import 'mine/ProtocolPage.dart';
 import 'mine/SetPage.dart';
 
 class MinePage extends StatefulWidget{
@@ -134,7 +135,7 @@ class MinePageState extends State<MinePage>{
                 }),
                 Divider(height: 1.0,color: Color.fromARGB(255, 220, 220, 220)),
                 getText("服务条款",(){
-                  Navigator.push(context, CustomRoute(MediaPlayerPage()));
+                  Navigator.push(context, CustomRoute(ProtocolPage()));
                 }),
                 Divider(height: 1.0,color: Color.fromARGB(255, 220, 220, 220)),
                 getText("意见反馈",() async {
