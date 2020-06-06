@@ -1,5 +1,3 @@
-import 'dart:ffi';
-
 import 'package:gxq_project/bean/point_info.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
@@ -122,36 +120,35 @@ class DatabaseHelper {
   //插入
   Future<void> insertList(List<PointInfo>data) async {
     var dbClient = await db;
-    return await dbClient.transaction((Transaction txn) async {
+    try{
+      await dbClient.transaction((Transaction txn) async {
+        if(data!=null){
+          data.forEach((bean){
+            dbClient.execute("replace into $tableName "
+                "($columnId, "
+                "$columnCreateTime, "
+                "$columnTempType, "
+                "$columnUserId, "
+                "$columnIsUpload, "
+                "$columnBlueToothId, "
+                "$columnBlueToothName,"
+                "$columnDeviceId,"
+                "$columnTempValueMax,"
+                "$columnTempValueMin,"
+                "$columnTempValueAverage,"
+                "$columnTempStatus,"
+                "$columnDetailInfo) "
+                "values ('${bean.id}', '${bean.createTime}', ${bean.tempType}, "
+                "'${bean.userId}', '${bean.isUpload}', '${bean.bluetoothId}', '${bean.bluetoothName}',"
+                "'${bean.deviceId}','${bean.tempValueMax}','${bean.tempValueMin}',"
+                "'${bean.tempValueAverage}',${bean.status},'${bean.detailInfo}')");
 
-      if(data!=null){
-        data.forEach((bean){
-          dbClient.execute("replace into $tableName "
-              "($columnId, "
-              "$columnCreateTime, "
-              "$columnTempType, "
-              "$columnUserId, "
-              "$columnIsUpload, "
-              "$columnBlueToothId, "
-              "$columnBlueToothName,"
-              "$columnDeviceId,"
-              "$columnTempValueMax,"
-              "$columnTempValueMin,"
-              "$columnTempValueAverage,"
-              "$columnTempStatus,"
-              "$columnDetailInfo) "
-              "values ('${bean.id}', '${bean.createTime}', '${bean.tempType}', "
-              "'${bean.userId}', '${bean.isUpload}', ${bean.bluetoothId}, '${bean.bluetoothName}',"
-              "'${bean.deviceId}','${bean.tempValueMax}','${bean.tempValueMin}',"
-              "'${bean.tempValueAverage}',${bean.status},'${bean.detailInfo}')");
-        });
-      }
-      //book1.id = await db.insert(tableBook, book1.toMap());
-
-      //book2.id = await db.insert(tableBook, book2.toMap());
-
-
-    });
+          });
+        }
+      });
+    }catch(e){
+      print(e.toString());
+    }
   }
   //关闭
   Future close() async {

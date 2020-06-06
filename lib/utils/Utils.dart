@@ -1,4 +1,11 @@
+
+
 import 'package:date_format/date_format.dart';
+import 'package:flutter/material.dart';
+import 'package:gxq_project/common/param_name.dart';
+import 'package:gxq_project/page/mine/LoginPage.dart';
+import 'package:gxq_project/widget/CustomRoute.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Utils{
   static String getImgPath(String name, {String format: 'png'}) {
@@ -55,7 +62,12 @@ class Utils{
     }
   }
 
+  static Future<bool> isLogin() async {
+    var prefs = await SharedPreferences.getInstance();
+    bool isLogin=prefs.getBool(ParamName.IS_LOGIN)??false;
 
+    return isLogin;
+  }
 
 }
 

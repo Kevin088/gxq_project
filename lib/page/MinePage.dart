@@ -4,7 +4,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:gxq_project/bean/LoginInfoEvent.dart';
 import 'package:gxq_project/common/param_name.dart';
-import 'package:gxq_project/page/DeviceManagePage.dart';
 import 'package:gxq_project/page/mine/LoginPage.dart';
 import 'package:gxq_project/page/mine/MediaPlayerPage.dart';
 import 'package:gxq_project/utils/Toast.dart';
@@ -138,7 +137,13 @@ class MinePageState extends State<MinePage>{
                   Navigator.push(context, CustomRoute(MediaPlayerPage()));
                 }),
                 Divider(height: 1.0,color: Color.fromARGB(255, 220, 220, 220)),
-                getText("意见反馈",(){
+                getText("意见反馈",() async {
+                  var prefs = await SharedPreferences.getInstance();
+                  bool isLogin=prefs.getBool(ParamName.IS_LOGIN)??false;
+                  if(!isLogin){
+                    Navigator.push(context, CustomRoute(LoginPage()));
+                    return;
+                  }
                   Navigator.push(context, CustomRoute(FeedbackPage()));
                 }),
                 Divider(height: 1.0,color: Color.fromARGB(255, 220, 220, 220)),

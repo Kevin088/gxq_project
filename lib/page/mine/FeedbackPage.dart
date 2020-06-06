@@ -1,7 +1,12 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:gxq_project/common/api.dart';
+import 'package:gxq_project/http/httpUtil.dart';
 import 'package:gxq_project/res/Colors.dart';
+import 'package:gxq_project/utils/Toast.dart';
 import 'package:gxq_project/utils/Utils.dart';
+import 'package:loading_dialog/loading_dialog.dart';
 
 class FeedbackPage extends StatefulWidget{
   @override
@@ -14,6 +19,7 @@ class FeedbackPage extends StatefulWidget{
 
 class FeedbackPageState extends State<FeedbackPage>{
   String text="";
+  LoadingDialog loading ;
   @override
   Widget build(BuildContext context) {
 
@@ -27,6 +33,7 @@ class FeedbackPageState extends State<FeedbackPage>{
       text=controller.text;
 
     });
+    loading= LoadingDialog(buildContext: context);
     // TODO: implement build
     return Scaffold(
       body: Column(
@@ -69,11 +76,18 @@ class FeedbackPageState extends State<FeedbackPage>{
             margin: EdgeInsets.fromLTRB(20, 60, 20, 0),
             child: FlatButton(
 
-              onPressed: (){
+              onPressed: () async {
                 if(text.isEmpty){
+                  Toast.toast(context,msg: "请输入内容");
                   return;
                 }
-                print(1);
+                loading?.show();
+                Response response=await HttpUtil.getInstance()
+                    .post(Api.yijianfankui,data: {"remark":text});
+                if (!mounted) return;
+                loading?.hide();
+                Toast.toast(context,msg: "提交成功");
+                Navigator.pop(context);
               },
               child: Container(
                 margin:  EdgeInsets.fromLTRB(20,0,20,0),
@@ -87,7 +101,7 @@ class FeedbackPageState extends State<FeedbackPage>{
                   ),
                 ),
               ),
-              color: text.isEmpty?Colors.white:MyColors.color_00286B,
+              color: MyColors.color_00286B,
 
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.all(Radius.circular(30)),

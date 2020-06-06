@@ -11,5 +11,6 @@ class Api {
 
   static const String getList = "api/user/feed/";
 
+  static const String yijianfankui="api/user/remark";
 
 }
