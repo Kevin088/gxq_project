@@ -13,7 +13,6 @@ import 'package:gxq_project/common/api.dart';
 import 'package:gxq_project/common/param_name.dart';
 import 'package:gxq_project/db/database_helper.dart';
 import 'package:gxq_project/http/httpUtil.dart';
-import 'package:gxq_project/page/test/LearnDropdownButton.dart';
 import 'package:gxq_project/res/Colors.dart';
 import 'package:gxq_project/utils/Toast.dart';
 import 'package:gxq_project/utils/Utils.dart';
@@ -21,7 +20,7 @@ import 'package:gxq_project/widget/CustomRoute.dart';
 import 'package:gxq_project/widget/banner/widget_banner.dart';
 import 'package:gxq_project/widget/line/chart_bean.dart';
 import 'package:gxq_project/widget/line/chart_line.dart';
-import 'package:rammus/rammus.dart' as rammus; //导包
+
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
 
@@ -41,8 +40,6 @@ class HomePage extends StatefulWidget {
 
 class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin{
   int tabButton = 0;
-  String _deviceId="";
-  //List<BluetoothDevice> devices = List<BluetoothDevice>();
 
 
   double xPosition = 0;
@@ -82,35 +79,6 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin{
 
 
 
-    //推送通知的处理 (注意，这里的id:针对Android8.0以上的设备来设置通知通道,客户端的id跟阿里云的通知通道要一致，否则收不到通知)
-    rammus.setupNotificationManager(id: "1",name: "rammus",description: "rammus test",);
-    rammus.onNotification.listen((data){
-      print("-=============>notification here ${data.summary}");
-    });
-    rammus.onNotificationOpened.listen((data){//这里是点击通知栏回调的方法
-      print("-=============> ${data.summary} 被点了");
-      //点击通知后跳转的页面
-      Navigator.of(context).push(new MaterialPageRoute(
-          builder: (ctx) => new HomePage()));
-    });
-
-    rammus.onNotificationRemoved.listen((data){
-      print("-=============> $data 被删除了");
-    });
-
-    rammus.onNotificationReceivedInApp.listen((data){
-      print("-ReceivedInApp=============>${data.summary} In app");
-    });
-
-    rammus.onNotificationClickedWithNoAction.listen((data){
-      print("${data.summary} no action-=============>");
-    });
-
-    rammus.onMessageArrived.listen((data){
-      print("received data -=============> ${data.content}");
-    });
-
-    initPlatformState();
     //蓝牙=====================================
 
     FlutterBlue flutterBlue = FlutterBlue.instance;
@@ -187,26 +155,6 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin{
   }
 
 
-  //获取device id的方法
-  Future<void> initPlatformState() async {
-    String deviceId;
-    try {
-      deviceId = await rammus.deviceId;
-    } on PlatformException {
-      deviceId = 'Failed to get device id.';
-    }
-    print("===deviceId========>$deviceId");
-    final prefs = await SharedPreferences.getInstance();
-    prefs.setString(ParamName.DEVICE_ID,deviceId);
-//    if (!mounted) return;
-//    setState(() {
-//      _deviceId = deviceId;
-//      //接下来你要做的事情
-//      //1.将device id通过接口post给后台，然后进行指定设备的推送
-//      //2.推送的时候，在Android8.0以上的设备都要设置通知通道
-//
-//    });
-  }
 
 
   @override
