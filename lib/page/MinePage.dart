@@ -125,11 +125,11 @@ class MinePageState extends State<MinePage>{
                 ],)
                 ,
                 SizedBox(height: 30.0),
-                getText("设备管理",
-                    (){
-                     // Navigator.push(context, CustomRoute(DeviceManagePage()));
-                    }),
-                Divider(height: 1.0,color: Color.fromARGB(255, 220, 220, 220)),
+//                getText("设备管理",
+//                    (){
+//                     // Navigator.push(context, CustomRoute(DeviceManagePage()));
+//                    }),
+//                Divider(height: 1.0,color: Color.fromARGB(255, 220, 220, 220)),
                 getText("提醒设置", (){
                   Navigator.push(context, CustomRoute(SetPage()));
                 }),
