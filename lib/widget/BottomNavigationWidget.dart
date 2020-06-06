@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:gxq_project/bean/point_info.dart';
 import 'package:gxq_project/common/api.dart';
 import 'package:gxq_project/common/param_name.dart';
 import 'package:gxq_project/db/database_helper.dart';
@@ -35,13 +36,24 @@ class BottomNavigationWidgetState extends State<BottomNavigationWidget> {
     if (!mounted) return;
     String deviceId=prefs.getString(ParamName.DEVICE_ID);
     Response response= await HttpUtil.getInstance().post(Api.getList+deviceId);
+    var data=response?.data;
+    var list=data['data'];
+    if(list!=null){
+      List<PointInfo> listInfo=PointInfo.fromMapList(list);
+      if(listInfo!=null){
+        listInfo.forEach((bean){
+          bean.isUpload="1";
+        });
+        //存库
+       await DatabaseHelper().insertList(listInfo);
+      }
+    }
+
+
     //上传
-    DatabaseHelper().getUnuploadList().then((value) async {
+    DatabaseHelper().getUnuploadList().then((value)  {
       if(value.length>0){
-        Response response=await HttpUtil.getInstance().post(Api.upload,data: value);
-
-
-
+        HttpUtil.getInstance().post(Api.upload,data: value);
       }
     });
   }

@@ -703,7 +703,7 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin{
     var uuid = Uuid();
     String id=uuid.v1();
     int createTime=listData[0]?.millisSeconds;
-    String tempType=tabButton.toString();
+    int tempType=tabButton;
     String isUpload="0";
     String deviceId=prefs.getString(ParamName.DEVICE_ID);
     String blueToothId=this.blueToothId;

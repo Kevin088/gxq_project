@@ -1,7 +1,7 @@
 class PointInfo{
   String id;       //uuid
   int createTime; //创建时间
-  String tempType;//温度类型
+  int tempType;//温度类型
   String userId;  //用户id
   String isUpload;//是否同步到服务器了  后端不需要
   String bluetoothId;//蓝牙设备id
@@ -34,18 +34,24 @@ class PointInfo{
 
   static PointInfo fromMap(Map<String, dynamic> map) {
     PointInfo pointInfo = new PointInfo();
-    pointInfo.id = map['id'];
-    pointInfo.createTime = map['createTime'];
-    pointInfo.userId = map['userId'];
-    pointInfo.isUpload = map['isUpload'];
-    pointInfo.bluetoothId = map['bluetoothId'];
-    pointInfo.bluetoothName = map['bluetoothName'];
-    pointInfo.deviceId = map['deviceId'];
-    pointInfo.tempValueMax = map['tempValueMax'];
-    pointInfo.tempValueMin = map['tempValueMin'];
-    pointInfo.tempValueAverage = map['tempValueAverage'];
-    pointInfo.detailInfo = map['detailInfo'];
-    pointInfo.status = map['status'];
+    try{
+      pointInfo.id = map['id'];
+      pointInfo.createTime = map['createTime'];
+      pointInfo.userId = map['userId']??"";
+      pointInfo.isUpload = map['isUpload'];
+      pointInfo.tempType = map['tempType'];
+      pointInfo.bluetoothId = map['bluetoothId'];
+      pointInfo.bluetoothName = map['bluetoothName'];
+      pointInfo.deviceId = map['deviceId'];
+      pointInfo.tempValueMax = map['tempValueMax'];
+      pointInfo.tempValueMin = map['tempValueMin'];
+      pointInfo.tempValueAverage = map['tempValueAverage'];
+      pointInfo.detailInfo = map['detailInfo'];
+      pointInfo.status = map['status'];
+    }catch(e){
+      print(e.toString());
+    }
+
     return pointInfo;
   }
 
