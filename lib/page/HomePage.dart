@@ -17,6 +17,7 @@ import 'package:gxq_project/res/Colors.dart';
 import 'package:gxq_project/utils/Toast.dart';
 import 'package:gxq_project/utils/Utils.dart';
 import 'package:gxq_project/widget/CustomRoute.dart';
+import 'package:gxq_project/widget/MessageDialog.dart';
 import 'package:gxq_project/widget/PopupWindow.dart';
 import 'package:gxq_project/widget/banner/widget_banner.dart';
 import 'package:gxq_project/widget/line/chart_bean.dart';
@@ -31,7 +32,7 @@ import 'mine/AboutPage.dart';
 import 'mine/CommonQuestionPage.dart';
 import 'mine/LoginPage.dart';
 import 'mine/SetPage.dart';
-
+import 'package:rammus/rammus.dart' as rammus;
 
 class HomePage extends StatefulWidget {
   @override
@@ -52,7 +53,7 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin{
   final GlobalKey globalKey = GlobalKey();
 
 
-  var value='1';
+  //var value='1';
 
 
 
@@ -76,12 +77,13 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin{
   String blueToothName="设备连接中...";
   //banner
   List<String> _imgData =List<String>();
+
+  bool isShowHighTempDialog=false;
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-
-    listData.add(ChartBean(x:"0:00",y: 0,millisSeconds: 0));
+    initPush();
 
     //蓝牙=====================================
 
@@ -150,6 +152,9 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin{
 
     initData();
 
+    if(isShowHighTempDialog){
+      showHighTempDialog();
+    }
   }
 
   @override
@@ -204,8 +209,8 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin{
                           width: 50,
                           child: FlatButton(
                             onPressed: (){
-                              Navigator.push(context, CustomRoute(TemperatureSetPage()));
 
+                              Navigator.push(context, CustomRoute(TemperatureSetPage()));
                             },
                             child: Image.asset(Utils.getImgPath2("ic_setting")),
                           ),
@@ -661,17 +666,16 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin{
 
 
   Timer _timer;
-  int count;
+  int count=0;
   timeStart(){
     isCaiJing=true;
-    count=0;
     const period = const Duration(seconds: 2);
     runnable();
     Timer.periodic(period, (timer) async {
       _timer=timer;
       print("timer========");
       runnable();
-      count++;
+
     });
 
   }
@@ -683,6 +687,7 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin{
             y:Utils.formatDouble(currentTemperature),
             millisSeconds: DateTime.now().millisecondsSinceEpoch);
         listData.add(chartBean);
+        count++;
         if(minTemp>double.parse(currentTemperature)){
           minTemp=double.parse(currentTemperature);
         }else if(maxTemp<double.parse(currentTemperature)){
@@ -733,7 +738,7 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin{
     }
     var prefs = await SharedPreferences.getInstance();
     if (!mounted) return;
-    String userId= prefs.getString(ParamName.SP_USER_ID);
+    int userId= prefs.getInt(ParamName.SP_USER_ID)??0;
     var uuid = Uuid();
     String id=uuid.v1();
     int createTime=listData[0]?.millisSeconds;
@@ -756,7 +761,7 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin{
     var pointInfo=PointInfo();
     pointInfo.id=id;
     pointInfo.createTime=createTime;
-    pointInfo.userId=userId??"0";
+    pointInfo.userId=userId.toString();
     pointInfo.tempType=tempType;
     pointInfo.isUpload=isUpload;
     pointInfo.deviceId=deviceId??"0";
@@ -768,5 +773,87 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin{
     pointInfo.detailInfo=detailInfo;
     pointInfo.status=status;
     DatabaseHelper().saveItem(pointInfo);
+
+    Response response= await HttpUtil.getInstance().post(Api.upload_one,data: pointInfo.toMap());
+    var data=response?.data;
+    if(data['code']==200){
+      pointInfo.isUpload="1";
+      //存库
+      DatabaseHelper().updateItem(pointInfo);
+    }
+  }
+
+
+  initPush() async {
+//    var channels = List<rammus.NotificationChannel>();
+//    channels.add(rammus.NotificationChannel(
+//      "1",
+//      "rammus",
+//      "rammus test",
+//      importance: rammus.AndroidNotificationImportance.MAX,
+//    ));
+//    //推送通知的处理 (注意，这里的id:针对Android8.0以上的设备来设置通知通道,客户端的id跟阿里云的通知通道要一致，否则收不到通知)
+//    rammus.setupNotificationManager(channels);
+    rammus.setupNotificationManager(id: "1",name: "rammus",description: "rammus test",);
+
+    rammus.onNotification.listen((data){
+      Toast.toast(context,msg:data.toString()+"onNotification");
+      print("-==================================================>notification here ${data.summary}");
+    });
+    rammus.onNotificationOpened.listen((data){//这里是点击通知栏回调的方法
+      print("-=============================================================> ${data.summary} 被点了");
+      isShowHighTempDialog=true;
+      showHighTempDialog();
+      Toast.toast(context,msg:data.toString()+"onNotificationOpened");
+    });
+
+    rammus.onNotificationRemoved.listen((data){
+      print("-==================> $data 被删除了");
+    });
+
+    rammus.onNotificationReceivedInApp.listen((data){
+      print("-ReceivedInApp==============================================================>${data.summary} In app");
+    });
+
+    rammus.onNotificationClickedWithNoAction.listen((data){
+      print("${data.summary} no action-==============================================================>");
+    });
+
+    rammus.onMessageArrived.listen((data){
+      print("received data -===============================================================> ${data.content}");
+    });
+
+    String deviceId;
+    try {
+      deviceId = await rammus.deviceId;
+    } on PlatformException {
+      deviceId = 'Failed to get device id.';
+    }
+    print("===deviceId========>$deviceId");
+    final prefs = await SharedPreferences.getInstance();
+    prefs.setString(ParamName.DEVICE_ID,deviceId);
+//    if (!mounted) return;
+//    setState(() {
+//      _deviceId = deviceId;
+//      //接下来你要做的事情
+//      //1.将device id通过接口post给后台，然后进行指定设备的推送
+//      //2.推送的时候，在Android8.0以上的设备都要设置通知通道
+//
+//    });
+  }
+
+  showHighTempDialog(){
+    isShowHighTempDialog=false;
+    showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return GestureDetector(
+            child: Image.asset(Utils.getImgPath2("ic_push_dialog_bg")),
+            onTap: (){
+              Navigator.of(context).pop();
+            },
+          );
+        });
   }
 }

@@ -9,8 +9,11 @@ import 'package:gxq_project/http/httpUtil.dart';
 import 'package:gxq_project/page/HomePage.dart';
 import 'package:gxq_project/page/MinePage.dart';
 import 'package:gxq_project/page/SecondPage.dart';
+import 'package:gxq_project/utils/Toast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:rammus/rammus.dart' as rammus; //导包
+
+
+import 'MessageDialog.dart'; //导包
 class BottomNavigationWidget extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
@@ -24,12 +27,12 @@ class BottomNavigationWidgetState extends State<BottomNavigationWidget> {
 
   @override
   void initState() {
+
     // TODO: implement initState
     pages
       ..add(HomePage())
       ..add(SecondPage())
         ..add(MinePage());
-    initPush();
     initData();
   }
   Future<void> initData() async {
@@ -47,7 +50,7 @@ class BottomNavigationWidgetState extends State<BottomNavigationWidget> {
           bean.isUpload="1";
         });
         //存库
-       await DatabaseHelper().insertList(listInfo);
+        DatabaseHelper().insertList(listInfo);
       }
     }
 
@@ -122,53 +125,6 @@ class BottomNavigationWidgetState extends State<BottomNavigationWidget> {
     _pageController.jumpToPage(index);
   }
 
-  initPush() async {
 
-    //推送通知的处理 (注意，这里的id:针对Android8.0以上的设备来设置通知通道,客户端的id跟阿里云的通知通道要一致，否则收不到通知)
-    rammus.setupNotificationManager(id: "1",name: "rammus",description: "rammus test",);
-    rammus.onNotification.listen((data){
-      print("-=============>notification here ${data.summary}");
-    });
-    rammus.onNotificationOpened.listen((data){//这里是点击通知栏回调的方法
-      print("-=============> ${data.summary} 被点了");
-      //点击通知后跳转的页面
-      Navigator.of(context).push(new MaterialPageRoute(
-          builder: (ctx) => new HomePage()));
-    });
-
-    rammus.onNotificationRemoved.listen((data){
-      print("-=============> $data 被删除了");
-    });
-
-    rammus.onNotificationReceivedInApp.listen((data){
-      print("-ReceivedInApp=============>${data.summary} In app");
-    });
-
-    rammus.onNotificationClickedWithNoAction.listen((data){
-      print("${data.summary} no action-=============>");
-    });
-
-    rammus.onMessageArrived.listen((data){
-      print("received data -=============> ${data.content}");
-    });
-
-    String deviceId;
-    try {
-      deviceId = await rammus.deviceId;
-    } on PlatformException {
-      deviceId = 'Failed to get device id.';
-    }
-    print("===deviceId========>$deviceId");
-    final prefs = await SharedPreferences.getInstance();
-    prefs.setString(ParamName.DEVICE_ID,deviceId);
-//    if (!mounted) return;
-//    setState(() {
-//      _deviceId = deviceId;
-//      //接下来你要做的事情
-//      //1.将device id通过接口post给后台，然后进行指定设备的推送
-//      //2.推送的时候，在Android8.0以上的设备都要设置通知通道
-//
-//    });
-  }
 }
 

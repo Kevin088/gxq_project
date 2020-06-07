@@ -38,7 +38,7 @@ class TemperatureDetailState extends State<TemperatureDetailPage> {
     var title;
     var temp;
     if(widget.pointInfo.status==0){
-      var title="体温正常";
+      title="体温正常";
       temp=widget.pointInfo.tempValueAverage;
     } else if(widget.pointInfo.status==2){
       title="体温中断";

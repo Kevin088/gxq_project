@@ -234,7 +234,7 @@ class SecondPageState extends State<SecondPage> {
     var title;
     var temp;
     if(pointInfo.status==0){
-      var title="体温正常";
+      title="体温正常";
       temp=pointInfo.tempValueAverage;
     } else if(pointInfo.status==2){
       title="体温中断";
