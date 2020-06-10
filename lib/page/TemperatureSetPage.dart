@@ -24,14 +24,23 @@ class TemperatureSetPageState extends State<TemperatureSetPage> {
   List<Widget> widegets2=List<Widget>();
   int leftSelect=0;
   int rightSelect=0;
+  var controller1=FixedExtentScrollController();
+  var controller2=FixedExtentScrollController();
   @override
   void initState() {
     super.initState();
-    for(int i=40;i>=34;i-=1){
+    for(double i=40;i>=34;i-=0.1){
       dataList.add(i.toString());
-      widegets1.add(Text(i.toString(),style: const TextStyle(color: MyColors.color_00286B, fontSize: 18),));
-      widegets2.add(Text(i.toString(),style: const TextStyle(color: Color(0xFF000046), fontSize: 18),));
+      widegets1.add(Text(i.toStringAsFixed(1),style: const TextStyle(color: MyColors.color_00286B, fontSize: 18),));
+      widegets2.add(Text(i.toStringAsFixed(1),style: const TextStyle(color: Color(0xFF000046), fontSize: 18),));
     }
+    WidgetsBinding.instance.addPostFrameCallback((mag) {
+      controller1.animateToItem(20,
+          duration: Duration(milliseconds: 600), curve: Curves.ease);
+      controller2.animateTo(10,
+          duration: Duration(milliseconds: 600), curve: Curves.ease);
+    });
+
   }
 
 
@@ -128,13 +137,15 @@ class TemperatureSetPageState extends State<TemperatureSetPage> {
   Widget getView1(){
 
     var picker1  = CupertinoPicker(
-      itemExtent: 25.0,
+      itemExtent: 28.0,
       onSelectedItemChanged: (position){
         leftSelect=position;
       },
       children:widegets1,
       useMagnifier: true,
       backgroundColor:Colors.white,
+        scrollController:controller1
+
     );
     return Container(
       height: 300,
@@ -145,13 +156,14 @@ class TemperatureSetPageState extends State<TemperatureSetPage> {
   Widget getView2(){
 
     var picker2  = CupertinoPicker(
-      itemExtent: 25.0,
+      itemExtent: 28.0,
       onSelectedItemChanged: (position){
         rightSelect=position;
       },
       children:widegets2,
       useMagnifier: true,
       backgroundColor:Colors.white,
+        scrollController:controller1
     );
     return     Container(
       height: 300,
