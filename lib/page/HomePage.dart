@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_blue/flutter_blue.dart';
 import 'package:flutter_qrscaner/flutter_qrscaner.dart';
+import 'package:gxq_project/bean/StartEvent.dart';
 import 'package:gxq_project/bean/banner_info.dart';
 import 'package:gxq_project/bean/point_info.dart';
 import 'package:gxq_project/common/api.dart';
@@ -16,6 +17,7 @@ import 'package:gxq_project/http/httpUtil.dart';
 import 'package:gxq_project/res/Colors.dart';
 import 'package:gxq_project/utils/Toast.dart';
 import 'package:gxq_project/utils/Utils.dart';
+import 'package:gxq_project/utils/event_bus.dart';
 import 'package:gxq_project/widget/CustomRoute.dart';
 import 'package:gxq_project/widget/MessageDialog.dart';
 import 'package:gxq_project/widget/PopupWindow.dart';
@@ -45,25 +47,17 @@ class HomePage extends StatefulWidget {
 class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin{
   //当前温度按钮
   int tabButton = 0;
-
-
   double xPosition = 0;
   double yPosition = 0;
-
   final GlobalKey globalKey = GlobalKey();
-
-
-  //var value='1';
-
-
-
   String UUID="0000fff6-0000-1000-8000-00805f9b34fb";
 
   BluetoothCharacteristic bluetoothCharacteristic;
   BluetoothDevice bluetoothDevice;
 
-  String currentTime="";
+  String currentTime="0";
   String currentTemperature="0";
+  String temperature="0";
 
   //设备
   List<BluetoothDevice> devicelist=List();
@@ -79,6 +73,8 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin{
   List<String> _imgData =List<String>();
 
   bool isShowHighTempDialog=false;
+
+  StreamSubscription eventBusOn;
   @override
   void initState() {
     // TODO: implement initState
@@ -132,7 +128,7 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin{
             print("================bluetoothCharacteristic!=null========");
             await bluetoothCharacteristic.setNotifyValue(true);
             bluetoothCharacteristic.value.listen((value) {
-              currentTemperature=Utils.getTemperature(value);
+              temperature=Utils.getTemperature(value);
               print("${Utils.getTemperature(value)}℃================$value========");
 
             });
@@ -155,6 +151,14 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin{
     if(isShowHighTempDialog){
       showHighTempDialog();
     }
+
+    eventBusOn=eventBus.on<StartEvent>().listen((event){
+        if(!event.isCaijing){
+          timeStart();
+        }else{
+          cancelTimer();
+        }
+    });
   }
 
   @override
@@ -210,7 +214,7 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin{
                           child: FlatButton(
                             onPressed: (){
 
-                              Navigator.push(context, CustomRoute(TemperatureSetPage()));
+                              Navigator.push(context, CustomRoute(TemperatureSetPage(isCaiJIng: isCaiJing,isReview: false,)));
                             },
                             child: Image.asset(Utils.getImgPath2("ic_setting")),
                           ),
@@ -318,76 +322,77 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin{
   }
   //设置
   Future<void> setting() async {
-    if(!isCaiJing){
-      var prefs = await SharedPreferences.getInstance();
-      bool isLogin=prefs.getBool(ParamName.IS_LOGIN)??false;
-      if(!isLogin){
-        Navigator.push(context, CustomRoute(LoginPage()));
-        return;
-      }
-      showDialog(
-          context: context,
-          barrierDismissible: true,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              content: Text('开始采集'),
-              actions: <Widget>[
-                FlatButton(
-                    onPressed: () {
-                      timeStart();
-                      Navigator.of(context).pop();
-                    },
-                    child: Padding(
-                    child: Text('确认'),
-            padding: EdgeInsets.fromLTRB(5,3,3,5),
-            )),
-                FlatButton(
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    },
-                    child: Padding(
-                        child: Text('取消'),
-                        padding: EdgeInsets.fromLTRB(5,3,3,5),
-                    )),
-              ],
-            );
-          });
-    }else{
-      showDialog(
-          context: context,
-          barrierDismissible: true,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              content: Text('结束采集'),
-              actions: <Widget>[
-                FlatButton(
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                      cancelTimer();
-                      setState(() {
+    Navigator.push(context, CustomRoute(TemperatureSetPage(isReview:true)));
+//    if(!isCaiJing){
+//      var prefs = await SharedPreferences.getInstance();
+//      bool isLogin=prefs.getBool(ParamName.IS_LOGIN)??false;
+//      if(!isLogin){
+//        Navigator.push(context, CustomRoute(LoginPage()));
+//        return;
+//      }
+//      showDialog(
+//          context: context,
+//          barrierDismissible: true,
+//          builder: (BuildContext context) {
+//            return AlertDialog(
+//              content: Text('开始采集'),
+//              actions: <Widget>[
+//                FlatButton(
+//                    onPressed: () {
+//                      timeStart();
+//                      Navigator.of(context).pop();
+//                    },
+//                    child: Padding(
+//                    child: Text('确认'),
+//            padding: EdgeInsets.fromLTRB(5,3,3,5),
+//            )),
+//                FlatButton(
+//                    onPressed: () {
+//                      Navigator.of(context).pop();
+//                    },
+//                    child: Padding(
+//                        child: Text('取消'),
+//                        padding: EdgeInsets.fromLTRB(5,3,3,5),
+//                    )),
+//              ],
+//            );
+//          });
+//    }else{
+//      showDialog(
+//          context: context,
+//          barrierDismissible: true,
+//          builder: (BuildContext context) {
+//            return AlertDialog(
+//              content: Text('结束采集'),
+//              actions: <Widget>[
+//                FlatButton(
+//                    onPressed: () {
+//                      Navigator.of(context).pop();
+//                      cancelTimer();
+//                      setState(() {
+//
+//                      });
+//                      _saveData(listData);
+//                    },
+//                    child: Padding(
+//                      child: Text('确定'),
+//                      padding: EdgeInsets.all(4),
+//                    )
+//                ),
+//                FlatButton(
+//                    onPressed: () {
+//                      Navigator.of(context).pop();
+//                    },
+//                    child:Padding(
+//                      child:  Text('取消'),
+//                      padding: EdgeInsets.all(4),
+//                    )
+//                ),
+//              ],
+//            );
+//          });
 
-                      });
-                      _saveData(listData);
-                    },
-                    child: Padding(
-                      child: Text('确定'),
-                      padding: EdgeInsets.all(4),
-                    )
-                ),
-                FlatButton(
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    },
-                    child:Padding(
-                      child:  Text('取消'),
-                      padding: EdgeInsets.all(4),
-                    )
-                ),
-              ],
-            );
-          });
-
-    }
+//    }
 
   }
 
@@ -478,6 +483,7 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin{
       pressedHintLineWidth: 1,
       pressedHintLineColor: MyColors.color_dddddd,
       duration: Duration(milliseconds: 2000),
+      isShowFloat:true,
     );
     return Container(
       key: globalKey,
@@ -517,61 +523,6 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin{
       ),
     );
   }
-
-
-
-//  //下拉菜单
-//  List<DropdownMenuItem> getListData(){
-//    List<DropdownMenuItem> items=new List();
-//    if(devicelist.length==0){
-//      DropdownMenuItem item=new DropdownMenuItem(
-//        child:Text(
-//          "设备连接中...",
-//          style: TextStyle(
-//              fontSize: 19,
-//              color: Color.fromARGB(255, 68, 68, 68)),
-//
-//        ),
-//        value: "设备连接中...",
-//      );
-//      items.add(item);
-//    }else{
-//      devicelist.forEach((it) {
-//        DropdownMenuItem item=new DropdownMenuItem(
-//          child:Text(
-//            it?.name,
-//            style: TextStyle(
-//                fontSize: 19,
-//                color: Color.fromARGB(255, 68, 68, 68)),
-//          ),
-//          value: bluetoothDevice?.name,
-//        );
-//        items.add(item);
-//      });
-//    }
-//    return items;
-//  }
-
-
-
-//  getDropDownMenu(){
-//    return
-//        new DropdownButton(
-//          items: getListData(),
-//          hint:getTitleView(blueToothName),//当没有默认值的时候可以设置的提示
-//          //value: value,//下拉菜单选择完之后显示给用户的值
-//          onChanged: (T){//下拉菜单item点击之后的回调
-//            setState(() {
-//              value=T;
-//            });
-//          },
-//          elevation: 24,//设置阴影的高度
-//          iconSize: 0,//设置三角标icon的大小
-//          isDense: true,
-//          //isExpanded:true,
-//          underline: Container(),
-//        );
-//  }
 
   getTitleView(String name){
     return Container(
@@ -670,6 +621,8 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin{
   timeStart(){
     isCaiJing=true;
     const period = const Duration(seconds: 2);
+    listData.clear();
+    count=0;
     runnable();
     Timer.periodic(period, (timer) async {
       _timer=timer;
@@ -680,9 +633,10 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin{
 
   }
   runnable(){
-    if(currentTemperature!="0"){
+    if(temperature!="0"){
       setState(() {
         currentTime=Utils.getTime();
+        currentTemperature=temperature;
         var chartBean=ChartBean(x:Utils.formatXvalue(count),
             y:Utils.formatDouble(currentTemperature),
             millisSeconds: DateTime.now().millisecondsSinceEpoch);
@@ -705,6 +659,10 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin{
       _timer.cancel();
       _timer = null;
     }
+    setState(() {
+
+    });
+    _saveData(listData);
   }
   Future<void> initData() async {
 
@@ -733,7 +691,7 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin{
 
 
   Future<void> _saveData(List<ChartBean>listData) async {
-    if(listData==null){
+    if(listData==null||listData.length==0){
       return;
     }
     var prefs = await SharedPreferences.getInstance();
@@ -752,10 +710,10 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin{
     String tempValueAverage=(allTem/count).toStringAsFixed(2);
     String detailInfo=jsonEncode(listData);
 
-    int lowValue=prefs.getInt(ParamName.SP_LOW_TEMP)??34;
-    int hightValue=prefs.getInt(ParamName.SP_HIGH_TEMP)??40;
+    int lowValue=prefs.getDouble(ParamName.SP_LOW_TEMP)??34;
+    int hightValue=prefs.getDouble(ParamName.SP_HIGH_TEMP)??40;
     int status=0;
-    if(hightValue<maxTemp){
+    if(hightValue<maxTemp||lowValue>minTemp){
       status=1;
     }
     var pointInfo=PointInfo();

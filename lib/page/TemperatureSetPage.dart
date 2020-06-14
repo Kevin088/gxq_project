@@ -1,8 +1,11 @@
+import 'package:common_utils/common_utils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:gxq_project/bean/StartEvent.dart';
 import 'package:gxq_project/common/param_name.dart';
 import 'package:gxq_project/res/Colors.dart';
 import 'package:gxq_project/utils/Toast.dart';
+import 'package:gxq_project/utils/event_bus.dart';
 import 'package:rammus/rammus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -10,6 +13,12 @@ typedef DateChangedCallback(double time);
 typedef String StringAtIndexCallBack(int index);
 
 class TemperatureSetPage extends StatefulWidget {
+
+  bool isCaiJIng=false;
+  bool isReview=false;
+  TemperatureSetPage({Key key,  this.isCaiJIng,this.isReview})
+      : super(key: key);
+
   @override
   State<StatefulWidget> createState() {
     // TODO: implement createState
@@ -29,20 +38,36 @@ class TemperatureSetPageState extends State<TemperatureSetPage> {
   @override
   void initState() {
     super.initState();
-    for(double i=40;i>=34;i-=0.1){
+    for(double i=55.0;i>24.9;i-=0.1){
       dataList.add(i.toString());
       widegets1.add(Text(i.toStringAsFixed(1),style: const TextStyle(color: MyColors.color_00286B, fontSize: 18),));
       widegets2.add(Text(i.toStringAsFixed(1),style: const TextStyle(color: Color(0xFF000046), fontSize: 18),));
     }
-    WidgetsBinding.instance.addPostFrameCallback((mag) {
-      controller1.animateToItem(20,
-          duration: Duration(milliseconds: 600), curve: Curves.ease);
-      controller2.animateTo(10,
-          duration: Duration(milliseconds: 600), curve: Curves.ease);
-    });
+
+    initData();
+
+//    WidgetsBinding.instance.addPostFrameCallback((mag) {
+//      controller1.animateToItem(250,
+//          duration: Duration(milliseconds: 600), curve: Curves.ease);
+//      controller2.animateToItem(250,
+//          duration: Duration(milliseconds: 600), curve: Curves.ease);
+//    });
+
 
   }
+  initData() async {
+    var prefs = await SharedPreferences.getInstance();
+    if(!mounted){
+      return;
+    }
+    double lowValue=prefs.getDouble(ParamName.SP_LOW_TEMP)??34;
+    double hightValue=prefs.getDouble(ParamName.SP_HIGH_TEMP)??40;
 
+    controller1.animateToItem(((55-lowValue)*10).round(),
+        duration: Duration(milliseconds: 600), curve: Curves.ease);
+    controller2.animateToItem(((55-hightValue)*10).round(),
+        duration: Duration(milliseconds: 600), curve: Curves.ease);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -54,7 +79,7 @@ class TemperatureSetPageState extends State<TemperatureSetPage> {
           children: <Widget>[
             SizedBox(height: 30,),
             Text(
-              "温度选择 ",
+              widget.isReview?"温度设置":(widget.isCaiJIng?"停止采集":"开始采集"),
               style: TextStyle(color: MyColors.color_444444,fontSize: 19,fontWeight: FontWeight.bold),
             ),
             SizedBox(height: 50,),
@@ -111,17 +136,24 @@ class TemperatureSetPageState extends State<TemperatureSetPage> {
                 textColor: Colors.white ,
 
                 onPressed: () async {
-                  int leftValue=int.parse(dataList[leftSelect]);
-                  int rightValue=int.parse(dataList[rightSelect]);
+                  double leftValue=double.parse(dataList[leftSelect]);
+                  double rightValue=double.parse(dataList[rightSelect]);
                   if(leftValue>=rightValue){
                     Toast.toast(context,msg: "温度设置错误");
                   }else{
                     var prefs = await SharedPreferences.getInstance();
-                    prefs.setInt(ParamName.SP_LOW_TEMP,leftValue);
-                    prefs.setInt(ParamName.SP_HIGH_TEMP,rightValue);
+                    prefs.setDouble(ParamName.SP_LOW_TEMP, NumUtil.getNumByValueDouble(leftValue, 1));
+                    prefs.setDouble(ParamName.SP_HIGH_TEMP,NumUtil.getNumByValueDouble(rightValue, 1));
+                    if(!widget.isReview){
+                      StartEvent event=new StartEvent();
+                      event.isCaijing=widget.isCaiJIng;
+                      eventBus.fire(event);
+                    }
                     Navigator.pop(context);
                   }
                   print(dataList[leftSelect]+"========"+dataList[rightSelect]);
+
+
                 },
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(30.0)), //圆角大小
@@ -163,7 +195,7 @@ class TemperatureSetPageState extends State<TemperatureSetPage> {
       children:widegets2,
       useMagnifier: true,
       backgroundColor:Colors.white,
-        scrollController:controller1
+        scrollController:controller2
     );
     return     Container(
       height: 300,

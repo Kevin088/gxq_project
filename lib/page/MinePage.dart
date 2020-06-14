@@ -42,7 +42,6 @@ class MinePageState extends State<MinePage>{
 
 
     eventBusOn=eventBus.on<LoginInfoEvent>().listen((event){
-      Toast.toast(context,msg: event.nickName);
       setState(() {
         isLogin=true;
         name=event.nickName;

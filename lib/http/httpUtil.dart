@@ -56,17 +56,17 @@ class HttpUtil {
     //dio.interceptors.add(CookieManager(CookieJar()));
     //代理
     //Fiddler抓包设置代理
-    (dio.httpClientAdapter as DefaultHttpClientAdapter).onHttpClientCreate = (client){
-      client.findProxy = (url){
-        //设置代理 电脑ip地址
-        return "PROXY 192.168.100.72:8888";
-        //不设置代理
-        //return 'DIRECT';
-      };
-      //抓Https包设置
-      client.badCertificateCallback =
-          (X509Certificate cert, String host, int port) => true;
-    };
+//    (dio.httpClientAdapter as DefaultHttpClientAdapter).onHttpClientCreate = (client){
+//      client.findProxy = (url){
+//        //设置代理 电脑ip地址
+//        return "PROXY 192.168.100.8:8888";
+//        //不设置代理
+//        //return 'DIRECT';
+//      };
+//      //抓Https包设置
+//      client.badCertificateCallback =
+//          (X509Certificate cert, String host, int port) => true;
+//    };
     //添加拦截器
     dio.interceptors
         .add(InterceptorsWrapper(onRequest: (RequestOptions options) {

@@ -179,7 +179,7 @@ class ChartLinePainter extends BasePainter {
         for (int i = 0; i < length; i++) {
           if (i == 0) {
             var key = startX;
-            var value = (startY - chartBeans[i].y / maxMin[0] * _fixedHeight);
+            var value = (startY - (chartBeans[i].y-maxMin[1]) / (maxMin[0]-maxMin[1]) * _fixedHeight);
             path.moveTo(key, value);
             _points[key] = Offset(key, value);
             continue;
@@ -187,8 +187,8 @@ class ChartLinePainter extends BasePainter {
           currentX = startX + W * i;
           preX = startX + W * (i - 1);
 
-          preY = (startY - chartBeans[i - 1].y / maxMin[0] * _fixedHeight);
-          currentY = (startY - chartBeans[i].y / maxMin[0] * _fixedHeight);
+          preY = (startY - (chartBeans[i - 1].y -maxMin[1])/ (maxMin[0]-maxMin[1]) * _fixedHeight);
+          currentY = (startY - (chartBeans[i].y-maxMin[1]) / (maxMin[0]-maxMin[1])* _fixedHeight);
           _points[currentX] = Offset(currentX, currentY);
 
           if (isCurve) {
@@ -369,7 +369,7 @@ class ChartLinePainter extends BasePainter {
 
       }
       int yLength = yNum ; //包含原点,所以 +1
-      double dValue = maxMin[0] / yNum; //一段对应的值
+      double dValue = (maxMin[0] -maxMin[1])/ (yNum-1); //一段对应的值
       double dV = _fixedHeight / (yNum-1); //一段对应的高度
       for (int i = 0; i < yLength; i++) {
         if (isShowYValue) {
@@ -391,7 +391,7 @@ class ChartLinePainter extends BasePainter {
                 break;
             }
           }else{
-            yValue = (dValue * (i+1)).toStringAsFixed(isShowFloat ? 1 : 0);
+            yValue = (dValue * (i)+maxMin[1]).toStringAsFixed(isShowFloat ? 1 : 0);
           }
           TextPainter(
               textAlign: TextAlign.center,

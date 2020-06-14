@@ -28,6 +28,11 @@ class BasePainter extends CustomPainter {
     }
     if(max==min){
       min=0;
+    }else if(max-min<1.0){
+      min=max-1;
+      if(min<0){
+        min=0;
+      }
     }
     return [max, min];
   }
