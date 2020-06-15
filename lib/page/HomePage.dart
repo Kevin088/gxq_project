@@ -710,8 +710,8 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin{
     String tempValueAverage=(allTem/count).toStringAsFixed(2);
     String detailInfo=jsonEncode(listData);
 
-    int lowValue=prefs.getDouble(ParamName.SP_LOW_TEMP)??34;
-    int hightValue=prefs.getDouble(ParamName.SP_HIGH_TEMP)??40;
+    double lowValue=prefs.getDouble(ParamName.SP_LOW_TEMP)??34;
+    double hightValue=prefs.getDouble(ParamName.SP_HIGH_TEMP)??40;
     int status=0;
     if(hightValue<maxTemp||lowValue>minTemp){
       status=1;

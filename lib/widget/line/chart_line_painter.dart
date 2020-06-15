@@ -482,7 +482,7 @@ class ChartLinePainter extends BasePainter {
 
   ///绘制触摸
   void _drawOnPressed(Canvas canvas, Size size) {
-    print('globalPosition == $globalPosition');
+    print('绘制触摸 ====globalPosition == $globalPosition');
     if (!_isAnimationEnd) return;
     if (globalPosition == null) return;
     if (chartBeans == null || chartBeans.length == 0 || maxMin[0] <= 0) return;
@@ -491,13 +491,13 @@ class ChartLinePainter extends BasePainter {
 
       ///修复x轴越界
       if (pointer.dx < startXNoOff) pointer = Offset(startXNoOff, pointer.dy);
-      if (pointer.dx > endXNoOff) pointer = Offset(endXNoOff, pointer.dy);
+      //if (pointer.dx > endXNoOff) pointer = Offset(endXNoOff, pointer.dy);
 
       double currentX, currentY;
       int length = chartBeans.length ;
       double W = _fixedWidth / (length - 1); //两个点之间的x方向距离
       for (int i = 0; i < length; i++) {
-        currentX = startXNoOff + W * i;
+        currentX = startXNoOff + W * i+xOffset;
         currentY = chartBeans[i].y;
         if (currentX - W / 2 <= pointer.dx && pointer.dx <= currentX + W / 2) {
           pointer = _points[currentX];
