@@ -45,7 +45,9 @@ class HomePage extends StatefulWidget {
 }
 
 class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin{
-  //当前温度按钮
+  /// 多长时间判定为未连接
+  int maxTimeLoss=10;
+  ///当前温度按钮
   int tabButton = 0;
   double xPosition = 0;
   double yPosition = 0;
@@ -212,8 +214,13 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin{
                         child: Container(
                           width: 50,
                           child: FlatButton(
-                            onPressed: (){
-
+                            onPressed: () async {
+                              var prefs = await SharedPreferences.getInstance();
+                              bool isLogin=prefs.getBool(ParamName.IS_LOGIN)??false;
+                              if(!isLogin){
+                                Navigator.push(context, CustomRoute(LoginPage()));
+                                return;
+                              }
                               Navigator.push(context, CustomRoute(TemperatureSetPage(isCaiJIng: isCaiJing,isReview: false,)));
                             },
                             child: Image.asset(Utils.getImgPath2("ic_setting")),
@@ -322,6 +329,12 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin{
   }
   //设置
   Future<void> setting() async {
+    var prefs = await SharedPreferences.getInstance();
+    bool isLogin=prefs.getBool(ParamName.IS_LOGIN)??false;
+    if(!isLogin){
+      Navigator.push(context, CustomRoute(LoginPage()));
+      return;
+    }
     Navigator.push(context, CustomRoute(TemperatureSetPage(isReview:true)));
 //    if(!isCaiJing){
 //      var prefs = await SharedPreferences.getInstance();
@@ -623,6 +636,7 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin{
     const period = const Duration(seconds: 2);
     listData.clear();
     count=0;
+    unConnectCount=0;
     runnable();
     Timer.periodic(period, (timer) async {
       _timer=timer;
@@ -632,11 +646,15 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin{
     });
 
   }
+  int unConnectCount=0;
   runnable(){
+
     if(temperature!="0"){
+      unConnectCount=0;
       setState(() {
         currentTime=Utils.getTime();
         currentTemperature=temperature;
+        temperature="0";
         var chartBean=ChartBean(x:Utils.formatXvalue(count),
             y:Utils.formatDouble(currentTemperature),
             millisSeconds: DateTime.now().millisecondsSinceEpoch);
@@ -649,8 +667,17 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin{
         }
         allTem+=double.parse(currentTemperature);
       });
-      //currentTemperature="0";
+    }else{
+      unConnectCount++;
+      if(isLoss()){
+        cancelTimer();
+        showLossDialog();
+      }
     }
+  }
+
+  bool isLoss(){
+    return unConnectCount>maxTimeLoss;
   }
 
   void cancelTimer() {
@@ -713,7 +740,9 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin{
     double lowValue=prefs.getDouble(ParamName.SP_LOW_TEMP)??34;
     double hightValue=prefs.getDouble(ParamName.SP_HIGH_TEMP)??40;
     int status=0;
-    if(hightValue<maxTemp||lowValue>minTemp){
+    if(isLoss()){
+      status=2;
+    }else if(hightValue<maxTemp||lowValue>minTemp){
       status=1;
     }
     var pointInfo=PointInfo();
@@ -813,5 +842,35 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin{
             },
           );
         });
+  }
+  void showLossDialog(){
+          showDialog(
+          context: context,
+          barrierDismissible: true,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              content: Text('采集温度异常，设备已经断开'),
+              actions: <Widget>[
+                FlatButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    child: Padding(
+                      child: Text('确定'),
+                      padding: EdgeInsets.all(4),
+                    )
+                ),
+                FlatButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    child:Padding(
+                      child:  Text('取消'),
+                      padding: EdgeInsets.all(4),
+                    )
+                ),
+              ],
+            );
+          });
   }
 }

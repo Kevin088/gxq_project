@@ -323,6 +323,7 @@ class TemperatureDetailState extends State<TemperatureDetailPage> {
       pressedHintLineWidth: 1,
       pressedHintLineColor: MyColors.color_dddddd,
       duration: Duration(milliseconds: 2000),
+      isShowFloat:true,
     );
     return Container(
       margin: EdgeInsets.only(left: 0, right: 16, top: 20, bottom: 0),

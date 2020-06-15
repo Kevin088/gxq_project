@@ -491,13 +491,15 @@ class ChartLinePainter extends BasePainter {
 
       ///修复x轴越界
       if (pointer.dx < startXNoOff) pointer = Offset(startXNoOff, pointer.dy);
-      //if (pointer.dx > endXNoOff) pointer = Offset(endXNoOff, pointer.dy);
+
+      if (pointer.dx > endXNoOff&&chartBeans.length<=7) pointer = Offset(endXNoOff, pointer.dy);
 
       double currentX, currentY;
       int length = chartBeans.length ;
-      double W = _fixedWidth / (length - 1); //两个点之间的x方向距离
+      //double W = _fixedWidth / (length - 1); //两个点之间的x方向距离
+      double W=xGap;
       for (int i = 0; i < length; i++) {
-        currentX = startXNoOff + W * i+xOffset;
+        currentX = startXNoOff + W * i+(length>7?xOffset:0);
         currentY = chartBeans[i].y;
         if (currentX - W / 2 <= pointer.dx && pointer.dx <= currentX + W / 2) {
           pointer = _points[currentX];

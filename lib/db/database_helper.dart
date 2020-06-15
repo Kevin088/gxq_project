@@ -69,7 +69,8 @@ class DatabaseHelper {
   //查询 体温数据
   Future<List> getTotalList() async {
     var dbClient = await db;
-    var result = await dbClient.rawQuery("SELECT * FROM $tableName WHERE $columnTempType='0'");
+    var result = await dbClient.rawQuery("SELECT * FROM $tableName "
+        "WHERE $columnTempType='0' ORDER BY $columnCreateTime DESC");
     return result.toList();
   }
 
