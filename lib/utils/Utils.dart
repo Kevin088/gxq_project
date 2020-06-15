@@ -4,6 +4,7 @@ import 'package:date_format/date_format.dart';
 import 'package:flutter/material.dart';
 import 'package:gxq_project/common/param_name.dart';
 import 'package:gxq_project/page/mine/LoginPage.dart';
+import 'package:gxq_project/res/Colors.dart';
 import 'package:gxq_project/widget/CustomRoute.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -70,6 +71,15 @@ class Utils{
     bool isLogin=prefs.getBool(ParamName.IS_LOGIN)??false;
 
     return isLogin;
+  }
+  static Color getColor(int type){
+    if(type==0){
+      return MyColors.color_3464BA;
+    }else if(type==2){
+      return MyColors.color_DFC865;
+    }else{
+      return MyColors.color_DF6565;
+    }
   }
 
 }

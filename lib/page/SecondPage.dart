@@ -288,7 +288,7 @@ class SecondPageState extends State<SecondPage> {
             ),
             Text(
               temp,
-              style: TextStyle(color: MyColors.color_3464BA, fontSize: 20),
+              style: TextStyle(color: Utils.getColor(pointInfo.status), fontSize: 20),
             ),
             Container(
               width: 8,
@@ -297,7 +297,7 @@ class SecondPageState extends State<SecondPage> {
               child: Container(
                 height: 6,
                 width: 6,
-                color: MyColors.color_3464BA,
+                color: Utils.getColor(pointInfo.status),
               ),
             ),
             Container(
@@ -311,4 +311,5 @@ class SecondPageState extends State<SecondPage> {
       ),
     );
   }
+
 }

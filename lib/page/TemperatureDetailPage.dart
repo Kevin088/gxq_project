@@ -57,7 +57,7 @@ class TemperatureDetailState extends State<TemperatureDetailPage> {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: <Widget>[
         Container(
-          color: MyColors.color_DF6565,
+          color: Utils.getColor(widget.pointInfo.status),
           height: 230,
           child: Padding(
             padding: EdgeInsets.fromLTRB(20, 30, 20, 0),
@@ -225,7 +225,7 @@ class TemperatureDetailState extends State<TemperatureDetailPage> {
             ClipRRect(
               borderRadius: BorderRadius.circular(4.0),
               child: Container(
-                color: MyColors.color_DF6565,
+                color: Utils.getColor(widget.pointInfo.status),
                 width: 4,
                 height: 80,
               ),
@@ -234,7 +234,7 @@ class TemperatureDetailState extends State<TemperatureDetailPage> {
               child: Container(
                 width: 12,
                 height: 12,
-                color: MyColors.color_DF6565,
+                color: Utils.getColor(widget.pointInfo.status),
               ),
             ),
             Positioned(
@@ -246,7 +246,7 @@ class TemperatureDetailState extends State<TemperatureDetailPage> {
                       child: Container(
                         width: 12,
                         height: 12,
-                        color: MyColors.color_DF6565,
+                        color: Utils.getColor(widget.pointInfo.status),
                       ),
                     ),
                     ClipOval(
@@ -307,7 +307,7 @@ class TemperatureDetailState extends State<TemperatureDetailPage> {
       size: Size(MediaQuery.of(context).size.width, 180),
       isCurve: true,
       lineWidth: 2,
-      lineColor: MyColors.color_DF6565,
+      lineColor: Utils.getColor(widget.pointInfo.status),
       fontColor: MyColors.color_444444,
       xyColor: MyColors.color_dddddd,
       shaderColors: [
