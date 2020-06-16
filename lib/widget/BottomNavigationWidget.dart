@@ -11,7 +11,7 @@ import 'package:gxq_project/page/MinePage.dart';
 import 'package:gxq_project/page/SecondPage.dart';
 import 'package:gxq_project/utils/Toast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
+import 'package:rammus/rammus.dart' as rammus;
 
 import 'MessageDialog.dart'; //导包
 class BottomNavigationWidget extends StatefulWidget {
@@ -40,6 +40,13 @@ class BottomNavigationWidgetState extends State<BottomNavigationWidget> {
     var prefs = await SharedPreferences.getInstance();
     if (!mounted) return;
     String deviceId=prefs.getString(ParamName.DEVICE_ID);
+    if(deviceId==null||deviceId.isEmpty){
+      try {
+        deviceId = await rammus.deviceId;
+      } on PlatformException {
+
+      }
+    }
     Response response= await HttpUtil.getInstance().post(Api.getList+deviceId);
     var data=response?.data;
     var list=data['data'];

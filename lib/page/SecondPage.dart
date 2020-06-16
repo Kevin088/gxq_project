@@ -1,12 +1,18 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:gxq_project/bean/point_info.dart';
+import 'package:gxq_project/common/api.dart';
 import 'package:gxq_project/db/database_helper.dart';
+import 'package:gxq_project/http/httpUtil.dart';
 import 'package:gxq_project/page/TemperatureDetailPage.dart';
 import 'package:gxq_project/res/Colors.dart';
 import 'package:gxq_project/res/style.dart';
+import 'package:gxq_project/utils/Toast.dart';
 import 'package:gxq_project/utils/Utils.dart';
 import 'package:gxq_project/widget/CustomRoute.dart';
+import 'package:gxq_project/widget/SlideButton.dart';
+import 'package:loading_dialog/loading_dialog.dart';
 
 class SecondPage extends StatefulWidget {
   @override
@@ -21,11 +27,15 @@ class SecondPageState extends State<SecondPage> {
 
   var mList=List<PointInfo>();
   bool isLoading = false;
+
+  LoadingDialog loading ;
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     initData();
+
+    loading=new LoadingDialog(buildContext: context);
   }
 
   void initData(){
@@ -228,8 +238,8 @@ class SecondPageState extends State<SecondPage> {
 //      });
 //    }
 //  }
-
-  Widget getItemView(int index) {
+  var list=List<SlideButton>();
+  SlideButton getItemView(int index) {
     var pointInfo=mList[index];
     var title;
     var temp;
@@ -243,73 +253,140 @@ class SecondPageState extends State<SecondPage> {
       title="体温报警";
       temp=pointInfo.tempValueMax;
     }
-    return GestureDetector(
-      onTap: () {
-        Navigator.push(context, CustomRoute(TemperatureDetailPage(pointInfo: pointInfo)));
+    var key = GlobalKey<SlideButtonState>();
+    var slide = SlideButton(
+      key:key,
+      singleButtonWidth: 80,
+      onSlideStarted: (){
+        list.forEach((slide){
+          if(slide.key!=key){
+            slide.key.currentState?.close();
+          }
+        });
       },
-      child: Container(
-        decoration: BoxDecoration(
-            border: Border(
-                bottom: BorderSide(width: 0.5, color: MyColors.color_divider))),
-        height: 80,
-        margin: EdgeInsets.fromLTRB(20, 0, 20, 0),
-        child: Row(
-          children: <Widget>[
-            Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Text(
-                  title,
-                  style: TextStyle(
-                      color: MyColors.color_444444,
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold),
-                ),
-                SizedBox(height: 10.0),
-                Text(
-                  Utils.formatTime(pointInfo.createTime),
-                  style: TextStyle(
-                    color: MyColors.gray_999999,
-                    fontSize: 12,
+      //滑动开显示的button
+      buttons: <Widget>[
+        buildAction1(key, "删 除", MyColors.color_DF6565, () {
+         //Toast.toast(context,msg: index.toString());
+         delInfo(mList[index].id);
+          key.currentState.close();
+        }),
+      ],
+      child: GestureDetector(
+        onTap: () {
+          Navigator.push(context, CustomRoute(TemperatureDetailPage(pointInfo: pointInfo)));
+        },
+        child: Container(
+          decoration: BoxDecoration(
+              color: Colors.white,
+              border: Border(
+                  bottom: BorderSide(width: 0.5, color: MyColors.color_divider))),
+          height: 80,
+          padding: EdgeInsets.fromLTRB(20, 0, 20, 0),
+          child: Row(
+            children: <Widget>[
+              Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Text(
+                    title,
+                    style: TextStyle(
+                        color: MyColors.color_444444,
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold),
                   ),
-                ),
-                Text(
-                  pointInfo.bluetoothName,
-                  style: TextStyle(
-                    color: MyColors.gray_999999,
-                    fontSize: 12,
+                  SizedBox(height: 10.0),
+                  Text(
+                    Utils.formatTime(pointInfo.createTime),
+                    style: TextStyle(
+                      color: MyColors.gray_999999,
+                      fontSize: 12,
+                    ),
                   ),
-                ),
-              ],
-            ),
-            Expanded(
-              child: Container(),
-            ),
-            Text(
-              temp,
-              style: TextStyle(color: Utils.getColor(pointInfo.status), fontSize: 20),
-            ),
-            Container(
-              width: 8,
-            ),
-            ClipOval(
-              child: Container(
-                height: 6,
-                width: 6,
-                color: Utils.getColor(pointInfo.status),
+                  Text(
+                    pointInfo.bluetoothName,
+                    style: TextStyle(
+                      color: MyColors.gray_999999,
+                      fontSize: 12,
+                    ),
+                  ),
+                ],
               ),
-            ),
-            Container(
-              width: 8,
-            ),
-            Image(
-              image: AssetImage(Utils.getImgPath2("ic_arraw")),
-            )
-          ],
+              Expanded(
+                child: Container(),
+              ),
+              Text(
+                temp,
+                style: TextStyle(color: Utils.getColor(pointInfo.status), fontSize: 20),
+              ),
+              Container(
+                width: 8,
+              ),
+              ClipOval(
+                child: Container(
+                  height: 6,
+                  width: 6,
+                  color: Utils.getColor(pointInfo.status),
+                ),
+              ),
+              Container(
+                width: 8,
+              ),
+              Image(
+                image: AssetImage(Utils.getImgPath2("ic_arraw")),
+              )
+            ],
+          ),
         ),
+      ),
+
+    );
+    list.add(slide);
+
+    return slide;
+  }
+  //构建button
+  InkWell buildAction1(GlobalKey<SlideButtonState> key, String text, Color color,
+      GestureTapCallback tap) {
+
+    return InkWell(
+      onTap: tap,
+      child: Container(
+        decoration:BoxDecoration(
+          borderRadius: new BorderRadius.only(topRight: new Radius.circular(10.0),bottomRight: new Radius.circular(10.0)),
+          color: color,
+        ),
+        alignment: Alignment.center,
+        width: 80,
+        height: 92,
+        child: Text(text,
+            style: TextStyle(
+              color: Colors.white,
+            )),
       ),
     );
   }
 
+  delInfo(String id) async {
+    if(id.isEmpty){
+      return;
+    }
+    loading.show();
+    Response response=await HttpUtil.getInstance().post(Api.del+id,);
+    if (!mounted) return;
+    loading.hide();
+    var loginInfo=response?.data;
+    var code=loginInfo['code'];
+    Toast.toast(context,msg: code==200?"成功":"失败");
+    if(code!=200){
+      return;
+    }
+
+    DatabaseHelper().deleteItem(id).then((value){
+
+      initData();
+
+    });
+  }
 }

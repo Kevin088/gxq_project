@@ -105,7 +105,7 @@ class DatabaseHelper {
 
 
   //根据id删除
-  Future<int> deleteItem(int id) async {
+  Future<int> deleteItem(String id) async {
     var dbClient = await db;
     return await dbClient.delete(tableName,
         where: "$columnId = ?", whereArgs: [id]);

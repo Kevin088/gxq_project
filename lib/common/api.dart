@@ -13,4 +13,6 @@ class Api {
 
   static const String yijianfankui="api/user/remark";
 
+  static const String del="api/user/delrecord/";
+
 }
