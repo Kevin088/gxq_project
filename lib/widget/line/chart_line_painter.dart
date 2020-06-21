@@ -353,6 +353,7 @@ class ChartLinePainter extends BasePainter {
           }
 
         }
+
         ///绘制x轴文本
         TextPainter(
             textAlign: TextAlign.center,
@@ -366,6 +367,7 @@ class ChartLinePainter extends BasePainter {
         if (xOffset <0) {
           canvas.restore();
         }
+
 //        if (isShowHintX) {
 //          ///x轴辅助线
 //          canvas.drawLine(
@@ -399,7 +401,6 @@ class ChartLinePainter extends BasePainter {
         if (xOffset < 0) {
           canvas.restore();
         }
-
       }
       int yLength = yNum ; //包含原点,所以 +1
       double dValue = (maxMin[0] -maxMin[1])/ (yNum-1); //一段对应的值

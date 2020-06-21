@@ -73,7 +73,9 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin{
   String blueToothName="设备连接中...";
   //banner
   List<String> _imgData =List<String>();
-
+  List<String> _jumpUrl =List<String>();
+  
+  
   bool isShowHighTempDialog=false;
 
   StreamSubscription eventBusOn;
@@ -111,6 +113,33 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin{
               blueToothName=r.device.name;
             });
           }
+          r.device.state.listen((s){
+            switch(s){
+              case BluetoothDeviceState.connected:
+                print("蓝牙已经链接=====================");
+                setState(() {
+                  blueToothName=bluetoothDevice.name;
+                });
+                break;
+              case BluetoothDeviceState.disconnected:
+                print("蓝牙=========disconnected============");
+                setState(() {
+                  blueToothName="设备连接中...";
+                  flutterBlue.startScan(timeout: Duration(seconds: 60*60));
+                });
+                devicelist.remove(bluetoothDevice);
+                bluetoothDevice=null;
+
+                break;
+              case BluetoothDeviceState.connecting:
+                print("蓝牙=========connecting============");
+                break;
+              case BluetoothDeviceState.disconnecting:
+                print("蓝牙======disconnecting===============");
+                break;
+            }
+          });
+
 
           List<BluetoothService> services = await r.device.discoverServices();
           services.forEach((service) {
@@ -144,6 +173,8 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin{
         });
       }
     });
+
+
 // Stop scanning
     //  flutterBlue.stopScan();
 
@@ -398,7 +429,7 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin{
   }
 
   Widget getBanner() {
-    return CustomBanner(_imgData);
+    return CustomBanner(_imgData,_jumpUrl);
   }
 
   Widget getTabButton(String txt, Function press, int index) {
@@ -618,6 +649,9 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin{
   Timer _timer;
   int count=0;
   timeStart() async {
+    if(isCaiJing){
+      return;
+    }
     isCaiJing=true;
     const period = const Duration(seconds: 2);
     listData.clear();
@@ -647,7 +681,6 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin{
   }
   int unConnectCount=0;
   runnable(){
-
     if(temperature!="0"){
       unConnectCount=0;
       setState(() {
@@ -672,11 +705,11 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin{
         count++;
         if(double.parse(currentTemperature)>setMaxTemp
             ||double.parse(currentTemperature)<setMinTemp){
-          currentstatus=1;
+
           if(!isShowHighTempDialog){
             showHighTempDialog();
           }
-          cancelTimer();
+          //cancelTimer();
         }
       });
     }else{
@@ -715,6 +748,7 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin{
     List<BannerInfo>listBanner=BannerInfo.fromMapList(list);
     listBanner?.forEach((element){
        _imgData.add(element.url);
+       _jumpUrl.add(element.jumpUrl);
     });
     setState(() {
 
@@ -728,7 +762,7 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin{
   double maxTemp=0;
   double minTemp=0;
   double allTem=0;
-  int currentstatus=-1;
+ // int currentstatus=-1;
 
   double setMaxTemp;
   double setMinTemp;
@@ -747,10 +781,10 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin{
     String isUpload="0";
     String deviceId=await rammus.deviceId;
     String blueToothId=this.blueToothId;
-    String blueToothName=this.blueToothName;
+    String blueToothName=this.bluetoothDevice?.name;
     String tempValueMax=maxTemp.toString();
     String tempValueMin=minTemp.toString();
-    String tempValueAverage=(allTem/count).toStringAsFixed(2);
+    String tempValueAverage=(allTem/listData.length).toStringAsFixed(2);
     String detailInfo=jsonEncode(listData);
 
     double lowValue=prefs.getDouble(ParamName.SP_LOW_TEMP_PEOPLE)??35;
@@ -764,7 +798,9 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin{
     }
     int status=0;
     // ignore: unrelated_type_equality_checks
-    if(currentTemperature==1){
+
+    if(double.parse(currentTemperature)>setMaxTemp
+        ||double.parse(currentTemperature)<setMinTemp){
       status=1;
     }else if(isLoss()){
       status=2;
@@ -797,7 +833,7 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin{
     maxTemp=-1000;
     minTemp=1000;
     allTem=0;
-    currentstatus=-1;
+  //  currentstatus=-1;
   }
 
 

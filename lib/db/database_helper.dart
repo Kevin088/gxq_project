@@ -70,7 +70,7 @@ class DatabaseHelper {
   Future<List> getTotalList() async {
     var dbClient = await db;
     var result = await dbClient.rawQuery("SELECT * FROM $tableName "
-        "ORDER BY $columnCreateTime DESC");
+        "WHERE $columnTempType='0' ORDER BY $columnCreateTime DESC");
     return result.toList();
   }
 
