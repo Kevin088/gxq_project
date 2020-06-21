@@ -37,16 +37,16 @@ class BottomNavigationWidgetState extends State<BottomNavigationWidget> {
   }
   Future<void> initData() async {
     //下载
-    var prefs = await SharedPreferences.getInstance();
+    //var prefs = await SharedPreferences.getInstance();
     if (!mounted) return;
-    String deviceId=prefs.getString(ParamName.DEVICE_ID);
-    if(deviceId==null||deviceId.isEmpty){
-      try {
-        deviceId = await rammus.deviceId;
-      } on PlatformException {
+    String deviceId;
 
-      }
+    try {
+      deviceId = await rammus.deviceId;
+    } on PlatformException {
+
     }
+
     Response response= await HttpUtil.getInstance().post(Api.getList+deviceId);
     var data=response?.data;
     var list=data['data'];
@@ -97,7 +97,7 @@ class BottomNavigationWidgetState extends State<BottomNavigationWidget> {
                 Icons.business,
               ),
               title: new Text(
-                '商业',
+                '历史温度 ',
               )),
           BottomNavigationBarItem(
               icon: Icon(

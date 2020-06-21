@@ -243,14 +243,27 @@ class SecondPageState extends State<SecondPage> {
     var pointInfo=mList[index];
     var title;
     var temp;
+    var str;
+    switch(pointInfo.tempType){
+      case 0:
+        str="体温";
+        break;
+      case 1:
+        str="室温";
+        break;
+      case 2:
+        str="水温";
+        break;
+    }
+
     if(pointInfo.status==0){
-      title="体温正常";
+      title="$str正常";
       temp=pointInfo.tempValueAverage;
     } else if(pointInfo.status==2){
-      title="体温中断";
+      title="$str中断";
       temp=pointInfo.tempValueAverage;
     }else if(pointInfo.status==1){
-      title="体温报警";
+      title="$str报警";
       temp=pointInfo.tempValueMax;
     }
     var key = GlobalKey<SlideButtonState>();

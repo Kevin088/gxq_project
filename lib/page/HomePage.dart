@@ -46,7 +46,7 @@ class HomePage extends StatefulWidget {
 
 class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin{
   /// 多长时间判定为未连接
-  int maxTimeLoss=10;
+  int maxTimeLoss=60*5;
   ///当前温度按钮
   int tabButton = 0;
   double xPosition = 0;
@@ -213,18 +213,6 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin{
                       Container(
                         child: Container(
                           width: 50,
-                          child: FlatButton(
-                            onPressed: () async {
-                              var prefs = await SharedPreferences.getInstance();
-                              bool isLogin=prefs.getBool(ParamName.IS_LOGIN)??false;
-                              if(!isLogin){
-                                Navigator.push(context, CustomRoute(LoginPage()));
-                                return;
-                              }
-                              Navigator.push(context, CustomRoute(TemperatureSetPage(isCaiJIng: isCaiJing,isReview: false,)));
-                            },
-                            child: Image.asset(Utils.getImgPath2("ic_setting")),
-                          ),
                         ),
                       )
                     ],
@@ -335,7 +323,7 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin{
       Navigator.push(context, CustomRoute(LoginPage()));
       return;
     }
-    Navigator.push(context, CustomRoute(TemperatureSetPage(isReview:true)));
+    Navigator.push(context, CustomRoute(TemperatureSetPage(isCaiJIng:isCaiJing,index: tabButton,)));
 //    if(!isCaiJing){
 //      var prefs = await SharedPreferences.getInstance();
 //      bool isLogin=prefs.getBool(ParamName.IS_LOGIN)??false;
@@ -593,7 +581,6 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin{
       return Container(
         color: MyColors.color_bg_pop,
         padding: EdgeInsets.fromLTRB(20, 0, 20, 0),
-        height: 100,
         child: Text(
           "设备连接中...",
           style: TextStyle(
@@ -604,7 +591,6 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin{
     }else{
       return Container(
         color: Colors.white,
-        height: 100,
         child: ListView.builder(
           itemBuilder: (context, index) {
             return GestureDetector(
@@ -631,12 +617,25 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin{
 
   Timer _timer;
   int count=0;
-  timeStart(){
+  timeStart() async {
     isCaiJing=true;
     const period = const Duration(seconds: 2);
     listData.clear();
     count=0;
     unConnectCount=0;
+
+    var prefs = await SharedPreferences.getInstance();
+    if (!mounted) return;
+    if(tabButton==0)
+       setMinTemp=prefs.getDouble(ParamName.SP_LOW_TEMP_PEOPLE)??35;
+       setMaxTemp=prefs.getDouble(ParamName.SP_HIGH_TEMP_PEOPLE)??39;
+    if(tabButton==1){
+      setMinTemp=prefs.getDouble(ParamName.SP_LOW_TEMP_ROOM)??15;
+      setMaxTemp=prefs.getDouble(ParamName.SP_HIGH_TEMP_ROOM)??36;
+    }else if(tabButton==2){
+      setMinTemp=prefs.getDouble(ParamName.SP_LOW_TEMP_WATER)??20;
+      setMaxTemp=prefs.getDouble(ParamName.SP_HIGH_TEMP_WATER)??45;
+    }
     runnable();
     Timer.periodic(period, (timer) async {
       _timer=timer;
@@ -659,13 +658,26 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin{
             y:Utils.formatDouble(currentTemperature),
             millisSeconds: DateTime.now().millisecondsSinceEpoch);
         listData.add(chartBean);
-        count++;
+
+        if(count==0){
+          minTemp=double.parse(currentTemperature);
+          maxTemp=double.parse(currentTemperature);
+        }
         if(minTemp>double.parse(currentTemperature)){
           minTemp=double.parse(currentTemperature);
         }else if(maxTemp<double.parse(currentTemperature)){
           maxTemp=double.parse(currentTemperature);
         }
         allTem+=double.parse(currentTemperature);
+        count++;
+        if(double.parse(currentTemperature)>setMaxTemp
+            ||double.parse(currentTemperature)<setMinTemp){
+          currentstatus=1;
+          if(!isShowHighTempDialog){
+            showHighTempDialog();
+          }
+          cancelTimer();
+        }
       });
     }else{
       unConnectCount++;
@@ -685,11 +697,12 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin{
       isCaiJing=false;
       _timer.cancel();
       _timer = null;
+      _saveData(listData);
     }
     setState(() {
 
     });
-    _saveData(listData);
+
   }
   Future<void> initData() async {
 
@@ -712,10 +725,13 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin{
   bool get wantKeepAlive => true;
 
 
-  double maxTemp=-1000;
-  double minTemp=1000;
+  double maxTemp=0;
+  double minTemp=0;
   double allTem=0;
+  int currentstatus=-1;
 
+  double setMaxTemp;
+  double setMinTemp;
 
   Future<void> _saveData(List<ChartBean>listData) async {
     if(listData==null||listData.length==0){
@@ -729,7 +745,7 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin{
     int createTime=listData[0]?.millisSeconds;
     int tempType=tabButton;
     String isUpload="0";
-    String deviceId=prefs.getString(ParamName.DEVICE_ID);
+    String deviceId=await rammus.deviceId;
     String blueToothId=this.blueToothId;
     String blueToothName=this.blueToothName;
     String tempValueMax=maxTemp.toString();
@@ -737,13 +753,21 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin{
     String tempValueAverage=(allTem/count).toStringAsFixed(2);
     String detailInfo=jsonEncode(listData);
 
-    double lowValue=prefs.getDouble(ParamName.SP_LOW_TEMP)??34;
-    double hightValue=prefs.getDouble(ParamName.SP_HIGH_TEMP)??40;
+    double lowValue=prefs.getDouble(ParamName.SP_LOW_TEMP_PEOPLE)??35;
+    double hightValue=prefs.getDouble(ParamName.SP_HIGH_TEMP_PEOPLE)??39;
+    if(tempType==1){
+      lowValue=prefs.getDouble(ParamName.SP_LOW_TEMP_ROOM)??15;
+      hightValue=prefs.getDouble(ParamName.SP_HIGH_TEMP_ROOM)??36;
+    }else if(tempType==2){
+      lowValue=prefs.getDouble(ParamName.SP_LOW_TEMP_WATER)??20;
+      hightValue=prefs.getDouble(ParamName.SP_HIGH_TEMP_WATER)??45;
+    }
     int status=0;
-    if(isLoss()){
-      status=2;
-    }else if(hightValue<maxTemp||lowValue>minTemp){
+    // ignore: unrelated_type_equality_checks
+    if(currentTemperature==1){
       status=1;
+    }else if(isLoss()){
+      status=2;
     }
     var pointInfo=PointInfo();
     pointInfo.id=id;
@@ -768,6 +792,12 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin{
       //存库
       DatabaseHelper().updateItem(pointInfo);
     }
+
+
+    maxTemp=-1000;
+    minTemp=1000;
+    allTem=0;
+    currentstatus=-1;
   }
 
 
@@ -830,7 +860,7 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin{
   }
 
   showHighTempDialog(){
-    isShowHighTempDialog=false;
+    isShowHighTempDialog=true;
     showDialog(
         context: context,
         barrierDismissible: false,
@@ -839,10 +869,12 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin{
             child: Image.asset(Utils.getImgPath2("ic_push_dialog_bg")),
             onTap: (){
               Navigator.of(context).pop();
+              isShowHighTempDialog=false;
             },
           );
         });
   }
+
   void showLossDialog(){
           showDialog(
           context: context,

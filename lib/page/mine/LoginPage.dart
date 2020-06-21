@@ -20,7 +20,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sharesdk_plugin/sharesdk_defines.dart';
 
 import 'package:sharesdk_plugin/sharesdk_interface.dart';
-
+import 'package:rammus/rammus.dart' as rammus;
 class LoginPage extends StatefulWidget{
   @override
   State<StatefulWidget> createState() {
@@ -39,8 +39,11 @@ class LoginPageState extends State<LoginPage>{
     initData();
   }
   Future<void> initData() async {
-    final prefs = await SharedPreferences.getInstance();
-    deviceId=prefs.getString(ParamName.DEVICE_ID);
+//    final prefs = await SharedPreferences.getInstance();
+//    deviceId=prefs.getString(ParamName.DEVICE_ID);
+//    if(deviceId==null){
+      deviceId= await rammus.deviceId;
+//    }
   }
   @override
   Widget build(BuildContext context) {
