@@ -14,7 +14,7 @@ void main() {
 
   register.setupWechat("wx9af9b57fa99042f5","f89725582f66ed27ae17239f0de57431","http://www.iqihang.com.cn/");
 
-  register.setupSinaWeibo("470701973","f0515c6d0a56ccb1f0c77d5e2a38be4d","https://www.pgyer.com/L9wr");
+  register.setupSinaWeibo("470701973","f0515c6d0a56ccb1f0c77d5e2a38be4d","http://mobile.iqihang.com");
 
   register.setupQQ("1110255218", "KEVOjmNgXbMTaEfu");
 
