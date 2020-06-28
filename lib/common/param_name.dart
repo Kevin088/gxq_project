@@ -13,4 +13,6 @@ class ParamName{
 
   static const String SP_LOW_TEMP_WATER="SP_LOW_TEMP_WATER";
   static const String SP_HIGH_TEMP_WATER="SP_HIGH_TEMP_WATER";
+
+  static const String URL_YINSI="http://150.158.113.42/protocol.html";
 }
