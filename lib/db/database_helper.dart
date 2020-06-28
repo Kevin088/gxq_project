@@ -69,7 +69,8 @@ class DatabaseHelper {
   //查询 体温数据
   Future<List> getTotalList() async {
     var dbClient = await db;
-    var result = await dbClient.rawQuery("SELECT * FROM $tableName WHERE $columnTempType='0'");
+    var result = await dbClient.rawQuery("SELECT * FROM $tableName "
+        "WHERE $columnTempType='0' ORDER BY $columnCreateTime DESC");
     return result.toList();
   }
 
@@ -104,7 +105,7 @@ class DatabaseHelper {
 
 
   //根据id删除
-  Future<int> deleteItem(int id) async {
+  Future<int> deleteItem(String id) async {
     var dbClient = await db;
     return await dbClient.delete(tableName,
         where: "$columnId = ?", whereArgs: [id]);

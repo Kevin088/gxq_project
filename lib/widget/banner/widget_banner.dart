@@ -2,14 +2,16 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 
+import 'package:url_launcher/url_launcher.dart';
 class CustomBanner extends StatefulWidget {
   final List<String> _images;
+  final List<String>_jumpUrl;
   final double height;
   final ValueChanged<int> onTap;
   final Curve curve;
 
   CustomBanner(
-    this._images, {
+    this._images, this._jumpUrl,{
     this.height = 200,
     this.onTap,
     this.curve = Curves.linear,
@@ -86,13 +88,27 @@ class _CustomBannerState extends State<CustomBanner> {
             onPanDown: (details) {
               _cancelTimer();
             },
-            onTap: () {
-              Scaffold.of(context).showSnackBar(
-                SnackBar(
-                  content: Text('当前 page 为 ${index % length}'),
-                  duration: Duration(milliseconds: 500),
-                ),
-              );
+            onTap: () async {
+//              Scaffold.of(context).showSnackBar(
+//                SnackBar(
+//                  content: Text('当前 page 为 ${index % length}'),
+//                  duration: Duration(milliseconds: 500),
+//                ),
+//              );
+
+//              _launchURL(apkUrl) async {
+//                if (await canLaunch(apkUrl)) {
+//
+//                } else {
+//                  throw 'Could not launch $apkUrl';
+//                }
+//              }
+              String url=widget._jumpUrl[index%length];
+              if(!url.contains("http")){
+                url="http://"+url;
+              }
+              await launch(url);
+
             },
             child: Image.network(
               widget._images[index % length],

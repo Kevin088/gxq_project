@@ -27,6 +27,9 @@ apply plugin: 'com.mob.sdk'
 apply plugin: 'seal'
 
 def projectRoot = project.getRootProject().rootDir.absolutePath
+static def releaseTime() {
+    return new Date().format("yyyyMMddHHmm", TimeZone.getTimeZone("GMT+8"))
+}
 android {
     compileSdkVersion 28
 
@@ -63,6 +66,15 @@ android {
             minifyEnabled false
             shrinkResources false
             signingConfig signingConfigs.release
+//            applicationVariants.all { variant ->
+//                variant.outputs.all { output ->
+//                    def fileName = "app_release_${releaseTime()}.apk"
+//                    def outFile = output.outputFile
+//                    if (outFile != null && outFile.name.endsWith('.apk')) {
+//                        outputFileName = fileName
+//                    }
+//                }
+//            }
         }
     }
 

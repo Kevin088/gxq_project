@@ -20,7 +20,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sharesdk_plugin/sharesdk_defines.dart';
 
 import 'package:sharesdk_plugin/sharesdk_interface.dart';
-
+import 'package:rammus/rammus.dart' as rammus;
 class LoginPage extends StatefulWidget{
   @override
   State<StatefulWidget> createState() {
@@ -39,8 +39,11 @@ class LoginPageState extends State<LoginPage>{
     initData();
   }
   Future<void> initData() async {
-    final prefs = await SharedPreferences.getInstance();
-    deviceId=prefs.getString(ParamName.DEVICE_ID);
+//    final prefs = await SharedPreferences.getInstance();
+//    deviceId=prefs.getString(ParamName.DEVICE_ID);
+//    if(deviceId==null){
+      deviceId= await rammus.deviceId;
+//    }
   }
   @override
   Widget build(BuildContext context) {
@@ -86,12 +89,25 @@ class LoginPageState extends State<LoginPage>{
                 ),
               ),
               onPressed: (){
-                Toast.toast(context,msg:"微信");
-
+               // Toast.toast(context,msg:"微信");
+//                SharesdkPlugin.isClientInstalled(ShareSDKPlatforms.wechatSession)
+//                .then((value){
+//                  if(value){
+//                    SharesdkPlugin.getUserInfo(
+//                        ShareSDKPlatforms.wechatSession, (SSDKResponseState state,
+//                        Map user, SSDKError error) {
+//
+//                      //Toast.toast(context,msg: user.toString());
+//                    });
+//                  }else{
+//                    Toast.toast(context,msg: "请安装微信客户端");
+//                  }
+//                });
                 SharesdkPlugin.getUserInfo(
                     ShareSDKPlatforms.wechatSession, (SSDKResponseState state,
                     Map user, SSDKError error) {
-                  Toast.toast(context,msg: user.toString());
+
+                  //Toast.toast(context,msg: user.toString());
                 });
               },
               shape: RoundedRectangleBorder(
@@ -164,24 +180,31 @@ class LoginPageState extends State<LoginPage>{
                 SharesdkPlugin.getUserInfo(
                     ShareSDKPlatforms.qq, (SSDKResponseState state,
                     Map user, SSDKError error) async {
-                      if(user!=null){
-                        Map<String,dynamic> temp=new Map<String,dynamic>.from(user);
-                        var dbInfo=temp["dbInfo"];
-                        Map<String,dynamic>map=json.decode(dbInfo.toString());
-                        QQLoginBean bean=QQLoginBean.fromJson(map);
-
-                        if(bean!=null){
-                          RequestLoginBean loginBean=new RequestLoginBean();
-                          loginBean.avatar=bean?.icon;
-                          loginBean.openId=bean?.userID;
-                          loginBean.nickName=bean?.nickname;
-                          loginBean.loginType=2;
-                          loginBean.device=deviceId;
-                          login(loginBean);
-                        }
-                      }
-
+                  if(user!=null){
+                    Map<String,dynamic> temp=new Map<String,dynamic>.from(user);
+                    var dbInfo=temp["dbInfo"];
+                    Map<String,dynamic>map=json.decode(dbInfo.toString());
+                    QQLoginBean bean=QQLoginBean.fromJson(map);
+                    if(bean!=null){
+                      RequestLoginBean loginBean=new RequestLoginBean();
+                      loginBean.avatar=bean?.icon;
+                      loginBean.openId=bean?.userID;
+                      loginBean.nickName=bean?.nickname;
+                      loginBean.loginType=2;
+                      loginBean.device=deviceId;
+                      login(loginBean);
+                    }
+                  }
                 });
+
+//                SharesdkPlugin.isClientInstalled(ShareSDKPlatforms.qq)
+//                    .then((value){
+//                  if(value){
+//
+//                  }else{
+//                    Toast.toast(context,msg: "请安装qq客户端");
+//                  }
+//                });
               },
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.all(Radius.circular(28)),

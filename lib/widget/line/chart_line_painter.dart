@@ -12,7 +12,7 @@ class ChartLinePainter extends BasePainter {
   Color lineColor; //曲线或折线的颜色
   Color xyColor; //xy轴的颜色
   static const double basePadding = 16; //默认的边距
-  static const double xGap = 40; //x轴间距
+  static const double xGap = 30; //x轴间距
   List<double> maxMin = [0, 0]; //存储极值
   bool isCurve; //是否为曲线
   bool isShowYValue; //是否显示y轴数值
@@ -49,6 +49,9 @@ class ChartLinePainter extends BasePainter {
 //    ChartBean(),
 //  ];
   bool scrollEndx;
+
+  int numX=7;//x轴 显示的刻度
+
   ChartLinePainter(
     this.chartBeans,
     this.lineColor, {
@@ -66,7 +69,7 @@ class ChartLinePainter extends BasePainter {
     this.rulerWidth = 8,
     this.shaderColors,
     this.xyColor = defaultColor,
-    this.yNum = 4,
+    this.yNum = 10,
     this.isShowFloat = false,
     this.fontSize = 10,
     this.fontColor = defaultColor,
@@ -81,8 +84,8 @@ class ChartLinePainter extends BasePainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    if(scrollEndx&&chartBeans.length>7){
-      xOffset=-40*(chartBeans.length-7).roundToDouble();
+    if(scrollEndx&&chartBeans.length>numX){
+      xOffset=-xGap*(chartBeans.length-numX).roundToDouble();
     }
     _init(size);
     _drawXy(canvas, size); //坐标轴
@@ -115,13 +118,15 @@ class ChartLinePainter extends BasePainter {
       fontColor = defaultColor;
     }
     if (fontSize == null) {
-      fontSize = 10;
+      fontSize = 8;
     }
     if (pressedHintLineColor == null) {
       pressedHintLineColor = defaultColor;
     }
-    if (yNum == null) {
+    if (chartBeans.length == 0) {
       yNum = 4;
+    }else{
+      yNum=10;
     }
     if (isShowFloat == null) {
       isShowFloat = false;
@@ -133,17 +138,21 @@ class ChartLinePainter extends BasePainter {
     startXNoOff= basePadding * 2.5 ; //预留出y轴刻度值所占的空间
     endXNoOff = size.width - basePadding * 2;
     double temp=basePadding * 2.5;//预留出y轴刻度值所占的空间
+
+    numX=(size.width - basePadding * 2-temp)~/xGap;
     if(xOffset>0){
       xOffset=0;
     }
-    if(chartBeans.length>7){
+    if(chartBeans.length>numX){
       if(chartBeans.length*xGap+xOffset<size.width-xGap){
         xOffset=-chartBeans.length*xGap+size.width-xGap;
       }
+    }else{
+      xOffset=0;
     }
 
     startX = temp +xOffset;
-    if(chartBeans.length<=7){
+    if(chartBeans.length<=numX){
       endX = size.width - basePadding * 2;
     }else{
       endX = xGap * chartBeans.length+xOffset;
@@ -155,16 +164,16 @@ class ChartLinePainter extends BasePainter {
     _fixedWidth = endX - startX;
     maxMin = calculateMaxMin(chartBeans);
 
-    double paddingTop=basePadding * 2;
+
     double paddingLeft=basePadding * 2.5;
-    double paddingRight=basePadding * 2;
-    double paddingBottom=basePadding * 3 ;
+
 
     //创建一个矩形，方便后续绘制
     innerRect = Rect.fromPoints(
       Offset(paddingLeft, 0),
       Offset(size.width, size.height ),
     );
+
 
   }
 
@@ -179,7 +188,7 @@ class ChartLinePainter extends BasePainter {
         for (int i = 0; i < length; i++) {
           if (i == 0) {
             var key = startX;
-            var value = (startY - chartBeans[i].y / maxMin[0] * _fixedHeight);
+            var value = (startY - (chartBeans[i].y-maxMin[1]) / (maxMin[0]-maxMin[1]) * _fixedHeight);
             path.moveTo(key, value);
             _points[key] = Offset(key, value);
             continue;
@@ -187,8 +196,8 @@ class ChartLinePainter extends BasePainter {
           currentX = startX + W * i;
           preX = startX + W * (i - 1);
 
-          preY = (startY - chartBeans[i - 1].y / maxMin[0] * _fixedHeight);
-          currentY = (startY - chartBeans[i].y / maxMin[0] * _fixedHeight);
+          preY = (startY - (chartBeans[i - 1].y -maxMin[1])/ (maxMin[0]-maxMin[1]) * _fixedHeight);
+          currentY = (startY - (chartBeans[i].y-maxMin[1]) / (maxMin[0]-maxMin[1])* _fixedHeight);
           _points[currentX] = Offset(currentX, currentY);
 
           if (isCurve) {
@@ -248,7 +257,7 @@ class ChartLinePainter extends BasePainter {
   void drawRuler(Canvas canvas, Paint paint) {
     if (chartBeans != null && chartBeans.length >= 0) {
       //int length = chartBeans.length > 7 ? 7 : chartBeans.length; //最多绘制7个
-      int length = chartBeans.length<=7?7:chartBeans.length;
+      int length = chartBeans.length<=numX?numX:chartBeans.length;
       double dw =xGap; //两个点之间的x方向距离
       double dh = _fixedHeight / (length - 1); //两个点之间的y方向距离
 
@@ -269,50 +278,74 @@ class ChartLinePainter extends BasePainter {
         if(chartBeans.length==0){
           switch(i){
            case 0:
-             text="0:00";
+             text="0:10";
              break;
             case 1:
-              text="0:10";
-              break;
-            case 2:
               text="0:20";
               break;
-            case 3:
+            case 2:
               text="0:30";
               break;
-            case 4:
+            case 3:
               text="0:40";
               break;
-            case 5:
+            case 4:
               text="0:50";
               break;
-            case 6:
+            case 5:
               text="1:00";
+              break;
+            case 6:
+              text="1:10";
+              break;
+            case 7:
+              text="1:20";
+              break;
+            case 8:
+              text="1:30";
+              break;
+            case 9:
+              text="1:40";
+              break;
+            case 10:
+              text="1:50";
               break;
           }
         }else{
           if(i>=chartBeans.length){
             switch(i){
               case 0:
-                text="0:00";
-                break;
-              case 1:
                 text="0:10";
                 break;
-              case 2:
+              case 1:
                 text="0:20";
                 break;
-              case 3:
+              case 2:
                 text="0:30";
                 break;
-              case 4:
+              case 3:
                 text="0:40";
                 break;
-              case 5:
+              case 4:
                 text="0:50";
                 break;
-              case 6:
+              case 5:
                 text="1:00";
+                break;
+              case 6:
+                text="1:10";
+                break;
+              case 7:
+                text="1:20";
+                break;
+              case 8:
+                text="1:30";
+                break;
+              case 9:
+                text="1:40";
+                break;
+              case 10:
+                text="1:50";
                 break;
             }
           }else{
@@ -320,6 +353,7 @@ class ChartLinePainter extends BasePainter {
           }
 
         }
+
         ///绘制x轴文本
         TextPainter(
             textAlign: TextAlign.center,
@@ -328,11 +362,12 @@ class ChartLinePainter extends BasePainter {
                 text: text,
                 style: TextStyle(color: fontColor, fontSize: fontSize)),
             textDirection: TextDirection.ltr)
-          ..layout(minWidth: 40, maxWidth: 40)
-          ..paint(canvas, Offset(startX + dw * i - 20, startY + basePadding));
+          ..layout(minWidth: xGap, maxWidth: xGap)
+          ..paint(canvas, Offset(startX + dw * i - 15, startY + basePadding));
         if (xOffset <0) {
           canvas.restore();
         }
+
 //        if (isShowHintX) {
 //          ///x轴辅助线
 //          canvas.drawLine(
@@ -366,10 +401,9 @@ class ChartLinePainter extends BasePainter {
         if (xOffset < 0) {
           canvas.restore();
         }
-
       }
       int yLength = yNum ; //包含原点,所以 +1
-      double dValue = maxMin[0] / yNum; //一段对应的值
+      double dValue = (maxMin[0] -maxMin[1])/ (yNum-1); //一段对应的值
       double dV = _fixedHeight / (yNum-1); //一段对应的高度
       for (int i = 0; i < yLength; i++) {
         if (isShowYValue) {
@@ -391,7 +425,7 @@ class ChartLinePainter extends BasePainter {
                 break;
             }
           }else{
-            yValue = (dValue * (i+1)).toStringAsFixed(isShowFloat ? 1 : 0);
+            yValue = (dValue * (i)+maxMin[1]).toStringAsFixed(isShowFloat ? 1 : 0);
           }
           TextPainter(
               textAlign: TextAlign.center,
@@ -482,7 +516,7 @@ class ChartLinePainter extends BasePainter {
 
   ///绘制触摸
   void _drawOnPressed(Canvas canvas, Size size) {
-    print('globalPosition == $globalPosition');
+    print('绘制触摸 ====globalPosition == $globalPosition');
     if (!_isAnimationEnd) return;
     if (globalPosition == null) return;
     if (chartBeans == null || chartBeans.length == 0 || maxMin[0] <= 0) return;
@@ -491,13 +525,15 @@ class ChartLinePainter extends BasePainter {
 
       ///修复x轴越界
       if (pointer.dx < startXNoOff) pointer = Offset(startXNoOff, pointer.dy);
-      if (pointer.dx > endXNoOff) pointer = Offset(endXNoOff, pointer.dy);
+
+      if (pointer.dx > endXNoOff&&chartBeans.length<=numX) pointer = Offset(endXNoOff, pointer.dy);
 
       double currentX, currentY;
       int length = chartBeans.length ;
-      double W = _fixedWidth / (length - 1); //两个点之间的x方向距离
+      //double W = _fixedWidth / (length - 1); //两个点之间的x方向距离
+      double W=xGap;
       for (int i = 0; i < length; i++) {
-        currentX = startXNoOff + W * i;
+        currentX = startXNoOff + W * i+(length>numX?xOffset:0);
         currentY = chartBeans[i].y;
         if (currentX - W / 2 <= pointer.dx && pointer.dx <= currentX + W / 2) {
           pointer = _points[currentX];
