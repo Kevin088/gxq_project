@@ -79,6 +79,8 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin{
   bool isShowHighTempDialog=false;
 
   StreamSubscription eventBusOn;
+
+  int connectState=0;
   @override
   void initState() {
     // TODO: implement initState
@@ -118,14 +120,17 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin{
               case BluetoothDeviceState.connected:
                 print("蓝牙已经链接=====================");
                 setState(() {
-                  blueToothName=bluetoothDevice.name;
+                  bluetoothDevice=r.device;
+                  blueToothName=bluetoothDevice?.name;
+                  connectState=0;
                 });
                 break;
               case BluetoothDeviceState.disconnected:
                 print("蓝牙=========disconnected============");
                 setState(() {
-                  blueToothName="设备连接中...";
+                  blueToothName="设备断开连接...";
                   flutterBlue.startScan(timeout: Duration(seconds: 60*60));
+                  connectState=2;
                 });
                 devicelist.remove(bluetoothDevice);
                 bluetoothDevice=null;
@@ -133,8 +138,15 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin{
                 break;
               case BluetoothDeviceState.connecting:
                 print("蓝牙=========connecting============");
+                setState(() {
+                  connectState=0;
+                });
                 break;
               case BluetoothDeviceState.disconnecting:
+                setState(() {
+                  connectState=2;
+                });
+
                 print("蓝牙======disconnecting===============");
                 break;
             }
@@ -153,8 +165,8 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin{
                 print("${bluetoothCharacteristic.uuid}================charact===相等=====");
               }
             });
-
           });
+
           if(bluetoothCharacteristic!=null){
             print("================bluetoothCharacteristic!=null========");
             await bluetoothCharacteristic.setNotifyValue(true);
@@ -451,6 +463,14 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin{
   }
 
   Widget currentTemperatureView() {
+    MaterialColor myColor=null;
+    if(connectState==0){
+      myColor=Colors.orange;
+    }else if(connectState==1){
+      myColor=Colors.blue;
+    }else if(connectState==2){
+      myColor=Colors.grey;
+    }
     return Container(
       margin: EdgeInsets.fromLTRB(20, 20, 20, 0),
       child: Column(
@@ -476,12 +496,21 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin{
               ),
               Align(
                 alignment: FractionalOffset.centerRight,
-                child: GestureDetector(
-                    child:Padding(
-                      child:  Image.asset(Utils.getImgPath2("ic_wenduji")),
-                      padding: EdgeInsets.fromLTRB(5,3,3,5),
-                    ),
-                  onTap: setting,
+                child: RaisedButton(
+                  child: Padding(
+                      padding: EdgeInsets.only(left: 5),
+                      child: Text(
+                        "温度计",
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 12
+                        ),
+                      )
+                  ),
+                  color:  myColor,
+                  onPressed: setting,
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20.0)), //圆角大小
                 ),
               ),
             ],
@@ -677,7 +706,9 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin{
       runnable();
 
     });
-
+    setState(() {
+      connectState=1;
+    });
   }
   int unConnectCount=0;
   runnable(){
@@ -716,6 +747,7 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin{
       unConnectCount++;
       if(isLoss()){
         cancelTimer();
+        connectState=2;
         showLossDialog();
       }
     }
@@ -730,6 +762,7 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin{
       isCaiJing=false;
       _timer.cancel();
       _timer = null;
+      connectState=0;
       _saveData(listData);
     }
     setState(() {
