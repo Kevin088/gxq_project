@@ -18,4 +18,6 @@ class MyColors{
   static const Color color_888888=Color(0xFF888888);
   static const Color color_f8f8f9=Color(0xFFF2F2F2);
   static const Color color_bg_pop=Color(0xFFF2F2F2);
+  static const Color color_3ECCC7=Color(0xFF3ECCC7);
+
 }

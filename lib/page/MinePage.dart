@@ -11,6 +11,7 @@ import 'package:gxq_project/utils/Utils.dart';
 import 'package:gxq_project/utils/event_bus.dart';
 import 'package:gxq_project/widget/CustomRoute.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import 'mine/AboutPage.dart';
 import 'mine/FeedbackPage.dart';
@@ -149,6 +150,10 @@ class MinePageState extends State<MinePage>{
                 Divider(height: 1.0,color: Color.fromARGB(255, 220, 220, 220)),
                 getText("关于我们",(){
                   Navigator.push(context, CustomRoute(AboutPage()));
+                }),
+                Divider(height: 1.0,color: Color.fromARGB(255, 220, 220, 220)),
+                getText("隐私权限",() async {
+                 await launch(ParamName.URL_YINSI);
                 }),
                 Divider(height: 1.0,color: Color.fromARGB(255, 220, 220, 220)),
                 Expanded(child: Container()),

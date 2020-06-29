@@ -3,6 +3,7 @@ import 'dart:convert';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_blue/flutter_blue.dart';
@@ -27,6 +28,7 @@ import 'package:gxq_project/widget/line/chart_line.dart';
 import 'package:popup_window/popup_window.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:uuid/uuid.dart';
 
 import 'TemperatureSetPage.dart';
@@ -204,6 +206,9 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin{
           cancelTimer();
         }
     });
+    Future.delayed(Duration.zero, () {
+      showYinsiDialog();
+    });
   }
 
   @override
@@ -228,7 +233,6 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin{
       xPosition = MediaQuery.of(context).size.width-130;
 
     }
-
     return new MaterialApp(
         home: AnnotatedRegion<SystemUiOverlayStyle>(
           value: SystemUiOverlayStyle.dark,
@@ -337,6 +341,7 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin{
 
                           },
                           child:getHelpButton((){
+
                             Navigator.push(context, CustomRoute(CommonQuestionPage()));
                             //bluetoothCharacteristic.write([0xFB, 0x03, 0x00, 0x00]);
                           })
@@ -973,5 +978,58 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin{
               ],
             );
           });
+  }
+
+  void showYinsiDialog(){
+
+    showDialog(
+        context: context,
+        barrierDismissible: true,
+        builder: (BuildContext context) {
+          return AlertDialog(
+//            content: Text('我们非常重视您的隐私和个人信息保护，请您认真阅读'
+//            '《用户协议》和《隐私政策》，您同意并接受全部条款后方可使用爱启航HD相关功能。'),
+          content:RichText(
+              text:TextSpan(
+                text: '我们非常重视您的隐私和个人信息保护，请您认真阅读',
+                style: TextStyle(color: Colors.black,fontSize: 16.0),
+                  children: <TextSpan>[
+                    TextSpan(
+                    text: '《用户协议》',
+                    style: TextStyle(color: MyColors.color_3ECCC7,fontSize: 16.0),
+                    recognizer: TapGestureRecognizer()..onTap = () async {
+                      await launch(ParamName.URL_YINSI);
+                    }),
+                    TextSpan(
+                        text: '，您同意并接受全部条款后方可使用相关功能。',
+                        style: TextStyle(color: Colors.black,fontSize: 16.0),
+                        recognizer: TapGestureRecognizer()..onTap = () async {
+                          await launch(ParamName.URL_YINSI);
+                        }),
+                  ]
+              )
+          ),
+            actions: <Widget>[
+              FlatButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: Padding(
+                    child: Text('同意并继续'),
+                    padding: EdgeInsets.all(4),
+                  )
+              ),
+              FlatButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child:Padding(
+                    child:  Text('暂不同意'),
+                    padding: EdgeInsets.all(4),
+                  )
+              ),
+            ],
+          );
+        });
   }
 }

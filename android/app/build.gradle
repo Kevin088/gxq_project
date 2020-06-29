@@ -133,8 +133,8 @@ MobSDK {
                 shareByAppClient true
             }
             SinaWeibo {
-                appKey "1044815840"
-                appSecret "c150477094bc8c045b87826b89ff9c07"
+                appKey "470701973"
+                appSecret "f0515c6d0a56ccb1f0c77d5e2a38be4d"
                 callbackUri "http://mobile.iqihang.com"
                 shareByAppClient true
             }
