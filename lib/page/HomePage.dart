@@ -175,12 +175,6 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin{
         });
       }
     });
-
-
-// Stop scanning
-    //  flutterBlue.stopScan();
-
-
     initData();
 
     if(isShowHighTempDialog){
@@ -234,10 +228,7 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin{
                     children: <Widget>[
                       Container(
                         width: 50,
-                        child: FlatButton(
-                          onPressed: scan,
-                          child: Image.asset(Utils.getImgPath2("ic_saoyisao")),
-                        ),
+                        child: Container(),
                       ),
                       Expanded(
                           flex: 1,
@@ -360,77 +351,6 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin{
       return;
     }
     Navigator.push(context, CustomRoute(TemperatureSetPage(isCaiJIng:isCaiJing,index: tabButton,)));
-//    if(!isCaiJing){
-//      var prefs = await SharedPreferences.getInstance();
-//      bool isLogin=prefs.getBool(ParamName.IS_LOGIN)??false;
-//      if(!isLogin){
-//        Navigator.push(context, CustomRoute(LoginPage()));
-//        return;
-//      }
-//      showDialog(
-//          context: context,
-//          barrierDismissible: true,
-//          builder: (BuildContext context) {
-//            return AlertDialog(
-//              content: Text('开始采集'),
-//              actions: <Widget>[
-//                FlatButton(
-//                    onPressed: () {
-//                      timeStart();
-//                      Navigator.of(context).pop();
-//                    },
-//                    child: Padding(
-//                    child: Text('确认'),
-//            padding: EdgeInsets.fromLTRB(5,3,3,5),
-//            )),
-//                FlatButton(
-//                    onPressed: () {
-//                      Navigator.of(context).pop();
-//                    },
-//                    child: Padding(
-//                        child: Text('取消'),
-//                        padding: EdgeInsets.fromLTRB(5,3,3,5),
-//                    )),
-//              ],
-//            );
-//          });
-//    }else{
-//      showDialog(
-//          context: context,
-//          barrierDismissible: true,
-//          builder: (BuildContext context) {
-//            return AlertDialog(
-//              content: Text('结束采集'),
-//              actions: <Widget>[
-//                FlatButton(
-//                    onPressed: () {
-//                      Navigator.of(context).pop();
-//                      cancelTimer();
-//                      setState(() {
-//
-//                      });
-//                      _saveData(listData);
-//                    },
-//                    child: Padding(
-//                      child: Text('确定'),
-//                      padding: EdgeInsets.all(4),
-//                    )
-//                ),
-//                FlatButton(
-//                    onPressed: () {
-//                      Navigator.of(context).pop();
-//                    },
-//                    child:Padding(
-//                      child:  Text('取消'),
-//                      padding: EdgeInsets.all(4),
-//                    )
-//                ),
-//              ],
-//            );
-//          });
-
-//    }
-
   }
 
   Widget getBanner() {
