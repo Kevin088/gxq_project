@@ -9,7 +9,7 @@ class Api {
 
   static const String upload = "api/user/records";
   static const String upload_one = "api/user/record";
-  static const String getList = "api/user/feed/";
+  static const String getList = "api/user/feed";
 
   static const String yijianfankui="api/user/remark";
 

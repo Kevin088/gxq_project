@@ -241,9 +241,12 @@ class SecondPageState extends State<SecondPage> {
   var list=List<SlideButton>();
   SlideButton getItemView(int index) {
     var pointInfo=mList[index];
-    var title;
-    var temp;
-    var str;
+    if(pointInfo==null){
+      return null;
+    }
+    var title="体温正常";
+    var temp="0";
+    var str="体温";
     switch(pointInfo.tempType){
       case 0:
         str="体温";
@@ -311,14 +314,14 @@ class SecondPageState extends State<SecondPage> {
                   ),
                   SizedBox(height: 10.0),
                   Text(
-                    Utils.formatTime(pointInfo.createTime),
+                    Utils.formatTime(pointInfo?.createTime),
                     style: TextStyle(
                       color: MyColors.gray_999999,
                       fontSize: 12,
                     ),
                   ),
                   Text(
-                    pointInfo.bluetoothName,
+                    pointInfo.bluetoothName==null?"":pointInfo.bluetoothName,
                     style: TextStyle(
                       color: MyColors.gray_999999,
                       fontSize: 12,

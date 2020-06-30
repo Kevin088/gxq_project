@@ -47,9 +47,10 @@ class BottomNavigationWidgetState extends State<BottomNavigationWidget> {
 
     }
 
-    Response response= await HttpUtil.getInstance().post(Api.getList+deviceId);
+    Response response= await HttpUtil.getInstance().post(Api.getList,data: {"index":0, "size": 9999999,"where":{"device_id":deviceId}});
     var data=response?.data;
-    var list=data['data'];
+    var data_=data['data'];
+    var list=data_['records'];
     if(list!=null){
       List<PointInfo> listInfo=PointInfo.fromMapList(list);
       if(listInfo!=null){

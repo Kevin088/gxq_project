@@ -79,7 +79,7 @@ class TemperatureSetPageState extends State<TemperatureSetPage> {
           children: <Widget>[
             SizedBox(height: 30,),
             Text(
-              (widget.isCaiJIng?"停止采集":"开始采集"),
+              ("温度设定"),
               style: TextStyle(color: MyColors.color_444444,fontSize: 19,fontWeight: FontWeight.bold),
             ),
             SizedBox(height: 50,),

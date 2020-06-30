@@ -59,9 +59,9 @@ class HttpUtil {
     (dio.httpClientAdapter as DefaultHttpClientAdapter).onHttpClientCreate = (client){
       client.findProxy = (url){
         //设置代理 电脑ip地址
-        //return "PROXY 192.168.8.102:8888";
+        return "PROXY 192.168.100.72:8888";
         //不设置代理
-        return 'DIRECT';
+        //return 'DIRECT';
       };
       //抓Https包设置
       client.badCertificateCallback =

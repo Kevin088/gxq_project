@@ -52,7 +52,7 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin{
   ///当前温度按钮
   int tabButton = 0;
   double xPosition = 0;
-  double yPosition = 0;
+  double yPosition = 400;
   final GlobalKey globalKey = GlobalKey();
   String UUID="0000fff6-0000-1000-8000-00805f9b34fb";
 
@@ -82,7 +82,9 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin{
 
   StreamSubscription eventBusOn;
 
-  int connectState=0;
+  int connectState=0;//0 扫描中 断开连接 红  1 已连接 黄 2 检测中 绿
+
+  bool isShowPop=false;
   @override
   void initState() {
     // TODO: implement initState
@@ -100,7 +102,7 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin{
     flutterBlue.scanResults.listen((results) async {
       // do something with scan results
       for (ScanResult r in results) {
-        if(r.device.name!=null&&r.device.name!=""){
+        if(r.device.name!=null&&r.device.name!=""&&!devicelist.contains(r.device)){
           devicelist.add(r.device);
         }
 
@@ -124,7 +126,7 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin{
                 setState(() {
                   bluetoothDevice=r.device;
                   blueToothName=bluetoothDevice?.name;
-                  connectState=0;
+                  connectState=1;
                 });
                 break;
               case BluetoothDeviceState.disconnected:
@@ -132,7 +134,7 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin{
                 setState(() {
                   blueToothName="设备断开连接...";
                   flutterBlue.startScan(timeout: Duration(seconds: 60*60));
-                  connectState=2;
+                  connectState=0;
                 });
                 devicelist.remove(bluetoothDevice);
                 bluetoothDevice=null;
@@ -146,7 +148,7 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin{
                 break;
               case BluetoothDeviceState.disconnecting:
                 setState(() {
-                  connectState=2;
+                  connectState=0;
                 });
 
                 print("蓝牙======disconnecting===============");
@@ -231,116 +233,124 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin{
         home: AnnotatedRegion<SystemUiOverlayStyle>(
           value: SystemUiOverlayStyle.dark,
           child: Scaffold(
-            body: Column(
+            body:Stack(
               children: <Widget>[
-                Container(
-                  margin: EdgeInsets.fromLTRB(10, 20, 10, 0),
-                  height: 50,
-                  child: Row(
-                    children: <Widget>[
-                      Container(
-                        width: 50,
-                        child: Container(),
-                      ),
-                      Expanded(
-                          flex: 1,
-                          child: Container(
-                            alignment: Alignment.center,
-                            child: getTitleView(blueToothName),
-                          )),
-                      Container(
-                        child: Container(
-                          width: 50,
-                        ),
-                      )
-                    ],
-                  ),
-                ),
-                Container(
-                  height: 100,
-                  child: _imgData.length>0?getBanner():Container(),
-                ),
-                Container(
-                  margin: EdgeInsets.fromLTRB(20, 30, 20, 0),
-                  child: Row(
-                    children: <Widget>[
-                      Expanded(
-                        flex: 1,
-                        child: getTabButton("体温", () {
-                          if(isCaiJing){
-                            Toast.toast(context,msg: "温度正在采集");
-                            return;
-                          }
-                          setState(() {
-                            tabButton = 0;
-                          });
-                        }, 0),
-                      ),
-                      Expanded(
-                        flex: 1,
-                        child: getTabButton("室温", () {
-                          if(isCaiJing){
-                            Toast.toast(context,msg: "温度正在采集");
-                            return;
-                          }
-                          setState(() {
-                            tabButton = 1;
-                          });
-                        }, 1),
-                      ),
-                      Expanded(
-                        flex: 1,
-                        child: getTabButton("水温", () {
-                          if(isCaiJing){
-                            Toast.toast(context,msg: "温度正在采集");
-                            return;
-                          }
-                          setState(() {
-                            tabButton = 2;
-                          });
-                        }, 2),
-                      ),
-                    ],
-                  ),
-                ),
-                currentTemperatureView(),
-                Stack(
+                Column(
                   children: <Widget>[
-                    getLineView(context),
-                    Positioned(
-                      left: xPosition,
-                      top: yPosition,
-                      child: GestureDetector(
-                          onPanUpdate: (detail){
-                            double x=xPosition;
-                            x += detail.delta.dx;
-                            if(x>0&&x<MediaQuery.of(context).size.width-110){
-                              setState(() {
-                                xPosition=x;
-                              });
-                            }
-
-                            double y=yPosition;
-                            y += detail.delta.dy;
-                            if(y<150&&y>0){
-                              setState(() {
-                                yPosition=y;
-                              });
-                            }
-                          },
-                          onPanEnd: (detail){
-
-                          },
-                          child:getHelpButton((){
-
-                            Navigator.push(context, CustomRoute(CommonQuestionPage()));
-                            //bluetoothCharacteristic.write([0xFB, 0x03, 0x00, 0x00]);
-                          })
+                    Container(
+                      margin: EdgeInsets.fromLTRB(10, 20, 10, 0),
+                      height: 50,
+                      child: Row(
+                        children: <Widget>[
+                          Container(
+                            width: 50,
+                            child: Container(),
+                          ),
+                          Expanded(
+                              flex: 1,
+                              child: Container(
+                                alignment: Alignment.center,
+                                child: getTitleView(blueToothName),
+                              )),
+                          Container(
+                            child: Container(
+                              width: 50,
+                            ),
+                          )
+                        ],
                       ),
-                    )
+                    ),
+                    Container(
+                      height: 100,
+                      child: _imgData.length>0?getBanner():Container(),
+                    ),
+                    Container(
+                      margin: EdgeInsets.fromLTRB(20, 30, 20, 0),
+                      child: Row(
+                        children: <Widget>[
+                          Expanded(
+                            flex: 1,
+                            child: getTabButton("体温", () {
+                              if(isCaiJing){
+                                Toast.toast(context,msg: "温度正在采集");
+                                return;
+                              }
+                              setState(() {
+                                tabButton = 0;
+                              });
+                            }, 0),
+                          ),
+                          Expanded(
+                            flex: 1,
+                            child: getTabButton("室温", () {
+                              if(isCaiJing){
+                                Toast.toast(context,msg: "温度正在采集");
+                                return;
+                              }
+                              setState(() {
+                                tabButton = 1;
+                              });
+                            }, 1),
+                          ),
+                          Expanded(
+                            flex: 1,
+                            child: getTabButton("水温", () {
+                              if(isCaiJing){
+                                Toast.toast(context,msg: "温度正在采集");
+                                return;
+                              }
+                              setState(() {
+                                tabButton = 2;
+                              });
+                            }, 2),
+                          ),
+                        ],
+                      ),
+                    ),
+                    currentTemperatureView(),
+                    getLineView(context),
                   ],
                 ),
+                Positioned(
+                  top: 60,
+                  left: 0,
+                  child: Container(
+                    width: MediaQuery.of(context).size.width,
+                    alignment: Alignment.center,
+                    child: getPopWindowList(),
+                  ),
+                ),
+                Positioned(
+                  left: xPosition,
+                  top: yPosition,
+                  child: GestureDetector(
+                      onPanUpdate: (detail){
+                        double x=xPosition;
+                        x += detail.delta.dx;
+                        if(x>0&&x<MediaQuery.of(context).size.width-110){
+                          setState(() {
+                            xPosition=x;
+                          });
+                        }
 
+                        double y=yPosition;
+                        y += detail.delta.dy;
+                        if(y<MediaQuery.of(context).size.height-100&&y>35){
+                          setState(() {
+                            yPosition=y;
+                          });
+                        }
+                      },
+                      onPanEnd: (detail){
+
+                      },
+                      child:getHelpButton((){
+
+                        Navigator.push(context, CustomRoute(CommonQuestionPage()));
+                        //bluetoothCharacteristic.write([0xFB, 0x03, 0x00, 0x00]);
+                      })
+                  ),
+                )
               ],
             ),
           ),
@@ -356,6 +366,10 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin{
   }
   //设置
   Future<void> setting() async {
+    if(connectState==0){
+      Toast.toast(context,msg: "温度计连接中,请稍后");
+      return;
+    }
     var prefs = await SharedPreferences.getInstance();
     bool isLogin=prefs.getBool(ParamName.IS_LOGIN)??false;
     if(!isLogin){
@@ -388,13 +402,17 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin{
   }
 
   Widget currentTemperatureView() {
-    MaterialColor myColor=null;
+    MaterialColor myColor=Colors.red;
+    String text="连接中";
     if(connectState==0){
-      myColor=Colors.orange;
+      text="连接中";
+      myColor=Colors.red;
     }else if(connectState==1){
-      myColor=Colors.blue;
+      myColor=Colors.orange;
+      text="已连接";
     }else if(connectState==2){
-      myColor=Colors.grey;
+      myColor=Colors.green;
+      text="检测中";
     }
     return Container(
       margin: EdgeInsets.fromLTRB(20, 20, 20, 0),
@@ -425,7 +443,7 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin{
                   child: Padding(
                       padding: EdgeInsets.only(left: 5),
                       child: Text(
-                        "温度计",
+                        text,
                         style: TextStyle(
                             color: Colors.white,
                             fontSize: 12
@@ -557,42 +575,50 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin{
   GlobalKey popBottomKey= GlobalKey();
 
   showPop(){
-    PopupWindow.showPopWindow(context, "bottom",
-        popBottomKey, PopDirection.bottom, getPopWindowList(), 0);
+    setState(() {
+      isShowPop=!isShowPop;
+    });
   }
 
   Widget getPopWindowList(){
-    if(devicelist.length==0){
-      return Container(
-        color: MyColors.color_bg_pop,
-        padding: EdgeInsets.fromLTRB(20, 0, 20, 0),
-        child: Text(
-          "设备连接中...",
-          style: TextStyle(
-              fontSize: 19,
-              color: Color.fromARGB(255, 68, 68, 68)),
-        ),
-      );
+    if(!isShowPop){
+      return Container();
     }else{
-      return Container(
-        color: Colors.white,
-        child: ListView.builder(
-          itemBuilder: (context, index) {
-            return GestureDetector(
-                child: Text(
-                  devicelist[index].name,
-                  style: TextStyle(
-                      fontSize: 19,
-                      color: Color.fromARGB(255, 68, 68, 68)),
-                ),
-                onTap:(){
-                  // var ss=devicelist[index].name;
-                }
-            );
-          },
-          itemCount: devicelist.length,
-        ),
-      );
+      if(devicelist.length==0){
+        return Container(
+          color: MyColors.color_bg_pop,
+          padding: EdgeInsets.fromLTRB(20, 0, 20, 0),
+          child: Text(
+            "设备连接中...",
+            style: TextStyle(
+                fontSize: 19,
+                color: Color.fromARGB(255, 68, 68, 68)),
+          ),
+        );
+      }else{
+        return Container(
+          color: Colors.grey,
+          width: 180,
+          height: 200,
+          child: ListView.builder(
+            itemBuilder: (context, index) {
+              return GestureDetector(
+                  child: Text(
+                    devicelist[index].name,
+                    style: TextStyle(
+                        fontSize: 19,
+                        color: Color.fromARGB(255, 68, 68, 68)),
+                  ),
+                  onTap:(){
+                    // var ss=devicelist[index].name;
+                  }
+              );
+            },
+            itemCount: devicelist.length,
+          ),
+        );
+      }
+
     }
 
   }
@@ -607,6 +633,7 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin{
       return;
     }
     isCaiJing=true;
+
     const period = const Duration(seconds: 2);
     listData.clear();
     count=0;
@@ -631,9 +658,13 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin{
       runnable();
 
     });
-    setState(() {
-      connectState=1;
-    });
+
+    if(connectState!=0){
+      connectState=2;
+      setState(() {
+      });
+    }
+
   }
   int unConnectCount=0;
   runnable(){
@@ -687,9 +718,12 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin{
       isCaiJing=false;
       _timer.cancel();
       _timer = null;
-      connectState=0;
+      if(connectState!=0){
+        connectState=1;
+      }
       _saveData(listData);
     }
+
     setState(() {
 
     });
@@ -791,20 +825,10 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin{
     maxTemp=-1000;
     minTemp=1000;
     allTem=0;
-  //  currentstatus=-1;
   }
 
 
   initPush() async {
-//    var channels = List<rammus.NotificationChannel>();
-//    channels.add(rammus.NotificationChannel(
-//      "1",
-//      "rammus",
-//      "rammus test",
-//      importance: rammus.AndroidNotificationImportance.MAX,
-//    ));
-//    //推送通知的处理 (注意，这里的id:针对Android8.0以上的设备来设置通知通道,客户端的id跟阿里云的通知通道要一致，否则收不到通知)
-//    rammus.setupNotificationManager(channels);
     rammus.setupNotificationManager(id: "1",name: "rammus",description: "rammus test",);
 
     rammus.onNotification.listen((data){
@@ -843,14 +867,6 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin{
     print("===deviceId========>$deviceId");
     final prefs = await SharedPreferences.getInstance();
     prefs.setString(ParamName.DEVICE_ID,deviceId);
-//    if (!mounted) return;
-//    setState(() {
-//      _deviceId = deviceId;
-//      //接下来你要做的事情
-//      //1.将device id通过接口post给后台，然后进行指定设备的推送
-//      //2.推送的时候，在Android8.0以上的设备都要设置通知通道
-//
-//    });
   }
 
   showHighTempDialog(){
@@ -901,7 +917,7 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin{
   }
 
   void showYinsiDialog(){
-
+    return;
     showDialog(
         context: context,
         barrierDismissible: true,

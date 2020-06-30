@@ -49,10 +49,15 @@ class Utils{
     return formatDate(DateTime.now(), [yyyy, "-", mm, "-", dd, " "," ", HH, ":", nn, ":", ss]);
   }
   static String formatTime(int time){
-    if(time==0){
+    String str="";
+    try{
+      if(time==0){
+        return "0";
+      }
+      str=formatDate(DateTime.fromMillisecondsSinceEpoch(time), [yyyy, "-", mm, "-", dd, " "," ", HH, ":", nn, ":", ss]);
+    }catch(value){
       return "0";
     }
-    return formatDate(DateTime.fromMillisecondsSinceEpoch(time), [yyyy, "-", mm, "-", dd, " "," ", HH, ":", nn, ":", ss]);
   }
   static String formatXvalue(int time){
     time++;
