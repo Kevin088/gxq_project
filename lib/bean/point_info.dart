@@ -38,7 +38,7 @@ class PointInfo{
       pointInfo.id = map['id'];
       pointInfo.createTime = map['createTime'];
       pointInfo.userId = map['userId']??"";
-      pointInfo.isUpload = map['isUpload'];
+      pointInfo.isUpload = map['isUpload']??"1";
       pointInfo.tempType = map['tempType'];
       pointInfo.bluetoothId = map['bluetoothId'];
       pointInfo.bluetoothName = map['bluetoothName'];

@@ -85,6 +85,7 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin{
   int connectState=0;//0 扫描中 断开连接 红  1 已连接 黄 2 检测中 绿
 
   bool isShowPop=false;
+  FlutterBlue flutterBlue;
   @override
   void initState() {
     // TODO: implement initState
@@ -93,7 +94,7 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin{
 
     //蓝牙=====================================
 
-    FlutterBlue flutterBlue = FlutterBlue.instance;
+    flutterBlue = FlutterBlue.instance;
 
     // Start scanning
     flutterBlue.startScan(timeout: Duration(seconds: 60*60));
@@ -102,13 +103,15 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin{
     flutterBlue.scanResults.listen((results) async {
       // do something with scan results
       for (ScanResult r in results) {
-        if(r.device.name!=null&&r.device.name!=""&&!devicelist.contains(r.device)){
+        if(r.device.name!=null
+            && r.device.name!=""
+            &&!devicelist.contains(r.device)
+            && r.device.name.contains("Rdf")){
           devicelist.add(r.device);
         }
 
         if(r.device.name.contains("Rdf")&&bluetoothDevice==null){
           bluetoothDevice=r.device;
-          print('${r.device.name} found! rssi: ${r.rssi}');
           //flutterBlue.stopScan();
           //await r.device.disconnect();
           await r.device.connect();
@@ -133,7 +136,6 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin{
                 print("蓝牙=========disconnected============");
                 setState(() {
                   blueToothName="设备断开连接...";
-                  flutterBlue.startScan(timeout: Duration(seconds: 60*60));
                   connectState=0;
                 });
                 devicelist.remove(bluetoothDevice);
@@ -597,25 +599,40 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin{
         );
       }else{
         return Container(
-          color: Colors.grey,
           width: 180,
-          height: 200,
-          child: ListView.builder(
-            itemBuilder: (context, index) {
-              return GestureDetector(
-                  child: Text(
-                    devicelist[index].name,
-                    style: TextStyle(
-                        fontSize: 19,
-                        color: Color.fromARGB(255, 68, 68, 68)),
-                  ),
-                  onTap:(){
-                    // var ss=devicelist[index].name;
-                  }
-              );
-            },
-            itemCount: devicelist.length,
-          ),
+            height: 200,
+          child:MediaQuery.removePadding(
+            context: context,
+            removeTop: true,
+            child:ListView.builder(
+              itemBuilder: (context, index) {
+                return GestureDetector(
+                    child: Container(
+                      color: Colors.white,
+                      child: Padding(
+                        padding: EdgeInsets.all(4),
+                        child: Text(
+                          devicelist[index].name,
+                          style: TextStyle(
+                              fontSize: 19,
+                              color: devicelist[index]==bluetoothDevice?Colors.red:Colors.black
+                          ),
+                        ),
+                      ),
+                    ),
+                    onTap:(){
+                      // var ss=devicelist[index].name;
+                      connectBlueDevice(devicelist[index]);
+                      setState(() {
+                        isShowPop=false;
+                      });
+                    }
+                );
+              },
+              itemCount: devicelist.length,
+            ),
+          )
+
         );
       }
 
@@ -968,4 +985,92 @@ class HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin{
           );
         });
   }
+
+  connectBlueDevice(BluetoothDevice bluetoothDevice_) async {
+    if(bluetoothDevice_==null){
+      return;
+    }
+    if(bluetoothDevice==null){
+      return;
+    }
+    if(bluetoothDevice_==bluetoothDevice){
+      return;
+    }
+    bluetoothDevice.state.listen((s){
+
+    });
+    await bluetoothDevice.disconnect();
+
+    await bluetoothDevice_.connect();
+    bluetoothDevice=bluetoothDevice_;
+    print("已连接======= -=============>");
+    blueToothId=bluetoothDevice_.id.id;
+    if(bluetoothDevice_.name!=null&&bluetoothDevice_.name!=""){
+      setState(() {
+        blueToothName=bluetoothDevice_.name;
+      });
+    }
+    bluetoothDevice_.state.listen((s){
+      switch(s){
+        case BluetoothDeviceState.connected:
+          print("蓝牙已经链接=====================");
+          setState(() {
+            bluetoothDevice=bluetoothDevice_;
+            blueToothName=bluetoothDevice_?.name;
+            connectState=1;
+          });
+          break;
+        case BluetoothDeviceState.disconnected:
+          print("蓝牙=========disconnected============");
+          setState(() {
+            blueToothName="设备断开连接...";
+            connectState=0;
+          });
+          devicelist.remove(bluetoothDevice);
+          bluetoothDevice=null;
+
+          break;
+        case BluetoothDeviceState.connecting:
+          print("蓝牙=========connecting============");
+          setState(() {
+            connectState=0;
+          });
+          break;
+        case BluetoothDeviceState.disconnecting:
+          setState(() {
+            connectState=0;
+          });
+
+          print("蓝牙======disconnecting===============");
+          break;
+      }
+    });
+
+
+    List<BluetoothService> services = await bluetoothDevice_.discoverServices();
+    services.forEach((service) {
+      var characteristics = service.characteristics;
+      print("${service.uuid}================service========");
+      characteristics.forEach((characteristic) {
+        print("${characteristic.uuid}================charact========");
+        if(UUID.compareTo(characteristic.uuid.toString().toLowerCase())==0){
+          bluetoothCharacteristic=characteristic;
+          //bluetoothCharacteristic.write([0xFB,0x02,0x00,0x00]);
+          print("${bluetoothCharacteristic.uuid}================charact===相等=====");
+        }
+      });
+    });
+
+    if(bluetoothCharacteristic!=null){
+      print("================bluetoothCharacteristic!=null========");
+      await bluetoothCharacteristic.setNotifyValue(true);
+      bluetoothCharacteristic.value.listen((value) {
+        temperature=Utils.getTemperature(value);
+        print("${Utils.getTemperature(value)}℃================$value========");
+
+      });
+    }
+  }
+
+
 }
