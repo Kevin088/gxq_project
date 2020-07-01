@@ -49,7 +49,7 @@ class Utils{
     return formatDate(DateTime.now(), [yyyy, "-", mm, "-", dd, " "," ", HH, ":", nn, ":", ss]);
   }
   static String formatTime(int time){
-    String str="";
+    String str="0";
     try{
       if(time==0){
         return "0";
@@ -58,6 +58,7 @@ class Utils{
     }catch(value){
       return "0";
     }
+    return str;
   }
   static String formatXvalue(int time){
     time++;
